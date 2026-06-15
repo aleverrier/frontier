@@ -65,6 +65,8 @@
 - Fixed the clean Python 3.14 install instructions by installing `setuptools` and `wheel` before `python setup.py build_ext --inplace`.
 - Replaced public Gross asset configuration with bundled `grosscode/assets/gross144` files plus an optional `GROSSCODE_ASSET_ROOT` override, and removed the old internal asset-root environment wording from code and docs.
 - Bundled the Gross `[[144,12,12]]` CSS matrices, BB144/Gross memory X/Z Stim circuits, and materialized `bravyi_depth7`, `p=0.001` split-sector DEM sparse matrices/priors.
+- Corrected the fresh-clone install command to start with `python3 -m venv .venv`, since this macOS host does not provide a `python` executable before the venv exists.
+- Updated the matrix section to state explicitly that Gross/BB144 static assets are bundled while other supported matrix families are built or generated.
 - Added `frontier-sample-rows`, a public CLI that generates `sample_rows.csv` from the same detector-side DEM matrices and priors used by `frontier-replay`.
 - Documented the complete fresh BB144/Gross DEM reproduction flow at `p=0.001`, `Delta=12`, `K=512`, and `fwd_bwd_committee`: generate 10k matched sample rows, then replay them with the native engine.
 - Made `frontier-dem-info` load all requested matrices before printing its CSV header, so missing assets no longer produce a partial CSV.

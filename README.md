@@ -28,7 +28,7 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
 ## Install
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip setuptools wheel
 python -m pip install -e .
@@ -195,8 +195,9 @@ Replay writes `summary_by_scope.csv`, `per_shot_rows.csv`,
 
 ## Matrices
 
-The repo contains matrix builders, not checked-in static `.dem`, `.mtx`, `.npy`,
-or `.npz` matrix files.
+The repo bundles the static Gross/BB144 files needed for the default
+`bravyi_depth7`, `p=0.001` reproduction, and uses builders/generators for the
+other supported matrix families.
 
 - Gross split-sector detector-side DEM:
   `grosscode.dem.builder.build_split_sector_problem(...)` returns `D_X`, `D_Z`,

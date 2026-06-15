@@ -69,6 +69,8 @@
 \item Fixed the clean Python 3.14 install instructions by installing \texttt{setuptools} and \texttt{wheel} before \texttt{\detokenize{python setup.py build_ext --inplace}}.
 \item Replaced public Gross asset configuration with bundled \texttt{\detokenize{grosscode/assets/gross144}} files plus an optional \texttt{\detokenize{GROSSCODE_ASSET_ROOT}} override, and removed the old internal asset-root environment wording from code and docs.
 \item Bundled the Gross \(\left[\left[144,12,12\right]\right]\) CSS matrices, BB144/Gross memory X/Z Stim circuits, and materialized \texttt{\detokenize{bravyi_depth7}}, \(p=0.001\) split-sector DEM sparse matrices/priors.
+\item Corrected the fresh-clone install command to start with \texttt{\detokenize{python3 -m venv .venv}}, since this macOS host does not provide a \texttt{python} executable before the venv exists.
+\item Updated the matrix section to state explicitly that Gross/BB144 static assets are bundled while other supported matrix families are built or generated.
 \item Added \texttt{\detokenize{frontier-sample-rows}}, a public CLI that generates \texttt{\detokenize{sample_rows.csv}} from the same detector-side DEM matrices and priors used by \texttt{\detokenize{frontier-replay}}.
 \item Documented the complete fresh BB144/Gross DEM reproduction flow at \(p=0.001\), \(\Delta=12\), \(K=512\), and \texttt{\detokenize{fwd_bwd_committee}}: generate 10k matched sample rows, then replay them with the native engine.
 \item Made \texttt{\detokenize{frontier-dem-info}} load all requested matrices before printing its CSV header, so missing assets no longer produce a partial CSV.
