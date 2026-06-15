@@ -29,6 +29,14 @@
 - Changed optional Gross/Tanner asset handling to require explicit public asset configuration instead of silently falling back to a local developer path.
 - Renamed temporary cache defaults to `frontier` names.
 
+## 2026-06-15 Repo Scope Cleanup
+
+- Audited the standalone export file-by-file for the intended public surface: frontier on BB/Gross and surface-code detector-side matrices.
+- Removed the legacy `grosscode/decoders/**` package, including full BP/min-sum, windowed BP/min-sum, local-round, triangle-quotient, triangle small-set-flip, and structure-aware decoder families.
+- Removed old research-only support trees: `grosscode/bench/**`, `grosscode/polar_dem/**`, projected-location/min-sum helpers, triangle-basis/reference-recovery helpers, Tanner redundant extraction, nonbinary CNOT/quaternary BP helpers, and legacy model/baseline modules.
+- Kept the frontier/native path, BB/Gross/generalized-bicycle/rotated-surface/surface matrix builders, split-sector DEM builder, Stim fault pipeline, and triangle relation helpers used by retained ordering/report paths.
+- Added `docs/FILE_SCOPE.md` as the file-by-file retained-scope audit.
+
 ## 2026-06-15 BB144/Gross Reproducibility Docs
 
 - Added README instructions for reproducing BB144/Gross split-sector DEM results at a chosen `p = --p-location`.

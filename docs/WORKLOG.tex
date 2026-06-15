@@ -33,6 +33,16 @@
 \item Renamed temporary cache defaults to \texttt{frontier} names.
 \end{itemize}
 
+\subsection*{2026-06-15 Repo Scope Cleanup}
+
+\begin{itemize}
+\item Audited the standalone export file-by-file for the intended public surface: frontier on BB/Gross and surface-code detector-side matrices.
+\item Removed the legacy \texttt{\detokenize{grosscode/decoders/**}} package, including full BP/min-sum, windowed BP/min-sum, local-round, triangle-quotient, triangle small-set-flip, and structure-aware decoder families.
+\item Removed old research-only support trees: \texttt{\detokenize{grosscode/bench/**}}, \texttt{\detokenize{grosscode/polar_dem/**}}, projected-location/min-sum helpers, triangle-basis/reference-recovery helpers, Tanner redundant extraction, nonbinary CNOT/quaternary BP helpers, and legacy model/baseline modules.
+\item Kept the frontier/native path, BB/Gross/generalized-bicycle/rotated-surface/surface matrix builders, split-sector DEM builder, Stim fault pipeline, and triangle relation helpers used by retained ordering/report paths.
+\item Added \texttt{\detokenize{docs/FILE_SCOPE.md}} as the file-by-file retained-scope audit.
+\end{itemize}
+
 \subsection*{2026-06-15 BB144/Gross Reproducibility Docs}
 
 \begin{itemize}

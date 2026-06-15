@@ -13,6 +13,21 @@ This repository contains the working C++-accelerated frontier decoder path:
 The two-stage decoder is intentionally not part of the public CLI or Python
 API exposed by this export.
 
+## Scope
+
+This repo is scoped to running the frontier decoder on BB/Gross and surface-code
+detector-side matrices. It intentionally ships only:
+
+- frontier Python wrappers and the C++ native extension
+- BB/Gross, generalized/bivariate bicycle, rotated-surface, and planar
+  surface-code matrix/DEM builders
+- replay, smoke, and BB144/Gross benchmark CLIs
+- small tests and reproducibility notes
+
+Legacy BP/min-sum decoder families, triangle-quotient decoders, polar DEM
+experiments, and old research benchmark harnesses are not part of this export.
+See `docs/FILE_SCOPE.md` for the file-by-file audit.
+
 ## Install
 
 ```bash

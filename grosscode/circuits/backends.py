@@ -20,7 +20,7 @@ from grosscode.codes.rotated_surface import (
     get_rotated_surface_backend_spec,
     is_rotated_surface_backend,
 )
-from grosscode.utils.paths import REPO_ROOT, resolve_qtanner_root
+from grosscode.utils.paths import resolve_qtanner_root
 
 
 _PUBLIC_STIM_RE = re.compile(
@@ -206,10 +206,3 @@ def resolve_backend_circuit(
         f"public bravyi_depth7 circuit for sector={sector_norm} error_rate={error_rate} not found. "
         f"Available rates: {available}"
     )
-
-
-def resolve_public_baseline_script() -> Path:
-    script = REPO_ROOT / "tools" / "gross144_circuit_level_beam_v17_scan.py"
-    if not script.exists():
-        raise FileNotFoundError(f"public baseline wrapper target missing: {script}")
-    return script

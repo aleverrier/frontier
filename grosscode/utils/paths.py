@@ -14,7 +14,7 @@ def resolve_cache_root(root: str | Path | None = None, *, app_name: str = "front
     if root is not None:
         path = Path(root).expanduser()
     else:
-        override = os.environ.get("BETTER_BEAM_CACHE_DIR")
+        override = os.environ.get("FRONTIER_CACHE_DIR")
         if override:
             path = Path(override).expanduser()
         else:
