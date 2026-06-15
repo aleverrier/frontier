@@ -338,7 +338,7 @@ def _is_binary_fastpath_compatible(
     compatible = True
     for column, row_updates in zip(columns, tuple(model.layout.column_row_updates), strict=True):
         try:
-            payload = progressive._compile_binary_frontierk_column_payload(column, tuple(row_updates))
+            payload = progressive._compile_binary_frontier_column_payload(column, tuple(row_updates))
         except Exception:
             compatible = False
             break
@@ -468,7 +468,7 @@ def _native_binary_model_spec(model: FrontierModel) -> dict[str, object] | None:
     for column_index, (column, row_updates) in enumerate(
         zip(tuple(model.columns), row_updates_by_column, strict=True)
     ):
-        payload = progressive._compile_binary_frontierk_column_payload(column, tuple(row_updates))
+        payload = progressive._compile_binary_frontier_column_payload(column, tuple(row_updates))
         if payload is None:
             return None
         before_terms = _single_bit_row_terms(
@@ -1057,9 +1057,9 @@ def _frontier_stats_from_progressive(
         sum_pre_prune_state_count=int(sum(candidate_counts)),
         sum_post_prune_state_count=int(sum(post_counts)),
         no_path_count=0 if str(result.status) == "ok" else 1,
-        transition_time_s=float(getattr(result, "binary_frontierk_transition_expansion_time_s", 0.0) or 0.0),
-        merge_time_s=float(getattr(result, "binary_frontierk_merge_time_s", 0.0) or 0.0),
-        prune_time_s=float(getattr(result, "binary_frontierk_prune_sort_time_s", 0.0) or 0.0),
+        transition_time_s=float(getattr(result, "binary_frontier_transition_expansion_time_s", 0.0) or 0.0),
+        merge_time_s=float(getattr(result, "binary_frontier_merge_time_s", 0.0) or 0.0),
+        prune_time_s=float(getattr(result, "binary_frontier_prune_sort_time_s", 0.0) or 0.0),
         total_time_s=float(time.perf_counter() - float(started)),
     )
 
@@ -1109,13 +1109,13 @@ def _decode_frontier_binary_adapter(
         raise ValueError("binary frontier engine requested for an unsupported model")
 
     env_overrides = {
-        "FRONTIERK_BINARY_TRANSITION_FAST_PATH": "1",
-        "FRONTIERK_PRUNE_PRIMARY_TOPK_FAST_PATH": "1",
-        "FRONTIERK_FUSED_BINARY_PRIMARY_TOPK_FAST_PATH": "1",
-        "FRONTIERK_BINARY_LOCAL_PATTERN_FEATURE_TABLE": "1",
-        "FRONTIERK_BINARY_UNIQUE_DETECTOR_SCORE_FAST_PATH": "1",
-        "FRONTIERK_BINARY_SMALL_CANDIDATE_DIRECT_GAP": "1",
-        "FRONTIERK_BINARY_ZERO_CLOSE_MASK_FAST_PATH": "1",
+        "FRONTIER_BINARY_TRANSITION_FAST_PATH": "1",
+        "FRONTIER_PRUNE_PRIMARY_TOPK_FAST_PATH": "1",
+        "FRONTIER_FUSED_BINARY_PRIMARY_TOPK_FAST_PATH": "1",
+        "FRONTIER_BINARY_LOCAL_PATTERN_FEATURE_TABLE": "1",
+        "FRONTIER_BINARY_UNIQUE_DETECTOR_SCORE_FAST_PATH": "1",
+        "FRONTIER_BINARY_SMALL_CANDIDATE_DIRECT_GAP": "1",
+        "FRONTIER_BINARY_ZERO_CLOSE_MASK_FAST_PATH": "1",
     }
     previous_env = {name: os.environ.get(name) for name in env_overrides}
     try:

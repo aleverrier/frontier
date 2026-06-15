@@ -5,17 +5,16 @@
 - Created the initial `frontier` export.
 - Selected repo shape 3 and decoder mode 3: native C++ decoder plus DEM replay/benchmark CLI, with forward `deadline_reorder` and backward `backward_deadline_reorder`.
 - Public modes are limited to `forward_only`, `backward_only`, and `fwd_bwd_committee`.
-- The two-stage decoder is intentionally not exposed in the public CLI or native Python wrapper.
 - Validation completed:
   - `python setup.py build_ext --inplace`
-  - `python -m py_compile frontier_native.py tools/frontier_decoder.py tools/frontier_sample_replay.py tools/frontier_bb144_benchmark.py tools/gross144_dem_x_progressive_report.py tools/steane_progressive_decoder.py tests/test_frontier_export.py`
+  - `python -m py_compile frontier_native.py tools/dem_loader.py tools/frontier_decoder.py tools/frontier_sample_replay.py tools/frontier_bb144_benchmark.py tools/steane_progressive_decoder.py tests/test_frontier_export.py`
   - `python -m pytest -q` (`3 passed`)
   - `python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
 
 ## Open Items
 
 - Pushed to GitHub: `git@github.com:aleverrier/frontier.git`, branch `main`; first published commit was `3b45933`.
-- Decide whether to later refactor the native C++ file to physically delete the unused internal stage1/stage2 implementation code.
+- Continue to keep the standalone export minimal: BB/Gross and surface-code matrix builders, DEM loading, the frontier decoder, replay, benchmark, and tests.
 
 ## 2026-06-15 Naming and Matrix Docs Cleanup
 
@@ -34,12 +33,28 @@
 - Audited the standalone export file-by-file for the intended public surface: frontier on BB/Gross and surface-code detector-side matrices.
 - Removed the legacy `grosscode/decoders/**` package, including full BP/min-sum, windowed BP/min-sum, local-round, triangle-quotient, triangle small-set-flip, and structure-aware decoder families.
 - Removed old research-only support trees: `grosscode/bench/**`, `grosscode/polar_dem/**`, projected-location/min-sum helpers, triangle-basis/reference-recovery helpers, Tanner redundant extraction, nonbinary CNOT/quaternary BP helpers, and legacy model/baseline modules.
-- Kept the frontier/native path, BB/Gross/generalized-bicycle/rotated-surface/surface matrix builders, split-sector DEM builder, Stim fault pipeline, and triangle relation helpers used by retained ordering/report paths.
+- Kept the frontier/native path, BB/Gross/generalized-bicycle/rotated-surface/surface matrix builders, and split-sector DEM builder.
 - Added `docs/FILE_SCOPE.md` as the file-by-file retained-scope audit.
 
 ## 2026-06-15 BB144/Gross Reproducibility Docs
 
 - Added README instructions for reproducing BB144/Gross split-sector DEM results at a chosen `p = --p-location`.
-- Documented both workflows: fresh side-level Monte Carlo via `tools.gross144_dem_x_progressive_report`, and exact matched full-frame replay via `frontier-replay` plus a saved `sample_rows.csv`.
+- Documented matrix inspection via `frontier-dem-info` and exact matched full-frame replay via `frontier-replay` plus a saved `sample_rows.csv`.
 - Clarified that exact published full-frame rows require the same matched sample-row corpus; large sample corpora are not checked into this repo.
 - Made `frontier-bb144-benchmark --help` side-effect-free by deferring Matplotlib cache directory creation until after argument parsing.
+
+## 2026-06-15 Minimal Repo Tightening
+
+- Replaced the archived BB144/Gross report driver with `tools/dem_loader.py`, a small loader and `frontier-dem-info` CLI for supported BB/Gross and surface-code detector matrices.
+- Removed archived report, triangle-ordering, and Stim fault-analysis helper files that were not required by the public decoder path.
+- Removed physically dead native C++ code for non-public staged decoding and removed staged replay CSV fields.
+- Made `frontier-bb144-benchmark` require an explicit `--sample-rows` file instead of defaulting to a local `results/...` path.
+- Renamed the retained prune-block helper to `tools/frontier_prune_blocks.py`.
+- Validation completed after tightening:
+  - `PYTHONPYCACHEPREFIX=/tmp/frontier_pycache python -m py_compile frontier_native.py tools/dem_loader.py tools/frontier_decoder.py tools/frontier_sample_replay.py tools/frontier_bb144_benchmark.py tools/steane_progressive_decoder.py tools/frontier_prune_blocks.py tests/test_frontier_export.py`
+  - `python setup.py build_ext --inplace`
+  - `python -m pytest -q -p no:cacheprovider` (`3 passed`)
+  - `python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
+  - `python -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder`
+  - `python -m tools.dem_loader --help`
+  - `python -m tools.frontier_bb144_benchmark --help`

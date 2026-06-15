@@ -16,10 +16,10 @@ serving that surface were removed.
 | `native/_frontier_native.cpp` | C++ frontier engine used by the public decoder path. |
 | `tools/__init__.py` | Lightweight package marker for CLI/support modules. |
 | `tools/frontier_decoder.py` | Public Python frontier API and `frontier-smoke` CLI. |
+| `tools/dem_loader.py` | Minimal DEM-to-frontier loader and `frontier-dem-info` CLI for BB/Gross and surface-code detector matrices. |
 | `tools/frontier_sample_replay.py` | Matched sample replay CLI for BB144/Gross and related DEM rows. |
-| `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe. |
-| `tools/gross144_dem_x_progressive_report.py` | Fresh side-level BB144/Gross Monte Carlo/report CLI used by the README reproduction path. |
-| `tools/frontierk_prune_blocks.py` | Small support type used by `tools/steane_progressive_decoder.py`. |
+| `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe over explicit sample rows. |
+| `tools/frontier_prune_blocks.py` | Small support type used by `tools/steane_progressive_decoder.py`. |
 | `tools/steane_progressive_decoder.py` | Frontier recurrence implementation and ordering utilities used by the public wrapper and reports. |
 | `tests/test_frontier_export.py` | Regression coverage for the exported frontier wrapper/replay behavior. |
 | `grosscode/__init__.py` | Small top-level export for split-sector DEM construction. |
@@ -36,8 +36,6 @@ serving that surface were removed.
 | `grosscode/circuits/backends.py` | Backend-to-Stim circuit resolution for Gross, BB, generalized-bicycle, and rotated-surface families. |
 | `grosscode/dem/__init__.py` | Public split-sector DEM builder exports. |
 | `grosscode/dem/builder.py` | Detector-side DEM matrix builder used by replay/report/benchmark paths. |
-| `grosscode/dem/stim_fault_pipeline.py` | Stim sampling and correction-map utilities used by the BB144/Gross report path. |
-| `grosscode/dem/triangles.py` | Local triangle relation cataloging used for retained BB144/Gross ordering/report options. |
 | `grosscode/utils/__init__.py` | Public utility exports. |
 | `grosscode/utils/gf2.py` | GF(2) sparse/dense linear algebra used by code and DEM builders. |
 | `grosscode/utils/paths.py` | Repo/cache path and optional public Gross asset resolution. |
@@ -52,3 +50,6 @@ Removed categories:
 - `grosscode/polar_dem/**`: independent polar-transform DEM experiments.
 - Legacy model/baseline/nonbinary helpers and triangle-basis/projected-location
   tooling that supported those removed experiments.
+- Archived Gross report scripts, triangle-relation order experiments, and
+  Stim fault-analysis helpers that are not required by `frontier-dem-info`,
+  `frontier-replay`, or `frontier-bb144-benchmark`.

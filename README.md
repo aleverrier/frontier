@@ -8,10 +8,7 @@ This repository contains the working C++-accelerated frontier decoder path:
 - forward-only, backward-only, and forward/backward committee decoding
 - `deadline_reorder` for the forward pass
 - `backward_deadline_reorder` for the backward pass
-- Gross split-sector DEM replay and benchmark CLIs
-
-The two-stage decoder is intentionally not part of the public CLI or Python
-API exposed by this export.
+- Gross/BB and surface-code DEM inspection, replay, and benchmark CLIs
 
 ## Scope
 
@@ -21,7 +18,7 @@ detector-side matrices. It intentionally ships only:
 - frontier Python wrappers and the C++ native extension
 - BB/Gross, generalized/bivariate bicycle, rotated-surface, and planar
   surface-code matrix/DEM builders
-- replay, smoke, and BB144/Gross benchmark CLIs
+- DEM inspection, replay, smoke, and BB144/Gross benchmark CLIs
 - small tests and reproducibility notes
 
 Legacy BP/min-sum decoder families, triangle-quotient decoders, polar DEM
@@ -44,6 +41,22 @@ python setup.py build_ext --inplace
 python -m pytest -q
 frontier-smoke --K 16 --Delta 100 --shots 3
 ```
+
+## DEM Matrices
+
+Use `frontier-dem-info` to build a supported detector-side matrix family and
+print the dimensions used by the decoder:
+
+```bash
+frontier-dem-info \
+  --backend bravyi_depth7 \
+  --p-location 0.004 \
+  --column-order deadline_reorder
+```
+
+For the accepted BB144/Gross split-sector DEM benchmark, the expected dimensions
+are `D_X = D_Z = 936 x 8784`, `O_X = O_Z = 12 x 8784`, with 12 noisy
+syndrome-extraction rounds.
 
 ## DEM Replay
 
@@ -76,6 +89,7 @@ want the extension to use.
 
 ```bash
 frontier-bb144-benchmark \
+  --sample-rows sample_rows.csv \
   --backend bravyi_depth7 \
   --p-location 0.001 \
   --column-order deadline_reorder \
@@ -95,53 +109,15 @@ non-default circuit family. The accepted detector-side matrices are
 `D_X = D_Z = 936 x 8784`, `O_X = O_Z = 12 x 8784`, with 12 noisy
 syndrome-extraction rounds.
 
-Prerequisite for the default Gross benchmark: install or otherwise configure
-the optional public Gross-code matrix/circuit assets used by
-`grosscode.dem.builder.build_split_sector_problem(...)`. The reproduction
-commands below assume those assets are already visible to the Python
-environment.
-
-### Fresh Side-Level Monte Carlo
-
-This runs newly sampled side-level shots at a chosen `p`. Run both scopes for a
-paired BB144/Gross view. In this report CLI, `K` is `--beam-sizes` and `Delta`
-is `--beam-score-gap-threshold`.
-
-```bash
-for scope in memory_X memory_Z; do
-  python -m tools.gross144_dem_x_progressive_report \
-    --backend bravyi_depth7 \
-    --scope "$scope" \
-    --p-location 0.004 \
-    --shots 1000 \
-    --seed 20260615 \
-    --decoder-mode bidirectional_committee \
-    --column-order deadline_reorder \
-    --backward-column-order backward_deadline_reorder \
-    --beam-sizes 512 \
-    --beam-score-gap-threshold 12 \
-    --score-modes future_parity_logodds_a0p8 \
-    --production-mode \
-    --results-dir "results/bb144_p0p004_${scope}_frontier_k512_Delta12" \
-    --cpus 1 \
-    --shards 10 \
-    --progress-every-shards 1
-done
-```
-
-Each output directory contains `summary.csv`, `per_shot_rows.csv`,
-`run_metadata.json`, and, unless disabled, `report.md`/plots. The summary reports
-full logical side-level FER plus `logical_fail`, `syndrome_fail`, and
-`exception_fail` decomposition. For exact reproducibility, keep the same
-`--p-location`, `--seed`, `--shot-start`/`--shots`, `--scope`, matrix backend,
-and decoder settings.
-
-### Matched Full-Frame Replay
+Prerequisite for the default Gross benchmark: install or otherwise make
+available the optional public Gross-code matrix/circuit assets used by
+`grosscode.dem.builder.build_split_sector_problem(...)`.
 
 To reproduce a published full-frame row exactly, use the same matched
-`sample_rows.csv` that was used for that row. This repo does not check in large
-sample corpora. The CSV must contain both `memory_X` and `memory_Z` rows for
-the requested shot ids and must include at least:
+`sample_rows.csv` that was used for that row and pass the intended probability
+as `--p-location`. This repo does not check in large sample corpora. The CSV
+must contain both `memory_X` and `memory_Z` rows for the requested shot ids and
+must include at least:
 `scope`, `shot`, `seed`, `truth_syndrome`, and `truth_logical`.
 
 ```bash

@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 frontier-smoke = "tools.frontier_decoder:main"
+frontier-dem-info = "tools.dem_loader:main"
 frontier-replay = "tools.frontier_sample_replay:main"
 frontier-bb144-benchmark = "tools.frontier_bb144_benchmark:main"
 

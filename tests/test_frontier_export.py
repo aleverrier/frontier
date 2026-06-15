@@ -64,15 +64,16 @@ def test_export_direction_modes_are_limited_to_selected_decoder() -> None:
     assert replay._normalize_direction_mode("forward", "bidirectional_committee") == "forward_only"
     assert replay._normalize_direction_mode("backward", "bidirectional_committee") == "backward_only"
     with pytest.raises(ValueError):
-        replay._normalize_direction_mode("stage1_nocap_stage2", "bidirectional_committee")
+        replay._normalize_direction_mode("unsupported_mode", "bidirectional_committee")
     with pytest.raises(ValueError):
         replay._normalize_direction_mode("pressure_select", "bidirectional_committee")
 
 
-def test_native_wrapper_does_not_expose_two_stage_methods() -> None:
+def test_native_wrapper_exposes_only_public_decode_methods() -> None:
     if not frontier.native_binary_available():
         pytest.skip("native frontier extension is not built")
 
     native_model = frontier._get_native_binary_model(_model())
-    assert not hasattr(native_model, "decode_overlap1_first_stage")
-    assert not hasattr(native_model, "decode_many_stage1_nocap_stage2_replay")
+    assert hasattr(native_model, "decode")
+    assert hasattr(native_model, "decode_many")
+    assert hasattr(native_model, "decode_many_select_replay")

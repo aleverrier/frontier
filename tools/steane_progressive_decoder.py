@@ -32,7 +32,7 @@ try:
     from tools import steane_side_one_round_optimal_map_report as exact
 except Exception:  # pragma: no cover - optional legacy analysis helper.
     exact = None
-from tools.frontierk_prune_blocks import (
+from tools.frontier_prune_blocks import (
     PruneBlock,
     prune_boundary_mask_from_blocks,
     summarize_prune_blocks,
@@ -57,8 +57,8 @@ TAIL_CHECKPOINT_WINDOW_COLUMNS = 64
 PAIRTREE_EPS = float(1.0e-15)
 PAIRTREE_SUPPORT_GATE_MAX_ROWS = 16
 LOW_ERROR_LOGMASS_SCORE_MODE_PREFIX = "future_parity_low_error_logmass"
-ACTIVE_FRONTIERK_SCORE_MODE_PREFIX = "future_active_frontierk"
-STAGE1_RELIABILITY_SCORE_MODE = "future_parity_logodds_stage1_reliability_v1"
+ACTIVE_FRONTIER_SCORE_MODE_PREFIX = "future_active_frontier"
+PRIOR_RELIABILITY_SCORE_MODE = "future_parity_logodds_prior_reliability_v1"
 LEARNED_LINEAR_SCORE_MODES = frozenset(
     {
         "future_parity_learned_linear_v1",
@@ -113,9 +113,9 @@ NEARCUT_ALLOWED_FEATURES = frozenset(
         "detector_sparsity_margin_vs_best",
     }
 )
-STAGE1_RELIABILITY_LLR_CLIP = 8.0
+PRIOR_RELIABILITY_LLR_CLIP = 8.0
 DEFAULT_LOW_ERROR_EVENT_CAP = 4
-DEFAULT_ACTIVE_FRONTIERK_BEAM = 8
+DEFAULT_ACTIVE_FRONTIER_BEAM = 8
 SINGLE_FIX_SPILL_DETECTOR_LOG_PENALTY = float(math.log(2.0))
 SINGLE_FIX_LOGICAL_FLIP_LOG_PENALTY = float(math.log(4.0))
 QUOTIENT_MOVE_MAX_CANDIDATE_EVENTS = 16
@@ -824,66 +824,66 @@ class ProgressiveDecodeResult:
     future_parity_incremental_update_count: int = 0
     future_parity_payload_build_count: int = 0
     future_parity_scorer_time_s: float = 0.0
-    binary_frontierk_explicit_branch_count: int = 0
-    binary_frontierk_skipped_no_error_branch_count: int = 0
-    binary_frontierk_transition_expansion_time_s: float = 0.0
-    binary_frontierk_merge_time_s: float = 0.0
-    binary_frontierk_prune_sort_time_s: float = 0.0
-    binary_frontierk_total_decode_time_s: float = 0.0
-    binary_frontierk_model_order_cache_hit_count: int = 0
-    binary_frontierk_model_order_cache_miss_count: int = 0
-    binary_frontierk_model_order_cache_build_time_s: float = 0.0
-    binary_frontierk_model_order_layout_cache_hit_count: int = 0
-    binary_frontierk_model_order_layout_cache_miss_count: int = 0
-    binary_frontierk_model_order_layout_cache_build_time_s: float = 0.0
-    binary_frontierk_model_order_feature_terms_cache_hit_count: int = 0
-    binary_frontierk_model_order_feature_terms_cache_miss_count: int = 0
-    binary_frontierk_model_order_feature_terms_cache_build_time_s: float = 0.0
-    binary_frontierk_model_order_binary_payload_cache_hit_count: int = 0
-    binary_frontierk_model_order_binary_payload_cache_miss_count: int = 0
-    binary_frontierk_model_order_binary_payload_cache_build_time_s: float = 0.0
-    binary_frontierk_hotloop_instrumentation_enabled: bool = False
-    binary_frontierk_parent_state_count: int = 0
-    binary_frontierk_parent_detector_key_unique_count: int = 0
-    binary_frontierk_parent_detector_key_duplicate_count: int = 0
-    binary_frontierk_candidate_detector_key_unique_count: int = 0
-    binary_frontierk_candidate_detector_key_duplicate_count: int = 0
-    binary_frontierk_candidate_detector_key_full_state_duplicate_count: int = 0
-    binary_frontierk_local_pattern_sample_count: int = 0
-    binary_frontierk_local_pattern_unique_count: int = 0
-    binary_frontierk_local_pattern_duplicate_count: int = 0
-    binary_frontierk_local_pattern_full_table_entry_count: int = 0
-    binary_frontierk_local_pattern_full_table_oversized_count: int = 0
-    binary_frontierk_local_pattern_max_unique_per_column: int = 0
-    binary_frontierk_local_pattern_max_degree: int = 0
-    binary_frontierk_local_pattern_max_table_entries_per_column: int = 0
-    binary_frontierk_local_pattern_feature_table_enabled: bool = False
-    binary_frontierk_local_pattern_feature_table_boundary_count: int = 0
-    binary_frontierk_local_pattern_feature_table_lookup_count: int = 0
-    binary_frontierk_local_pattern_feature_table_entry_count: int = 0
-    binary_frontierk_local_pattern_feature_table_fallback_count: int = 0
-    binary_frontierk_local_pattern_feature_table_max_entries_per_column: int = 0
-    binary_frontierk_unique_detector_score_fast_path_enabled: bool = False
-    binary_frontierk_unique_detector_score_fast_path_boundary_count: int = 0
-    binary_frontierk_unique_detector_score_fast_path_candidate_count: int = 0
-    binary_frontierk_streaming_rank_selector_enabled: bool = False
-    binary_frontierk_streaming_rank_selector_boundary_count: int = 0
-    binary_frontierk_streaming_rank_selector_stored_candidate_count: int = 0
-    binary_frontierk_streaming_rank_selector_skipped_candidate_count: int = 0
-    binary_frontierk_streaming_rank_selector_max_window_candidate_count: int = 0
-    binary_frontierk_deferred_feature_materialization_enabled: bool = False
-    binary_frontierk_deferred_feature_materialization_boundary_count: int = 0
-    binary_frontierk_deferred_feature_materialization_parity_feature_count: int = 0
-    binary_frontierk_deferred_feature_materialization_full_feature_count: int = 0
-    binary_frontierk_deferred_feature_materialization_fallback_count: int = 0
-    binary_frontierk_small_candidate_direct_gap_boundary_count: int = 0
-    binary_frontierk_small_candidate_direct_gap_candidate_count: int = 0
-    binary_frontierk_zero_close_mask_fast_path_boundary_count: int = 0
-    binary_frontierk_zero_close_mask_fast_path_state_count: int = 0
-    binary_frontierk_two_pass_rank_selector_enabled: bool = False
-    binary_frontierk_two_pass_rank_selector_boundary_count: int = 0
-    binary_frontierk_two_pass_rank_selector_candidate_count: int = 0
-    binary_frontierk_two_pass_rank_selector_heap_boundary_count: int = 0
+    binary_frontier_explicit_branch_count: int = 0
+    binary_frontier_skipped_no_error_branch_count: int = 0
+    binary_frontier_transition_expansion_time_s: float = 0.0
+    binary_frontier_merge_time_s: float = 0.0
+    binary_frontier_prune_sort_time_s: float = 0.0
+    binary_frontier_total_decode_time_s: float = 0.0
+    binary_frontier_model_order_cache_hit_count: int = 0
+    binary_frontier_model_order_cache_miss_count: int = 0
+    binary_frontier_model_order_cache_build_time_s: float = 0.0
+    binary_frontier_model_order_layout_cache_hit_count: int = 0
+    binary_frontier_model_order_layout_cache_miss_count: int = 0
+    binary_frontier_model_order_layout_cache_build_time_s: float = 0.0
+    binary_frontier_model_order_feature_terms_cache_hit_count: int = 0
+    binary_frontier_model_order_feature_terms_cache_miss_count: int = 0
+    binary_frontier_model_order_feature_terms_cache_build_time_s: float = 0.0
+    binary_frontier_model_order_binary_payload_cache_hit_count: int = 0
+    binary_frontier_model_order_binary_payload_cache_miss_count: int = 0
+    binary_frontier_model_order_binary_payload_cache_build_time_s: float = 0.0
+    binary_frontier_hotloop_instrumentation_enabled: bool = False
+    binary_frontier_parent_state_count: int = 0
+    binary_frontier_parent_detector_key_unique_count: int = 0
+    binary_frontier_parent_detector_key_duplicate_count: int = 0
+    binary_frontier_candidate_detector_key_unique_count: int = 0
+    binary_frontier_candidate_detector_key_duplicate_count: int = 0
+    binary_frontier_candidate_detector_key_full_state_duplicate_count: int = 0
+    binary_frontier_local_pattern_sample_count: int = 0
+    binary_frontier_local_pattern_unique_count: int = 0
+    binary_frontier_local_pattern_duplicate_count: int = 0
+    binary_frontier_local_pattern_full_table_entry_count: int = 0
+    binary_frontier_local_pattern_full_table_oversized_count: int = 0
+    binary_frontier_local_pattern_max_unique_per_column: int = 0
+    binary_frontier_local_pattern_max_degree: int = 0
+    binary_frontier_local_pattern_max_table_entries_per_column: int = 0
+    binary_frontier_local_pattern_feature_table_enabled: bool = False
+    binary_frontier_local_pattern_feature_table_boundary_count: int = 0
+    binary_frontier_local_pattern_feature_table_lookup_count: int = 0
+    binary_frontier_local_pattern_feature_table_entry_count: int = 0
+    binary_frontier_local_pattern_feature_table_fallback_count: int = 0
+    binary_frontier_local_pattern_feature_table_max_entries_per_column: int = 0
+    binary_frontier_unique_detector_score_fast_path_enabled: bool = False
+    binary_frontier_unique_detector_score_fast_path_boundary_count: int = 0
+    binary_frontier_unique_detector_score_fast_path_candidate_count: int = 0
+    binary_frontier_streaming_rank_selector_enabled: bool = False
+    binary_frontier_streaming_rank_selector_boundary_count: int = 0
+    binary_frontier_streaming_rank_selector_stored_candidate_count: int = 0
+    binary_frontier_streaming_rank_selector_skipped_candidate_count: int = 0
+    binary_frontier_streaming_rank_selector_max_window_candidate_count: int = 0
+    binary_frontier_deferred_feature_materialization_enabled: bool = False
+    binary_frontier_deferred_feature_materialization_boundary_count: int = 0
+    binary_frontier_deferred_feature_materialization_parity_feature_count: int = 0
+    binary_frontier_deferred_feature_materialization_full_feature_count: int = 0
+    binary_frontier_deferred_feature_materialization_fallback_count: int = 0
+    binary_frontier_small_candidate_direct_gap_boundary_count: int = 0
+    binary_frontier_small_candidate_direct_gap_candidate_count: int = 0
+    binary_frontier_zero_close_mask_fast_path_boundary_count: int = 0
+    binary_frontier_zero_close_mask_fast_path_state_count: int = 0
+    binary_frontier_two_pass_rank_selector_enabled: bool = False
+    binary_frontier_two_pass_rank_selector_boundary_count: int = 0
+    binary_frontier_two_pass_rank_selector_candidate_count: int = 0
+    binary_frontier_two_pass_rank_selector_heap_boundary_count: int = 0
     log_mass_primary_production_path: str = "off"
     log_mass_primary_production_path_used: bool = False
     log_mass_primary_guard_fallback_count: int = 0
@@ -1080,7 +1080,7 @@ class FutureParityScorerStats:
 
 
 @dataclass(slots=True)
-class BinaryFrontierKFastPathStats:
+class BinaryFrontierPathStats:
     explicit_branch_count: int = 0
     skipped_no_error_branch_count: int = 0
     transition_expansion_time_s: float = 0.0
@@ -1172,7 +1172,7 @@ class FrontierRowUpdate:
 
 
 @dataclass(frozen=True, slots=True)
-class BinaryFrontierKLocalPatternFeatureTable:
+class BinaryFrontierLocalPatternFeatureTable:
     local_row_mask: int
     pattern_by_local_mask: dict[int, int]
     no_count_deltas: tuple[int, ...]
@@ -1212,7 +1212,7 @@ class FutureParityBoundaryPayload:
 
 
 @dataclass(frozen=True, slots=True)
-class BinaryFrontierKColumnPayload:
+class BinaryFrontierColumnPayload:
     no_error_log_const: float
     toggle_logodds: float
     toggle_detector_mask: int
@@ -1225,7 +1225,7 @@ class BinaryFrontierKColumnPayload:
     after_touch_bonus_weights: tuple[float, ...] = tuple()
     after_urgency_weights: tuple[float, ...] = tuple()
     after_parity_logodds_weights: tuple[float, ...] = tuple()
-    local_pattern_feature_table: BinaryFrontierKLocalPatternFeatureTable | None = None
+    local_pattern_feature_table: BinaryFrontierLocalPatternFeatureTable | None = None
 
 
 @dataclass(slots=True)
@@ -2715,29 +2715,29 @@ def _column_correction_masks(column: ProgressiveColumn) -> tuple[int, ...]:
     return tuple(int(value) for value in column.correction_response_masks)
 
 
-def _normalize_stage1_reliability_llr(stage1_reliability_llr: Sequence[float] | np.ndarray | None) -> np.ndarray | None:
-    if stage1_reliability_llr is None:
+def _normalize_prior_reliability_llr(prior_reliability_llr: Sequence[float] | np.ndarray | None) -> np.ndarray | None:
+    if prior_reliability_llr is None:
         return None
-    values = np.asarray(stage1_reliability_llr, dtype=np.float64).reshape(-1)
+    values = np.asarray(prior_reliability_llr, dtype=np.float64).reshape(-1)
     if values.size == 0:
         return None
     if not np.all(np.isfinite(values)):
-        raise ValueError("stage1_reliability_llr must contain only finite values")
+        raise ValueError("prior_reliability_llr must contain only finite values")
     return values
 
 
-def _stage1_reliability_selected_fault_log_score(
+def _prior_reliability_selected_fault_log_score(
     *,
     correction_mask: int,
-    stage1_reliability_llr: np.ndarray | None,
-    llr_clip: float = STAGE1_RELIABILITY_LLR_CLIP,
+    prior_reliability_llr: np.ndarray | None,
+    llr_clip: float = PRIOR_RELIABILITY_LLR_CLIP,
 ) -> float:
-    if stage1_reliability_llr is None or int(correction_mask) == 0:
+    if prior_reliability_llr is None or int(correction_mask) == 0:
         return 0.0
     clip = float(llr_clip)
     if not math.isfinite(float(clip)) or float(clip) <= 0.0:
         return 0.0
-    llrs = stage1_reliability_llr
+    llrs = prior_reliability_llr
     score = 0.0
     mask = int(correction_mask)
     while int(mask) != 0:
@@ -10509,10 +10509,10 @@ def _pairlogodds_uses_2opt(pair_selection: str) -> bool:
     return _normalize_pairlogodds_pair_selection(str(pair_selection)).endswith("_2opt")
 
 
-PAIRLOGODDS_ATLAS_CSV_ENV = "FRONTIERK_PAIRLOGODDS_ATLAS_CSV"
-PAIRLOGODDS_ATLAS_BOUNDARY_MODE_ENV = "FRONTIERK_PAIRLOGODDS_ATLAS_BOUNDARY_MODE"
-PAIRLOGODDS_ATLAS_SCOPE_ENV = "FRONTIERK_PAIRLOGODDS_ATLAS_SCOPE"
-PAIRLOGODDS_ATLAS_DIRECTION_ENV = "FRONTIERK_PAIRLOGODDS_ATLAS_DIRECTION"
+PAIRLOGODDS_ATLAS_CSV_ENV = "FRONTIER_PAIRLOGODDS_ATLAS_CSV"
+PAIRLOGODDS_ATLAS_BOUNDARY_MODE_ENV = "FRONTIER_PAIRLOGODDS_ATLAS_BOUNDARY_MODE"
+PAIRLOGODDS_ATLAS_SCOPE_ENV = "FRONTIER_PAIRLOGODDS_ATLAS_SCOPE"
+PAIRLOGODDS_ATLAS_DIRECTION_ENV = "FRONTIER_PAIRLOGODDS_ATLAS_DIRECTION"
 
 
 def _pairlogodds_normalized_pair(row_i: int, row_j: int) -> tuple[int, int]:
@@ -10715,7 +10715,7 @@ def _score_mode_uses_future_parity_features(score_mode_key: str) -> bool:
         "future_parity_logodds",
         "deadline_weighted_future_parity_tau16",
         "z_deadline_weighted_future_parity_tau16",
-        STAGE1_RELIABILITY_SCORE_MODE,
+        PRIOR_RELIABILITY_SCORE_MODE,
         "future_parity_quotient_probe",
         "future_parity_logodds_singlefix_bonus",
         "future_parity_logodds_singlefix_best",
@@ -10786,11 +10786,11 @@ def _low_error_event_cap_from_score_mode(score_mode_key: str) -> int | None:
 
 
 @lru_cache(maxsize=4096)
-def _active_frontierk_beam_from_score_mode(score_mode_key: str) -> int | None:
+def _active_frontier_beam_from_score_mode(score_mode_key: str) -> int | None:
     normalized = str(score_mode_key).strip().lower()
-    if normalized == ACTIVE_FRONTIERK_SCORE_MODE_PREFIX:
-        return int(DEFAULT_ACTIVE_FRONTIERK_BEAM)
-    prefix = f"{ACTIVE_FRONTIERK_SCORE_MODE_PREFIX}_k"
+    if normalized == ACTIVE_FRONTIER_SCORE_MODE_PREFIX:
+        return int(DEFAULT_ACTIVE_FRONTIER_BEAM)
+    prefix = f"{ACTIVE_FRONTIER_SCORE_MODE_PREFIX}_k"
     if not normalized.startswith(prefix):
         return None
     suffix = str(normalized[len(prefix):]).strip()
@@ -10820,8 +10820,8 @@ def _parse_pairlogodds_weight_token(token: str) -> float | None:
 
 _LEARNED_LINEAR_SCHEMA_VERSIONS = frozenset(
     {
-        "frontierk_future_parity_learned_linear_v1",
-        "frontierk_learned_linear_score_v1",
+        "frontier_future_parity_learned_linear_v1",
+        "frontier_learned_linear_score_v1",
     }
 )
 _LEARNED_LINEAR_BASE_FEATURES = frozenset(
@@ -11651,7 +11651,7 @@ def _compiled_singleton_future_parity_rank_plan(score_mode_key: str) -> tuple[fl
         if inner_plan is None:
             return None
         return (float(inner_plan[0]), True, str(inner_plan[2]))
-    if normalized in {"future_parity_logodds", STAGE1_RELIABILITY_SCORE_MODE}:
+    if normalized in {"future_parity_logodds", PRIOR_RELIABILITY_SCORE_MODE}:
         return (1.0, False, str(normalized))
     if normalized == "future_parity_logodds_only":
         return (1.0, True, str(normalized))
@@ -12089,7 +12089,7 @@ _BASE_PROGRESSIVE_SCORE_MODES = frozenset(
         "future_parity_logodds",
         "deadline_weighted_future_parity_tau16",
         "z_deadline_weighted_future_parity_tau16",
-        STAGE1_RELIABILITY_SCORE_MODE,
+        PRIOR_RELIABILITY_SCORE_MODE,
         "future_parity_quotient_probe",
         "future_parity_logodds_singlefix_bonus",
         "future_parity_logodds_singlefix_best",
@@ -12140,7 +12140,7 @@ def _score_mode_is_recognized(score_mode_key: str) -> bool:
         normalized in _BASE_PROGRESSIVE_SCORE_MODES
         or _score_mode_is_forward_cut_state_lookahead_family(normalized)
         or _low_error_event_cap_from_score_mode(normalized) is not None
-        or _active_frontierk_beam_from_score_mode(normalized) is not None
+        or _active_frontier_beam_from_score_mode(normalized) is not None
         or _pairlogodds_weights_from_score_mode(normalized) is not None
         or _future_pair_frustration_config_from_score_mode(normalized) is not None
         or _mixed_pairlogodds_support_gate_config_from_score_mode(normalized) is not None
@@ -12412,7 +12412,7 @@ def _normalize_future_parity_scorer(value: str | None) -> str:
     raw = (
         str(value).strip().lower()
         if value is not None and str(value).strip()
-        else str(os.environ.get("FRONTIERK_FUTURE_PARITY_SCORER", "cached")).strip().lower()
+        else str(os.environ.get("FRONTIER_FUTURE_PARITY_SCORER", "cached")).strip().lower()
     )
     aliases = {
         "optimized": "cached",
@@ -12433,7 +12433,7 @@ def _normalize_log_mass_primary_production_path(value: str | None) -> str:
     raw = (
         str(value).strip().lower()
         if value is not None and str(value).strip()
-        else str(os.environ.get("FRONTIERK_LOG_MASS_PRIMARY_PRODUCTION_PATH", "off")).strip().lower()
+        else str(os.environ.get("FRONTIER_LOG_MASS_PRIMARY_PRODUCTION_PATH", "off")).strip().lower()
     )
     aliases = {
         "0": "off",
@@ -15464,7 +15464,7 @@ def _compile_frontier_feature_update_terms_by_column(
 
 
 def _binary_production_transition_fast_path_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_BINARY_TRANSITION_FAST_PATH", "1")).strip().lower()
+    value = str(os.environ.get("FRONTIER_BINARY_TRANSITION_FAST_PATH", "1")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
@@ -15496,7 +15496,7 @@ _BINARY_LOCAL_PATTERN_FEATURE_TABLE_MAX_DEGREE = 12
 def _compile_binary_local_pattern_feature_table(
     *,
     row_updates: tuple[FrontierRowUpdate, ...],
-) -> BinaryFrontierKLocalPatternFeatureTable | None:
+) -> BinaryFrontierLocalPatternFeatureTable | None:
     local_row_masks = tuple(int(update.row_mask) for update in tuple(row_updates))
     degree = int(len(local_row_masks))
     if int(degree) > int(_BINARY_LOCAL_PATTERN_FEATURE_TABLE_MAX_DEGREE):
@@ -15595,7 +15595,7 @@ def _compile_binary_local_pattern_feature_table(
             toggle_parity_one[int(local_index)]
         )
 
-    return BinaryFrontierKLocalPatternFeatureTable(
+    return BinaryFrontierLocalPatternFeatureTable(
         local_row_mask=int(local_row_mask),
         pattern_by_local_mask=pattern_by_local_mask,
         no_count_deltas=tuple(int(value) for value in no_count_deltas),
@@ -15609,10 +15609,10 @@ def _compile_binary_local_pattern_feature_table(
     )
 
 
-def _compile_binary_frontierk_column_payload(
+def _compile_binary_frontier_column_payload(
     column: ProgressiveColumn,
     row_updates: tuple[FrontierRowUpdate, ...],
-) -> BinaryFrontierKColumnPayload | None:
+) -> BinaryFrontierColumnPayload | None:
     """Compile the exact binary DEM no-error/toggle case into primitive payload arrays."""
     if (
         len(column.prior_probs) != 2
@@ -15681,7 +15681,7 @@ def _compile_binary_frontierk_column_payload(
         row_updates=tuple(row_updates),
     )
 
-    return BinaryFrontierKColumnPayload(
+    return BinaryFrontierColumnPayload(
         no_error_log_const=float(no_error_log_const),
         toggle_logodds=float(toggle_logodds),
         toggle_detector_mask=int(column.detector_response_masks[1]),
@@ -15703,14 +15703,14 @@ _BINARY_FAST_PATH_COLUMN_CACHE: dict[
     tuple[
         tuple[ProgressiveColumn, ...],
         tuple[tuple[float, float, int, int, int, int] | None, ...],
-        tuple[BinaryFrontierKColumnPayload | None, ...],
+        tuple[BinaryFrontierColumnPayload | None, ...],
     ],
 ] = {}
 _BINARY_FAST_PATH_COLUMN_STRUCTURAL_CACHE: dict[
     tuple[tuple[ProgressiveColumn, ...], tuple[tuple[FrontierRowUpdate, ...], ...]],
     tuple[
         tuple[tuple[float, float, int, int, int, int] | None, ...],
-        tuple[BinaryFrontierKColumnPayload | None, ...],
+        tuple[BinaryFrontierColumnPayload | None, ...],
     ],
 ] = {}
 
@@ -15722,7 +15722,7 @@ def _compile_binary_fast_path_column_caches(
     enabled: bool,
 ) -> tuple[
     tuple[tuple[float, float, int, int, int, int] | None, ...],
-    tuple[BinaryFrontierKColumnPayload | None, ...],
+    tuple[BinaryFrontierColumnPayload | None, ...],
 ]:
     if not bool(enabled):
         return tuple(), tuple()
@@ -15753,10 +15753,10 @@ def _compile_binary_fast_path_column_caches(
 
     _BINARY_MODEL_ORDER_CACHE_STATS.binary_payload_miss_count += 1
     build_started = time.perf_counter()
-    payloads: list[BinaryFrontierKColumnPayload | None] = []
+    payloads: list[BinaryFrontierColumnPayload | None] = []
     terms: list[tuple[float, float, int, int, int, int] | None] = []
     for column, row_updates in zip(columns_tuple, row_updates_by_column):
-        payload = _compile_binary_frontierk_column_payload(column, tuple(row_updates))
+        payload = _compile_binary_frontier_column_payload(column, tuple(row_updates))
         payloads.append(payload)
         terms.append(None if payload is not None else _compile_binary_transition_terms(column))
 
@@ -15824,13 +15824,13 @@ def _incremental_child_mismatch_features_from_terms(
     )
 
 
-def _advance_binary_frontierk_logodds_fast_path(
+def _advance_binary_frontier_logodds_fast_path(
     *,
     state_log_mass: dict[int, float],
     state_viterbi: dict[int, float],
     state_viterbi_rep_cost: dict[int, int],
     current_detector_features: dict[int, FrontierMismatchFeatures],
-    binary_payload: BinaryFrontierKColumnPayload,
+    binary_payload: BinaryFrontierColumnPayload,
     close_mask: int,
     active_mask: int,
     target_syndrome_int: int,
@@ -15843,7 +15843,7 @@ def _advance_binary_frontierk_logodds_fast_path(
     log_mass_primary_only: bool,
     sparse_viterbi_maps_enabled: bool,
     future_parity_scorer_stats: FutureParityScorerStats,
-    binary_fast_path_stats: BinaryFrontierKFastPathStats,
+    binary_fast_path_stats: BinaryFrontierPathStats,
 ) -> tuple[
     dict[int, float],
     dict[int, float],
@@ -16104,11 +16104,11 @@ def _advance_binary_frontierk_logodds_fast_path(
     )
 
 
-def _advance_binary_frontierk_logodds_primary_topk_fast_path(
+def _advance_binary_frontier_logodds_primary_topk_fast_path(
     *,
     state_log_mass: dict[int, float],
     current_detector_features: dict[int, FrontierMismatchFeatures],
-    binary_payload: BinaryFrontierKColumnPayload,
+    binary_payload: BinaryFrontierColumnPayload,
     close_mask: int,
     active_mask: int,
     target_syndrome_int: int,
@@ -16134,7 +16134,7 @@ def _advance_binary_frontierk_logodds_primary_topk_fast_path(
     deferred_feature_materialization_enabled: bool,
     hotloop_instrumentation_enabled: bool,
     future_parity_scorer_stats: FutureParityScorerStats,
-    binary_fast_path_stats: BinaryFrontierKFastPathStats,
+    binary_fast_path_stats: BinaryFrontierPathStats,
 ) -> tuple[
     dict[int, float],
     dict[int, float],
@@ -19188,7 +19188,7 @@ def _build_future_active_frontier_payload(
     )
 
 
-def _future_active_frontierk_log_mass_from_payload(
+def _future_active_frontier_log_mass_from_payload(
     *,
     initial_projected_det_mask: int,
     payload: FutureActiveFrontierHeuristicPayload,
@@ -19335,8 +19335,8 @@ def _boundary_heuristic_mass(
             target_syndrome_int=int(target_syndrome_int),
             payload=payload,
         )
-    active_frontierk_beam = _active_frontierk_beam_from_score_mode(str(score_mode_key))
-    if active_frontierk_beam is not None:
+    active_frontier_beam = _active_frontier_beam_from_score_mode(str(score_mode_key))
+    if active_frontier_beam is not None:
         if int(active_mask) == 0:
             return 0.0
         payload_key = (int(boundary_column_index), int(active_mask))
@@ -19354,7 +19354,7 @@ def _boundary_heuristic_mass(
         score_cache_key = (
             int(boundary_column_index),
             int(active_mask),
-            int(active_frontierk_beam),
+            int(active_frontier_beam),
         )
         score_by_projected_mask = active_frontier_score_cache.setdefault(score_cache_key, {})
         initial_projected_det_mask = _project_mask_to_rows(
@@ -19363,10 +19363,10 @@ def _boundary_heuristic_mass(
         )
         if int(initial_projected_det_mask) not in score_by_projected_mask:
             score_by_projected_mask[int(initial_projected_det_mask)] = (
-                _future_active_frontierk_log_mass_from_payload(
+                _future_active_frontier_log_mass_from_payload(
                     initial_projected_det_mask=int(initial_projected_det_mask),
                     payload=payload,
-                    beam_size=int(active_frontierk_beam),
+                    beam_size=int(active_frontier_beam),
                 )
             )
         return float(score_by_projected_mask[int(initial_projected_det_mask)])
@@ -19514,7 +19514,7 @@ def _boundary_heuristic_mass(
     if score_mode_key in {
         "future_parity_logodds",
         "future_parity_logodds_only",
-        STAGE1_RELIABILITY_SCORE_MODE,
+        PRIOR_RELIABILITY_SCORE_MODE,
         "future_parity_quotient_probe",
         "forward_terminal_lookahead",
         "future_parity_lookahead",
@@ -19533,7 +19533,7 @@ def _boundary_heuristic_mass(
         or deadline_logodds_config is not None
     ):
         base_score = float(features.parity_logodds) if features is not None else 0.0
-        if score_mode_key in {"future_parity_logodds", "future_parity_logodds_only", STAGE1_RELIABILITY_SCORE_MODE}:
+        if score_mode_key in {"future_parity_logodds", "future_parity_logodds_only", PRIOR_RELIABILITY_SCORE_MODE}:
             return float(base_score)
         if logodds_alpha is not None:
             return float(logodds_alpha) * float(base_score)
@@ -22784,75 +22784,75 @@ def _prune_beam_frontier_primary_topk_fast_path(
 
 
 def _prune_primary_topk_fast_path_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_PRUNE_PRIMARY_TOPK_FAST_PATH", "1")).strip().lower()
+    value = str(os.environ.get("FRONTIER_PRUNE_PRIMARY_TOPK_FAST_PATH", "1")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _fused_binary_primary_topk_fast_path_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_FUSED_BINARY_PRIMARY_TOPK_FAST_PATH", "1")).strip().lower()
+    value = str(os.environ.get("FRONTIER_FUSED_BINARY_PRIMARY_TOPK_FAST_PATH", "1")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _fused_binary_no_merge_fast_path_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_FUSED_BINARY_NO_MERGE_FAST_PATH", "0")).strip().lower()
+    value = str(os.environ.get("FRONTIER_FUSED_BINARY_NO_MERGE_FAST_PATH", "0")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _fused_binary_array_candidate_buffer_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_FUSED_BINARY_ARRAY_CANDIDATE_BUFFER", "0")).strip().lower()
+    value = str(os.environ.get("FRONTIER_FUSED_BINARY_ARRAY_CANDIDATE_BUFFER", "0")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _log_mass_primary_sparse_viterbi_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_LOG_MASS_PRIMARY_SPARSE_VITERBI", "1")).strip().lower()
+    value = str(os.environ.get("FRONTIER_LOG_MASS_PRIMARY_SPARSE_VITERBI", "1")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _binary_hotloop_instrumentation_enabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_BINARY_HOTLOOP_INSTRUMENTATION", "0")).strip().lower()
+    value = str(os.environ.get("FRONTIER_BINARY_HOTLOOP_INSTRUMENTATION", "0")).strip().lower()
     return value in {"1", "true", "on", "yes"}
 
 
 def _binary_local_pattern_feature_table_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_BINARY_LOCAL_PATTERN_FEATURE_TABLE", "1")).strip().lower()
+    value = str(os.environ.get("FRONTIER_BINARY_LOCAL_PATTERN_FEATURE_TABLE", "1")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _binary_unique_detector_score_fast_path_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_BINARY_UNIQUE_DETECTOR_SCORE_FAST_PATH", "1")).strip().lower()
+    value = str(os.environ.get("FRONTIER_BINARY_UNIQUE_DETECTOR_SCORE_FAST_PATH", "1")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _binary_small_candidate_direct_gap_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_BINARY_SMALL_CANDIDATE_DIRECT_GAP", "1")).strip().lower()
+    value = str(os.environ.get("FRONTIER_BINARY_SMALL_CANDIDATE_DIRECT_GAP", "1")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _binary_zero_close_mask_fast_path_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_BINARY_ZERO_CLOSE_MASK_FAST_PATH", "1")).strip().lower()
+    value = str(os.environ.get("FRONTIER_BINARY_ZERO_CLOSE_MASK_FAST_PATH", "1")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _binary_streaming_rank_selector_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_BINARY_STREAMING_RANK_SELECTOR", "0")).strip().lower()
+    value = str(os.environ.get("FRONTIER_BINARY_STREAMING_RANK_SELECTOR", "0")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _binary_two_pass_rank_selector_disabled() -> bool:
-    value = str(os.environ.get("FRONTIERK_BINARY_TWO_PASS_RANK_SELECTOR", "0")).strip().lower()
+    value = str(os.environ.get("FRONTIER_BINARY_TWO_PASS_RANK_SELECTOR", "0")).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _binary_deferred_feature_materialization_disabled() -> bool:
     value = str(
-        os.environ.get("FRONTIERK_BINARY_DEFERRED_FEATURE_MATERIALIZATION", "0")
+        os.environ.get("FRONTIER_BINARY_DEFERRED_FEATURE_MATERIALIZATION", "0")
     ).strip().lower()
     return value in {"0", "false", "off", "no"}
 
 
 def _record_binary_hotloop_instrumentation(
     *,
-    stats: BinaryFrontierKFastPathStats,
+    stats: BinaryFrontierPathStats,
     state_log_mass: dict[int, float],
     detector_mask_mask: int,
     target_syndrome_int: int,
@@ -22978,7 +22978,7 @@ def _selective_local_lookahead_score_mode(mode: str) -> str:
     if key == "none":
         return ""
     if key == "active_k4":
-        return "future_active_frontierk_k4"
+        return "future_active_frontier_k4"
     if key == "component_logmass":
         return "future_component_logmass"
     if key == "pairlogodds":
@@ -26545,9 +26545,9 @@ def _prune_beam_frontier(
     forward_checkpoint_diversity_first: bool = False,
     forward_checkpoint_replay_window: int = 6,
     representative_correction_by_key: dict[int, int] | None = None,
-    stage1_reliability_correction_mu: float = 0.0,
-    stage1_reliability_llr: np.ndarray | None = None,
-    stage1_reliability_llr_clip: float = STAGE1_RELIABILITY_LLR_CLIP,
+    prior_reliability_correction_mu: float = 0.0,
+    prior_reliability_llr: np.ndarray | None = None,
+    prior_reliability_llr_clip: float = PRIOR_RELIABILITY_LLR_CLIP,
     learned_score_config: FutureParityLearnedLinearConfig | None = None,
     future_parity_scorer: str = "",
     future_parity_scorer_stats: FutureParityScorerStats | None = None,
@@ -26676,8 +26676,8 @@ def _prune_beam_frontier(
         and forward_guidance_replay_columns is None
         and forward_guidance_replay_layout is None
         and representative_correction_by_key is None
-        and float(stage1_reliability_correction_mu) == 0.0
-        and stage1_reliability_llr is None
+        and float(prior_reliability_correction_mu) == 0.0
+        and prior_reliability_llr is None
         and learned_score_config is None
         and not bool(nearcut_active)
     )
@@ -27514,8 +27514,8 @@ def _prune_beam_frontier(
 
     compiled_primary_topk_plan = _compiled_singleton_future_parity_rank_plan(str(score_mode_key))
     reliability_adjustment_active_for_fast_path = bool(
-        float(stage1_reliability_correction_mu) != 0.0
-        and stage1_reliability_llr is not None
+        float(prior_reliability_correction_mu) != 0.0
+        and prior_reliability_llr is not None
         and representative_correction_by_key is not None
     )
     primary_topk_fast_path_enabled = bool(
@@ -27756,8 +27756,8 @@ def _prune_beam_frontier(
         return float(per_mode_cache[int(det_key)])
 
     reliability_adjustment_active = bool(
-        float(stage1_reliability_correction_mu) != 0.0
-        and stage1_reliability_llr is not None
+        float(prior_reliability_correction_mu) != 0.0
+        and prior_reliability_llr is not None
         and representative_correction_by_key is not None
     )
 
@@ -27769,11 +27769,11 @@ def _prune_beam_frontier(
         correction_mask = representative_correction_by_key.get(int(key))
         if correction_mask is None:
             return 0.0
-        return float(stage1_reliability_correction_mu) * float(
-            _stage1_reliability_selected_fault_log_score(
+        return float(prior_reliability_correction_mu) * float(
+            _prior_reliability_selected_fault_log_score(
                 correction_mask=int(correction_mask),
-                stage1_reliability_llr=stage1_reliability_llr,
-                llr_clip=float(stage1_reliability_llr_clip),
+                prior_reliability_llr=prior_reliability_llr,
+                llr_clip=float(prior_reliability_llr_clip),
             )
         )
 
@@ -32327,7 +32327,7 @@ def _prune_beam_frontier(
                     for key in near_cut_keys
                     if int(key) in detector_key_by_state
                 }
-                active_k = _active_frontierk_beam_from_score_mode(str(selective_local_lookahead_score_mode_key))
+                active_k = _active_frontier_beam_from_score_mode(str(selective_local_lookahead_score_mode_key))
                 extra_work = int(len(unique_near_detectors)) * max(1, int(active_k or 1))
                 if selective_local_lookahead_steps is not None:
                     selective_local_lookahead_steps.append(
@@ -34386,211 +34386,6 @@ def _parse_stim_measurement_name(name: object) -> tuple[int, str, int, int, int]
     )
 
 
-def build_stim_worldline_conditioning_metadata(
-    *,
-    stim_path: str | Path,
-    sector: str,
-) -> tuple[tuple[StandardDetectorRowMetadata, ...], tuple[MeasurementOutcomeMetadata, ...]]:
-    import stim  # type: ignore
-
-    _ensure_real_grosscode_package()
-    from grosscode.dem.stim_fault_pipeline import circuit_measurement_names, circuit_record_to_detector_logical_matrices
-
-    circuit = stim.Circuit.from_file(str(Path(stim_path).expanduser().resolve()))
-    measurement_names = circuit_measurement_names(circuit)
-    detector_from_measurements, _logical_from_measurements, _detector_names, _logical_names = (
-        circuit_record_to_detector_logical_matrices(circuit)
-    )
-
-    parsed_measurements = [
-        _parse_stim_measurement_name(name)
-        for name in tuple(measurement_names)
-    ]
-    measurements_by_qubit: dict[int, list[tuple[int, str, int, int, int]]] = {}
-    for parsed in parsed_measurements:
-        measurement_index, gate, instruction_index, target_offset, qubit = parsed
-        measurements_by_qubit.setdefault(int(qubit), []).append(
-            (int(measurement_index), str(gate), int(instruction_index), int(target_offset), int(qubit))
-        )
-    for qubit in tuple(measurements_by_qubit.keys()):
-        measurements_by_qubit[int(qubit)] = sorted(
-            measurements_by_qubit[int(qubit)],
-            key=lambda item: (int(item[2]), int(item[3]), int(item[0])),
-        )
-
-    ancilla_qubits = {
-        int(qubit)
-        for qubit, entries in measurements_by_qubit.items()
-        if len(tuple(entries)) > 1
-    }
-    if not ancilla_qubits:
-        raise ValueError("could not infer repeated stabilizer-measurement worldlines from Stim measurements")
-
-    ancilla_endpoint_specs: dict[tuple[str, int], tuple[int, int, str, tuple[int, ...], int | None, str]] = {}
-    ancilla_key_by_raw_measurement: dict[int, tuple[str, int]] = {}
-    ancilla_qubit_by_raw_measurement: dict[int, int] = {}
-    ancilla_time_by_raw_measurement: dict[int, int] = {}
-    raw_measurement_qubit: dict[int, int] = {}
-    for qubit, entries in measurements_by_qubit.items():
-        for time_index, (measurement_index, gate, _instruction_index, _target_offset, _qubit) in enumerate(entries):
-            raw_measurement_qubit[int(measurement_index)] = int(qubit)
-            if int(qubit) not in ancilla_qubits:
-                continue
-            key = ("raw", int(measurement_index))
-            ancilla_endpoint_specs[key] = (
-                int(qubit),
-                int(time_index),
-                f"raw_q{int(qubit)}_m{int(measurement_index)}_{str(gate)}",
-                (int(measurement_index),),
-                None,
-                "",
-            )
-            ancilla_key_by_raw_measurement[int(measurement_index)] = key
-            ancilla_qubit_by_raw_measurement[int(measurement_index)] = int(qubit)
-            ancilla_time_by_raw_measurement[int(measurement_index)] = int(time_index)
-
-    boundary_start_specs: dict[tuple[str, int], tuple[int, int, str, tuple[int, ...], int | None, str]] = {}
-    final_endpoint_specs: dict[tuple[str, int, tuple[int, ...]], tuple[int, int, str, tuple[int, ...], int | None, str]] = {}
-    row_specs: list[tuple[int, int, tuple[object, ...], tuple[object, ...], str]] = []
-    for row_index in range(int(detector_from_measurements.shape[0])):
-        support = tuple(int(value) for value in np.flatnonzero(detector_from_measurements[int(row_index)]))
-        ancilla_support = tuple(
-            int(value) for value in support if int(value) in ancilla_key_by_raw_measurement
-        )
-        non_ancilla_support = tuple(
-            int(value) for value in support if int(value) not in ancilla_key_by_raw_measurement
-        )
-        if len(ancilla_support) == 1 and not non_ancilla_support:
-            raw_measurement_index = int(ancilla_support[0])
-            worldline_id = int(ancilla_qubit_by_raw_measurement[int(raw_measurement_index)])
-            start_key = ("boundary_start", int(worldline_id))
-            if start_key not in boundary_start_specs:
-                boundary_start_specs[start_key] = (
-                    int(worldline_id),
-                    -1,
-                    f"boundary_start_q{int(worldline_id)}",
-                    tuple(),
-                    0,
-                    "start_boundary",
-                )
-            row_specs.append(
-                (
-                    int(row_index),
-                    int(worldline_id),
-                    start_key,
-                    ancilla_key_by_raw_measurement[int(raw_measurement_index)],
-                    "start_boundary",
-                )
-            )
-            continue
-        if len(ancilla_support) == 2 and not non_ancilla_support:
-            first_raw, second_raw = sorted(int(value) for value in ancilla_support)
-            first_worldline = int(ancilla_qubit_by_raw_measurement[int(first_raw)])
-            second_worldline = int(ancilla_qubit_by_raw_measurement[int(second_raw)])
-            if int(first_worldline) != int(second_worldline):
-                raise ValueError(
-                    f"detector row {int(row_index)} mixes ancilla worldlines {int(first_worldline)} and {int(second_worldline)}"
-                )
-            if int(ancilla_time_by_raw_measurement[int(first_raw)]) >= int(ancilla_time_by_raw_measurement[int(second_raw)]):
-                raise ValueError(f"detector row {int(row_index)} is not ordered by ancilla measurement time")
-            row_specs.append(
-                (
-                    int(row_index),
-                    int(first_worldline),
-                    ancilla_key_by_raw_measurement[int(first_raw)],
-                    ancilla_key_by_raw_measurement[int(second_raw)],
-                    "",
-                )
-            )
-            continue
-        if len(ancilla_support) == 1 and non_ancilla_support:
-            raw_measurement_index = int(ancilla_support[0])
-            worldline_id = int(ancilla_qubit_by_raw_measurement[int(raw_measurement_index)])
-            final_key = ("boundary_final", int(worldline_id), tuple(sorted(int(value) for value in non_ancilla_support)))
-            if final_key not in final_endpoint_specs:
-                last_time_index = max(
-                    int(ancilla_time_by_raw_measurement[int(value)])
-                    for value in ancilla_key_by_raw_measurement.keys()
-                    if int(ancilla_qubit_by_raw_measurement[int(value)]) == int(worldline_id)
-                )
-                final_endpoint_specs[final_key] = (
-                    int(worldline_id),
-                    int(last_time_index) + 1,
-                    f"boundary_final_q{int(worldline_id)}",
-                    tuple(sorted(int(value) for value in non_ancilla_support)),
-                    None,
-                    "final_boundary",
-                )
-            row_specs.append(
-                (
-                    int(row_index),
-                    int(worldline_id),
-                    ancilla_key_by_raw_measurement[int(raw_measurement_index)],
-                    final_key,
-                    "final_boundary",
-                )
-            )
-            continue
-        raise ValueError(
-            f"unsupported detector row {int(row_index)} support pattern for conditioning metadata: {support}"
-        )
-
-    endpoint_specs = dict(ancilla_endpoint_specs)
-    endpoint_specs.update(boundary_start_specs)
-    endpoint_specs.update(final_endpoint_specs)
-    ordered_endpoint_items = sorted(
-        endpoint_specs.items(),
-        key=lambda item: (
-            int(item[1][0]),
-            int(item[1][1]),
-            0 if str(item[0][0]) == "boundary_start" else 1 if str(item[0][0]) == "raw" else 2,
-            str(item[1][2]),
-        ),
-    )
-    measurement_metadata: list[MeasurementOutcomeMetadata] = []
-    measurement_index_by_key: dict[tuple[object, ...], int] = {}
-    time_index_by_key: dict[tuple[object, ...], int] = {}
-    for measurement_index, (key, spec) in enumerate(ordered_endpoint_items):
-        worldline_id, time_index, label, source_measurement_indices, fixed_binary_value, boundary_kind = spec
-        qubit = int(worldline_id)
-        measurement_index_by_key[key] = int(measurement_index)
-        time_index_by_key[key] = int(time_index)
-        measurement_metadata.append(
-            MeasurementOutcomeMetadata(
-                measurement_index=int(measurement_index),
-                sector=str(sector),
-                worldline_id=int(worldline_id),
-                time_index=int(time_index),
-                qubit=int(qubit),
-                label=str(label),
-                source_measurement_indices=tuple(int(value) for value in source_measurement_indices),
-                fixed_binary_value=(
-                    None if fixed_binary_value is None else int(fixed_binary_value)
-                ),
-                boundary_kind=str(boundary_kind),
-            )
-        )
-
-    standard_rows = [
-        StandardDetectorRowMetadata(
-            row_index=int(row_index),
-            sector=str(sector),
-            worldline_id=int(worldline_id),
-            start_measurement_index=int(measurement_index_by_key[start_key]),
-            end_measurement_index=int(measurement_index_by_key[end_key]),
-            start_time_index=int(time_index_by_key[start_key]),
-            end_time_index=int(time_index_by_key[end_key]),
-            boundary_kind=str(boundary_kind),
-        )
-        for row_index, worldline_id, start_key, end_key, boundary_kind in sorted(
-            row_specs,
-            key=lambda item: int(item[0]),
-        )
-    ]
-    return (
-        tuple(standard_rows),
-        tuple(measurement_metadata),
-    )
 
 
 def project_raw_ternary_measurements_to_worldline_endpoints(
@@ -34797,76 +34592,6 @@ def _draw_rotated_surface_loss_branch_ranks(
     return selections
 
 
-def build_stim_measurement_lifecycles(
-    *,
-    stim_path: str | Path,
-    sector: str,
-) -> tuple[StimMeasurementLifecycle, ...]:
-    import stim  # type: ignore
-
-    _ensure_real_grosscode_package()
-    from grosscode.dem.stim_fault_pipeline import circuit_measurement_names
-
-    circuit = stim.Circuit.from_file(str(Path(stim_path).expanduser().resolve()))
-    flat = tuple(circuit.flattened())
-    measurement_names = circuit_measurement_names(circuit)
-    reference_measurements = np.asarray(circuit.without_noise().compile_sampler(seed=1).sample(shots=1)[0], dtype=np.uint8)
-
-    parsed_measurements = sorted(
-        (_parse_stim_measurement_name(name) for name in tuple(measurement_names)),
-        key=lambda item: int(item[0]),
-    )
-    previous_measurement_instruction_by_qubit: dict[int, int] = {}
-    lifecycles: list[StimMeasurementLifecycle] = []
-    for raw_measurement_index, gate, instruction_index, _target_offset, qubit in parsed_measurements:
-        candidate_sites: list[StimMeasurementLifecycleSite] = []
-        start_instruction_exclusive = int(previous_measurement_instruction_by_qubit.get(int(qubit), -1))
-        for active_instruction_index in range(int(start_instruction_exclusive) + 1, int(instruction_index)):
-            inst = flat[int(active_instruction_index)]
-            name = str(inst.name)
-            if name in {
-                "QUBIT_COORDS",
-                "SHIFT_COORDS",
-                "DETECTOR",
-                "OBSERVABLE_INCLUDE",
-                "TICK",
-                "DEPOLARIZE1",
-                "DEPOLARIZE2",
-                "X_ERROR",
-                "Y_ERROR",
-                "Z_ERROR",
-                "PAULI_CHANNEL_1",
-            }:
-                continue
-            if name in {"R", "RX", "RY"}:
-                continue
-            for target_group_index, qubits, _group_targets in _instruction_qubit_groups(inst):
-                if int(qubit) not in tuple(int(value) for value in qubits):
-                    continue
-                candidate_sites.append(
-                    StimMeasurementLifecycleSite(
-                        instruction_index=int(active_instruction_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name=str(name),
-                        qubit=int(qubit),
-                    )
-                )
-        lifecycles.append(
-            StimMeasurementLifecycle(
-                lifecycle_id=int(raw_measurement_index),
-                sector=str(sector),
-                qubit=int(qubit),
-                raw_measurement_index=int(raw_measurement_index),
-                measurement_instruction_index=int(instruction_index),
-                measurement_gate=str(gate).upper(),
-                start_instruction_exclusive=int(start_instruction_exclusive),
-                end_instruction_inclusive=int(instruction_index),
-                reference_measurement_bit=int(reference_measurements[int(raw_measurement_index)]),
-                candidate_sites=tuple(candidate_sites),
-            )
-        )
-        previous_measurement_instruction_by_qubit[int(qubit)] = int(instruction_index)
-    return tuple(lifecycles)
 
 
 def _build_rotated_surface_lossy_circuit_for_selected_lifecycles(
@@ -35006,401 +34731,6 @@ def _append_annotation_block_for_measurement_count(
 
 
 @lru_cache(maxsize=16)
-def _build_rotated_surface_midswap_sampling_bundle(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-) -> RotatedSurfaceMidSwapScheduleBundle:
-    import stim  # type: ignore
-
-    _ensure_real_grosscode_package()
-    from grosscode.codes.rotated_surface import (
-        get_rotated_surface_backend_spec,
-        is_rotated_surface_backend,
-    )
-    from grosscode.dem.stim_fault_pipeline import circuit_record_to_detector_logical_matrices
-
-    if not is_rotated_surface_backend(str(backend)):
-        raise ValueError(f"backend must be a rotated-surface backend, got {backend!r}")
-    sector_norm = str(sector).upper()
-    if sector_norm not in {"X", "Z"}:
-        raise ValueError("sector must be 'X' or 'Z'")
-
-    spec = get_rotated_surface_backend_spec(str(backend))
-    stock_bundle = _build_stim_split_sector_conditional_bundle(
-        backend=str(backend),
-        sector=sector_norm,
-        error_rate=float(error_rate),
-    )
-    stock_stim_path = str(stock_bundle.stim_path)
-    stock_circuit = stim.Circuit.from_file(str(stock_stim_path))
-    flat = tuple(stock_circuit.flattened())
-    stock_annotation_blocks = _annotation_instructions_grouped_by_measurement_count(stock_circuit)
-
-    qubit_coords: list[tuple[int, tuple[float, ...]]] = []
-    first_h_instruction = None
-    first_mr_instruction = None
-    last_data_measure_instruction = None
-    for inst in flat:
-        name = str(inst.name)
-        if name == "QUBIT_COORDS":
-            coords = tuple(float(value) for value in inst.gate_args_copy())
-            for target in tuple(inst.targets_copy()):
-                if bool(getattr(target, "is_qubit_target")):
-                    qubit_coords.append((int(target.qubit_value), tuple(coords)))
-            continue
-        if first_h_instruction is None and name == "H":
-            first_h_instruction = inst
-        if first_mr_instruction is None and name == "MR":
-            first_mr_instruction = inst
-        if name in {"M", "MX"}:
-            last_data_measure_instruction = inst
-
-    if first_h_instruction is None or first_mr_instruction is None or last_data_measure_instruction is None:
-        raise ValueError(
-            f"could not parse rotated-surface schedule from backend={backend!r} sector={sector_norm!r}"
-        )
-
-    x_check_roles = tuple(
-        int(target.qubit_value)
-        for target in tuple(first_h_instruction.targets_copy())
-        if bool(getattr(target, "is_qubit_target"))
-    )
-    check_roles = tuple(
-        int(target.qubit_value)
-        for target in tuple(first_mr_instruction.targets_copy())
-        if bool(getattr(target, "is_qubit_target"))
-    )
-    data_roles = tuple(
-        int(target.qubit_value)
-        for target in tuple(last_data_measure_instruction.targets_copy())
-        if bool(getattr(target, "is_qubit_target"))
-    )
-    check_role_set = set(int(value) for value in check_roles)
-    data_role_set = set(int(value) for value in data_roles)
-    if not check_roles or not data_roles:
-        raise ValueError("rotated-surface schedule parser found empty check/data role sets")
-
-    first_h_index = next(
-        index for index, inst in enumerate(flat) if inst is first_h_instruction
-    )
-    first_mr_index = next(
-        index for index, inst in enumerate(flat) if inst is first_mr_instruction
-    )
-    interaction_layers: list[tuple[tuple[int, int], ...]] = []
-    for inst in flat[int(first_h_index) + 1 : int(first_mr_index)]:
-        name = str(inst.name)
-        if name not in {"CX", "CNOT"}:
-            continue
-        targets = tuple(inst.targets_copy())
-        if len(targets) % 2 != 0:
-            raise ValueError(f"expected paired targets for {name}, got {targets!r}")
-        layer_pairs: list[tuple[int, int]] = []
-        for offset in range(0, len(targets), 2):
-            control = int(targets[int(offset)].qubit_value)
-            target = int(targets[int(offset) + 1].qubit_value)
-            if {int(control), int(target)}.issubset(check_role_set) or {int(control), int(target)}.issubset(data_role_set):
-                raise ValueError(
-                    "rotated-surface interaction layer did not couple a check role to a data role: "
-                    f"{(int(control), int(target))!r}"
-                )
-            layer_pairs.append((int(control), int(target)))
-        interaction_layers.append(tuple(layer_pairs))
-    if not interaction_layers:
-        raise ValueError(f"failed to extract interaction layers for backend={backend!r} sector={sector_norm!r}")
-
-    standard_detector_metadata = tuple(stock_bundle.standard_detector_metadata)
-    measurement_metadata = tuple(stock_bundle.measurement_metadata)
-
-    role_to_site: dict[int, int] = {
-        int(role): int(role)
-        for role in tuple(data_roles) + tuple(check_roles)
-    }
-    check_builders: dict[int, _LifecycleBuilder] = {
-        int(role): _LifecycleBuilder(
-            role_kind="check",
-            role_id=int(role),
-            round_index=0,
-            start_instruction_exclusive=-1,
-            segment_qubit=int(role_to_site[int(role)]),
-            segment_start_instruction_index=0,
-        )
-        for role in check_roles
-    }
-    data_builders: dict[int, _LifecycleBuilder] = {
-        int(role): _LifecycleBuilder(
-            role_kind="data",
-            role_id=int(role),
-            round_index=int(spec.syndrome_rounds),
-            start_instruction_exclusive=-1,
-            segment_qubit=int(role_to_site[int(role)]),
-            segment_start_instruction_index=0,
-        )
-        for role in data_roles
-    }
-    pending_lifecycles: list[tuple[_LifecycleBuilder, int, int, str]] = []
-
-    circuit = stim.Circuit()
-    instruction_index = 0
-    next_raw_measurement_index = 0
-    x_check_role_set = set(int(value) for value in x_check_roles)
-    data_prep_gate = "RX" if sector_norm == "X" else "R"
-    data_prep_error_gate = "Z_ERROR" if sector_norm == "X" else "X_ERROR"
-    final_measure_gate = "MX" if sector_norm == "X" else "M"
-    final_measure_error_gate = "Z_ERROR" if sector_norm == "X" else "X_ERROR"
-
-    def _emit(name: str, targets: Sequence[object], args: Sequence[float] | None = None) -> int:
-        nonlocal instruction_index
-        idx = int(instruction_index)
-        circuit.append(str(name), list(targets), [] if args is None else list(args))
-        instruction_index += 1
-        return idx
-
-    for qubit, coords in sorted(tuple(qubit_coords), key=lambda item: int(item[0])):
-        _emit("QUBIT_COORDS", [int(qubit)], coords)
-    _emit(data_prep_gate, [int(role_to_site[int(role)]) for role in data_roles], None)
-    _emit(data_prep_error_gate, [int(role_to_site[int(role)]) for role in data_roles], [float(error_rate)])
-    _emit("R", [int(role_to_site[int(role)]) for role in check_roles], None)
-    _emit("X_ERROR", [int(role_to_site[int(role)]) for role in check_roles], [float(error_rate)])
-
-    for round_index in range(int(spec.syndrome_rounds)):
-        _emit("TICK", [], None)
-        _emit("DEPOLARIZE1", [int(role_to_site[int(role)]) for role in data_roles], [float(error_rate)])
-
-        h_targets = [int(role_to_site[int(role)]) for role in x_check_roles]
-        h_index = _emit("H", h_targets, None)
-        for target_group_index, role in enumerate(tuple(x_check_roles)):
-            check_builders[int(role)].record_site(
-                instruction_index=int(h_index),
-                target_group_index=int(target_group_index),
-                instruction_name="H",
-            )
-        _emit("DEPOLARIZE1", h_targets, [float(error_rate)])
-        _emit("TICK", [], None)
-
-        for layer_pairs in tuple(interaction_layers):
-            cx_targets: list[int] = []
-            for control_role, target_role in tuple(layer_pairs):
-                cx_targets.extend(
-                    (
-                        int(role_to_site[int(control_role)]),
-                        int(role_to_site[int(target_role)]),
-                    )
-                )
-            cx_index = _emit("CX", cx_targets, None)
-            for target_group_index, (control_role, target_role) in enumerate(tuple(layer_pairs)):
-                control_role_int = int(control_role)
-                target_role_int = int(target_role)
-                if control_role_int in check_builders:
-                    check_builders[control_role_int].record_site(
-                        instruction_index=int(cx_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name="CX",
-                    )
-                else:
-                    data_builders[control_role_int].record_site(
-                        instruction_index=int(cx_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name="CX",
-                    )
-                if target_role_int in check_builders:
-                    check_builders[target_role_int].record_site(
-                        instruction_index=int(cx_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name="CX",
-                    )
-                else:
-                    data_builders[target_role_int].record_site(
-                        instruction_index=int(cx_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name="CX",
-                    )
-            _emit("DEPOLARIZE2", cx_targets, [float(error_rate)])
-
-            swap_targets = list(cx_targets)
-            swap_index = _emit("SWAP", swap_targets, None)
-            for target_group_index, (control_role, target_role) in enumerate(tuple(layer_pairs)):
-                control_role_int = int(control_role)
-                target_role_int = int(target_role)
-                if control_role_int in check_builders:
-                    check_builders[control_role_int].record_site(
-                        instruction_index=int(swap_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name="SWAP",
-                    )
-                else:
-                    data_builders[control_role_int].record_site(
-                        instruction_index=int(swap_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name="SWAP",
-                    )
-                if target_role_int in check_builders:
-                    check_builders[target_role_int].record_site(
-                        instruction_index=int(swap_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name="SWAP",
-                    )
-                else:
-                    data_builders[target_role_int].record_site(
-                        instruction_index=int(swap_index),
-                        target_group_index=int(target_group_index),
-                        instruction_name="SWAP",
-                    )
-                control_site = int(role_to_site[control_role_int])
-                target_site = int(role_to_site[target_role_int])
-                role_to_site[control_role_int] = int(target_site)
-                role_to_site[target_role_int] = int(control_site)
-                if control_role_int in check_builders:
-                    check_builders[control_role_int].move_to_qubit(
-                        qubit=int(role_to_site[control_role_int]),
-                        instruction_index=int(swap_index),
-                    )
-                else:
-                    data_builders[control_role_int].move_to_qubit(
-                        qubit=int(role_to_site[control_role_int]),
-                        instruction_index=int(swap_index),
-                    )
-                if target_role_int in check_builders:
-                    check_builders[target_role_int].move_to_qubit(
-                        qubit=int(role_to_site[target_role_int]),
-                        instruction_index=int(swap_index),
-                    )
-                else:
-                    data_builders[target_role_int].move_to_qubit(
-                        qubit=int(role_to_site[target_role_int]),
-                        instruction_index=int(swap_index),
-                    )
-            _emit("DEPOLARIZE2", swap_targets, [float(error_rate)])
-            _emit("TICK", [], None)
-
-        h_targets = [int(role_to_site[int(role)]) for role in x_check_roles]
-        h_index = _emit("H", h_targets, None)
-        for target_group_index, role in enumerate(tuple(x_check_roles)):
-            check_builders[int(role)].record_site(
-                instruction_index=int(h_index),
-                target_group_index=int(target_group_index),
-                instruction_name="H",
-            )
-        _emit("DEPOLARIZE1", h_targets, [float(error_rate)])
-        _emit("TICK", [], None)
-
-        check_sites = [int(role_to_site[int(role)]) for role in check_roles]
-        _emit("X_ERROR", check_sites, [float(error_rate)])
-        measurement_index = _emit("MR", check_sites, None)
-        _emit("X_ERROR", check_sites, [float(error_rate)])
-
-        for role in tuple(check_roles):
-            pending_lifecycles.append(
-                (
-                    check_builders[int(role)],
-                    int(next_raw_measurement_index),
-                    int(measurement_index),
-                    "MR",
-                )
-            )
-            next_raw_measurement_index += 1
-        _append_annotation_block_for_measurement_count(
-            circuit=circuit,
-            grouped_annotations=stock_annotation_blocks,
-            measurement_count=int(next_raw_measurement_index),
-        )
-        if int(round_index) + 1 < int(spec.syndrome_rounds):
-            check_builders = {
-                int(role): _LifecycleBuilder(
-                    role_kind="check",
-                    role_id=int(role),
-                    round_index=int(round_index) + 1,
-                    start_instruction_exclusive=int(measurement_index),
-                    segment_qubit=int(role_to_site[int(role)]),
-                    segment_start_instruction_index=int(measurement_index) + 1,
-                )
-                for role in check_roles
-            }
-
-    data_sites = [int(role_to_site[int(role)]) for role in data_roles]
-    _emit(final_measure_error_gate, data_sites, [float(error_rate)])
-    final_measure_index = _emit(final_measure_gate, data_sites, None)
-    for role in tuple(data_roles):
-        pending_lifecycles.append(
-            (
-                data_builders[int(role)],
-                int(next_raw_measurement_index),
-                int(final_measure_index),
-                str(final_measure_gate),
-            )
-        )
-        next_raw_measurement_index += 1
-    _append_annotation_block_for_measurement_count(
-        circuit=circuit,
-        grouped_annotations=stock_annotation_blocks,
-        measurement_count=int(next_raw_measurement_index),
-    )
-
-    reference_measurements = np.asarray(circuit.without_noise().compile_sampler(seed=1).sample(shots=1)[0], dtype=np.uint8)
-    if int(reference_measurements.shape[0]) != int(stock_circuit.num_measurements):
-        raise ValueError(
-            "automatic mid-swap circuit changed the raw measurement count relative to the stock rotated-surface "
-            f"circuit: {int(reference_measurements.shape[0])} vs {int(stock_circuit.num_measurements)}"
-        )
-    detector_from_measurements, logical_from_measurements, _detector_names, _logical_names = (
-        circuit_record_to_detector_logical_matrices(circuit)
-    )
-    if not np.array_equal(
-        np.asarray(detector_from_measurements, dtype=np.uint8),
-        np.asarray(stock_bundle.detector_from_measurements, dtype=np.uint8),
-    ):
-        raise ValueError("automatic mid-swap detector transform no longer matches the stock conceptual detector basis")
-    if not np.array_equal(
-        np.asarray(logical_from_measurements, dtype=np.uint8),
-        np.asarray(stock_bundle.logical_from_measurements, dtype=np.uint8),
-    ):
-        raise ValueError("automatic mid-swap logical transform no longer matches the stock conceptual logical basis")
-
-    lifecycles = tuple(
-        builder.finish(
-            lifecycle_id=int(raw_measurement_index),
-            sector=sector_norm,
-            raw_measurement_index=int(raw_measurement_index),
-            measurement_instruction_index=int(measurement_instruction_index),
-            measurement_gate=str(measurement_gate),
-            reference_measurement_bit=int(reference_measurements[int(raw_measurement_index)]),
-        )
-        for builder, raw_measurement_index, measurement_instruction_index, measurement_gate in sorted(
-            pending_lifecycles,
-            key=lambda item: int(item[1]),
-        )
-    )
-
-    generated_path = _generated_rotated_surface_midswap_stim_path(
-        backend=str(backend),
-        sector=sector_norm,
-        error_rate=float(error_rate),
-        syndrome_rounds=int(spec.syndrome_rounds),
-    )
-    generated_path.write_text(str(circuit), encoding="utf-8")
-    return RotatedSurfaceMidSwapScheduleBundle(
-        backend=str(backend),
-        sector=sector_norm,
-        error_rate=float(error_rate),
-        syndrome_rounds=int(spec.syndrome_rounds),
-        stim_path=str(generated_path),
-        stock_stim_path=str(stock_stim_path),
-        qubit_coords=tuple(sorted(tuple(qubit_coords), key=lambda item: int(item[0]))),
-        data_roles=tuple(int(value) for value in data_roles),
-        check_roles=tuple(int(value) for value in check_roles),
-        x_check_roles=tuple(int(value) for value in x_check_roles),
-        interaction_layers=tuple(
-            tuple((int(control_role), int(target_role)) for control_role, target_role in tuple(layer))
-            for layer in tuple(interaction_layers)
-        ),
-        measurement_metadata=tuple(measurement_metadata),
-        standard_detector_metadata=tuple(standard_detector_metadata),
-        lifecycles=tuple(lifecycles),
-        detector_from_measurements=np.asarray(detector_from_measurements, dtype=np.uint8),
-        logical_from_measurements=np.asarray(logical_from_measurements, dtype=np.uint8),
-        reference_measurements=np.asarray(reference_measurements, dtype=np.uint8),
-    )
 
 
 def _build_rotated_surface_midswap_lossy_circuit_for_selected_lifecycles(
@@ -35789,78 +35119,6 @@ def sample_midswap_lossy_shots_from_metadata(
     return tuple(out)
 
 
-def sample_midswap_lossy_shot(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-    loss_rate: float,
-    seed: int | None = None,
-    rng: np.random.Generator | None = None,
-    forced_loss_branch_ranks_by_lifecycle: dict[int, int] | None = None,
-) -> MeasurementLifecycleLossyShot:
-    if rng is not None and seed is not None:
-        raise ValueError("provide at most one of rng and seed")
-    p_loss = float(loss_rate)
-    if p_loss < 0.0 or p_loss >= 1.0:
-        raise ValueError(f"loss_rate must lie in [0, 1), got {loss_rate!r}")
-
-    bundle = _build_rotated_surface_midswap_sampling_bundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-    )
-    generator = rng if rng is not None else np.random.default_rng(seed)
-    selected_branch_ranks_by_lifecycle = _draw_rotated_surface_loss_branch_ranks(
-        lifecycles=bundle.lifecycles,
-        loss_rate=float(p_loss),
-        rng=generator,
-        forced_loss_branch_ranks_by_lifecycle=forced_loss_branch_ranks_by_lifecycle,
-    )
-    modified = _build_rotated_surface_midswap_lossy_circuit_for_selected_lifecycles(
-        bundle=bundle,
-        selected_branch_ranks_by_lifecycle=selected_branch_ranks_by_lifecycle,
-    )
-    sampler_seed = int(generator.integers(0, np.iinfo(np.uint64).max, dtype=np.uint64))
-    sampled_binary = np.asarray(modified.compile_sampler(seed=sampler_seed).sample(shots=1)[0], dtype=np.uint8)
-    if sampled_binary.shape != bundle.reference_measurements.shape:
-        raise ValueError(
-            "automatic mid-swap sampler changed the raw measurement count: "
-            f"{sampled_binary.shape} vs {bundle.reference_measurements.shape}"
-        )
-
-    lifecycle_by_id = {int(item.lifecycle_id): item for item in tuple(bundle.lifecycles)}
-    ternary_outcomes: list[object] = [int(value) for value in sampled_binary.tolist()]
-    selected_loss_branches: list[SampledLossBranch] = []
-    for lifecycle_id, branch_rank in sorted(selected_branch_ranks_by_lifecycle.items()):
-        lifecycle = lifecycle_by_id[int(lifecycle_id)]
-        site = tuple(lifecycle.candidate_sites)[int(branch_rank)]
-        ternary_outcomes[int(lifecycle.raw_measurement_index)] = "L"
-        selected_loss_branches.append(
-            SampledLossBranch(
-                lifecycle_id=int(lifecycle.lifecycle_id),
-                raw_measurement_index=int(lifecycle.raw_measurement_index),
-                qubit=int(site.qubit),
-                branch_rank_within_lifecycle=int(branch_rank),
-                physical_time_index=int(site.instruction_index),
-                instruction_name=str(site.instruction_name),
-            )
-        )
-    endpoint_outcomes = project_raw_ternary_measurements_to_worldline_endpoints(
-        measurement_metadata=bundle.measurement_metadata,
-        raw_measurement_outcomes=tuple(ternary_outcomes),
-    )
-    return MeasurementLifecycleLossyShot(
-        backend=str(bundle.backend),
-        sector=str(bundle.sector),
-        error_rate=float(bundle.error_rate),
-        loss_rate=float(p_loss),
-        stim_path=str(bundle.stim_path),
-        raw_measurement_outcomes=tuple(ternary_outcomes),
-        binary_raw_measurements=tuple(int(value) for value in sampled_binary.tolist()),
-        endpoint_measurement_outcomes=tuple(endpoint_outcomes),
-        selected_loss_branches=tuple(selected_loss_branches),
-    )
 
 
 def sample_midswap_lossy_shots(
@@ -35898,55 +35156,6 @@ def sample_midswap_lossy_shots(
     return tuple(out)
 
 
-def sample_rotated_surface_lossy_shot(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-    loss_rate: float,
-    seed: int | None = None,
-    rng: np.random.Generator | None = None,
-    forced_loss_branch_ranks_by_lifecycle: dict[int, int] | None = None,
-) -> RotatedSurfaceLossyShot:
-    _ensure_real_grosscode_package()
-    from grosscode.codes.rotated_surface import is_rotated_surface_backend
-
-    if not is_rotated_surface_backend(str(backend)):
-        raise ValueError(f"backend must be a rotated-surface backend, got {backend!r}")
-    if rng is not None and seed is not None:
-        raise ValueError("provide at most one of rng and seed")
-    p_loss = float(loss_rate)
-    if p_loss < 0.0 or p_loss >= 1.0:
-        raise ValueError(f"loss_rate must lie in [0, 1), got {loss_rate!r}")
-
-    bundle = _build_stim_split_sector_conditional_bundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-    )
-    generic_shot = _sample_measurement_lifecycle_lossy_shot_from_metadata(
-        backend=str(backend),
-        sector=str(bundle.sector),
-        error_rate=float(error_rate),
-        loss_rate=float(p_loss),
-        stim_path=str(bundle.stim_path),
-        measurement_metadata=bundle.measurement_metadata,
-        lifecycles=bundle.lifecycles,
-        reference_measurements=bundle.reference_measurements,
-        seed=seed,
-        rng=rng,
-        forced_loss_branch_ranks_by_lifecycle=forced_loss_branch_ranks_by_lifecycle,
-    )
-    return RotatedSurfaceLossyShot(
-        backend=str(generic_shot.backend),
-        sector=str(generic_shot.sector),
-        error_rate=float(generic_shot.error_rate),
-        loss_rate=float(generic_shot.loss_rate),
-        raw_measurement_outcomes=tuple(generic_shot.raw_measurement_outcomes),
-        binary_raw_measurements=tuple(generic_shot.binary_raw_measurements),
-        endpoint_measurement_outcomes=tuple(generic_shot.endpoint_measurement_outcomes),
-        selected_loss_branches=tuple(generic_shot.selected_loss_branches),
-    )
 
 
 def sample_rotated_surface_lossy_shots(
@@ -36177,136 +35386,6 @@ class _LifecycleBuilder:
 
 
 @lru_cache(maxsize=16)
-def _build_stim_split_sector_conditional_bundle(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-) -> StimSplitSectorConditionalBundle:
-    _ensure_real_grosscode_package()
-    from grosscode.dem.builder import build_split_sector_problem
-    from grosscode.dem.stim_fault_pipeline import analyze_gross_split_sector_circuit
-
-    problem = build_split_sector_problem(backend=str(backend), error_rate=float(error_rate))
-    spec, analysis = analyze_gross_split_sector_circuit(
-        sector=str(sector),
-        backend=str(backend),
-        error_rate=float(error_rate),
-    )
-    detector = problem.D_X if str(sector).upper() == "X" else problem.D_Z
-    logical = problem.O_X if str(sector).upper() == "X" else problem.O_Z
-    priors = problem.priors_X if str(sector).upper() == "X" else problem.priors_Z
-    detector_csc = detector.tocsc()
-    logical_csc = logical.tocsc()
-
-    merged_by_signature: dict[tuple[int, int], object] = {}
-    for merged in tuple(analysis.merged_columns):
-        signature = (
-            _bitmask_from_support_rows([index for index, bit in enumerate(tuple(merged.detector_bits)) if int(bit) != 0]),
-            _bitmask_from_support_rows([index for index, bit in enumerate(tuple(merged.logical_bits)) if int(bit) != 0]),
-        )
-        if signature in merged_by_signature:
-            raise ValueError(f"duplicate merged signature encountered while building fault metadata: {signature!r}")
-        merged_by_signature[signature] = merged
-
-    time_ordered_entries: list[tuple[int, int, ProgressiveColumn, tuple[int, ...]]] = []
-    for source_column in range(int(detector.shape[1])):
-        det_start = int(detector_csc.indptr[int(source_column)])
-        det_stop = int(detector_csc.indptr[int(source_column) + 1])
-        det_rows = detector_csc.indices[det_start:det_stop].astype(np.int32, copy=False)
-        log_start = int(logical_csc.indptr[int(source_column)])
-        log_stop = int(logical_csc.indptr[int(source_column) + 1])
-        log_rows = logical_csc.indices[log_start:log_stop].astype(np.int32, copy=False)
-        detector_mask = _bitmask_from_support_rows(det_rows.tolist())
-        logical_mask = _bitmask_from_support_rows(log_rows.tolist())
-        merged = merged_by_signature.get((int(detector_mask), int(logical_mask)))
-        if merged is None:
-            raise ValueError(
-                "could not match split-sector DEM column to Stim merged fault metadata for "
-                f"backend={backend!r} sector={sector!r} column={int(source_column)}"
-            )
-        if not math.isclose(float(merged.probability), float(priors[int(source_column)]), rel_tol=0.0, abs_tol=1e-12):
-            raise ValueError(
-                "split-sector prior mismatch against Stim merged fault metadata for "
-                f"backend={backend!r} sector={sector!r} column={int(source_column)}: "
-                f"{float(priors[int(source_column)]):.18g} vs {float(merged.probability):.18g}"
-            )
-        source_fault_ids = tuple(int(value) for value in tuple(merged.raw_fault_ids))
-        source_faults = [analysis.faults[int(raw_id)] for raw_id in source_fault_ids]
-        touched_physical_qubits = tuple(
-            sorted(
-                {
-                    int(qubit)
-                    for fault in source_faults
-                    for qubit in tuple(int(value) for value in fault.qubits)
-                }
-            )
-        )
-        physical_time_index = min((int(fault.instruction_index) for fault in source_faults), default=int(source_column))
-        q = float(priors[int(source_column)])
-        prior_probs = (float(1.0 - q), float(q))
-        column = ProgressiveColumn(
-            family=f"stim_split_sector_{str(backend)}",
-            index=-1,
-            label=f"stim_dem_c{int(source_column)}",
-            instruction_offset=int(physical_time_index),
-            prior_probs=prior_probs,
-            prior_log_probs=tuple(
-                float("-inf") if float(value) <= 0.0 else float(math.log(float(value)))
-                for value in prior_probs
-            ),
-            detector_response_masks=(0, int(detector_mask)),
-            logical_response_masks=(0, int(logical_mask)),
-            detector_support_mask=int(detector_mask),
-            detector_support_rows=tuple(int(value) for value in det_rows.tolist()),
-            kind="pauli",
-            sector=str(sector).upper(),
-            physical_time_index=int(physical_time_index),
-            touched_physical_qubits=tuple(int(value) for value in touched_physical_qubits),
-            original_column_index=int(source_column),
-        )
-        time_ordered_entries.append(
-            (
-                int(physical_time_index),
-                int(source_column),
-                column,
-                tuple(int(value) for value in source_fault_ids),
-            )
-        )
-
-    time_ordered_entries.sort(key=lambda item: (int(item[0]), int(item[1])))
-    columns_time_ordered = tuple(
-        replace(column, index=int(order_index))
-        for order_index, (_time_index, _source_column, column, _source_fault_ids) in enumerate(time_ordered_entries)
-    )
-    source_fault_ids_by_column = tuple(
-        tuple(int(value) for value in source_fault_ids)
-        for _time_index, _source_column, _column, source_fault_ids in time_ordered_entries
-    )
-
-    standard_detector_metadata, measurement_metadata = build_stim_worldline_conditioning_metadata(
-        stim_path=str(spec.stim_path),
-        sector=str(sector).upper(),
-    )
-    lifecycles = build_stim_measurement_lifecycles(
-        stim_path=str(spec.stim_path),
-        sector=str(sector).upper(),
-    )
-    return StimSplitSectorConditionalBundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-        stim_path=str(spec.stim_path),
-        columns_time_ordered=tuple(columns_time_ordered),
-        source_fault_ids_by_column=tuple(source_fault_ids_by_column),
-        standard_detector_metadata=tuple(standard_detector_metadata),
-        measurement_metadata=tuple(measurement_metadata),
-        lifecycles=tuple(lifecycles),
-        faults=tuple(analysis.faults),
-        detector_from_measurements=np.asarray(spec.detector_from_channels, dtype=np.uint8),
-        logical_from_measurements=np.asarray(spec.logical_from_channels, dtype=np.uint8),
-        reference_measurements=np.asarray(analysis.raw_measurement_reference, dtype=np.uint8),
-    )
 
 
 def _fault_touches_lifecycle(
@@ -36328,217 +35407,9 @@ def _fault_touches_lifecycle(
     return False
 
 
-def _analyze_circuit_faults_relaxed_raw_measurements(
-    *,
-    circuit: object,
-    detector_names: Sequence[str],
-    logical_names: Sequence[str],
-    measurement_channel_names: Sequence[str],
-    detector_from_channels: np.ndarray,
-    logical_from_channels: np.ndarray,
-) -> object:
-    _ensure_real_grosscode_package()
-    from grosscode.dem.stim_fault_pipeline import (
-        CircuitFaultAnalysis,
-        compute_fault_measurement_flip_matrix,
-        enumerate_fault_locations,
-        merge_column_statistics,
-        merge_identical_fault_columns,
-        stim_dem_columns,
-    )
-
-    faults = enumerate_fault_locations(circuit)
-    no_noise_circuit = circuit.without_noise()
-    reference_measurements = np.asarray(no_noise_circuit.compile_sampler(seed=1).sample(shots=1)[0], dtype=np.uint8)
-    raw_probabilities = np.asarray([fault.probability for fault in faults], dtype=np.float64)
-    raw_measurement_channel_matrix = compute_fault_measurement_flip_matrix(circuit, faults)
-    raw_detector_matrix = (
-        np.asarray(detector_from_channels, dtype=np.uint8) @ np.asarray(raw_measurement_channel_matrix, dtype=np.uint8)
-    ) % np.uint8(2)
-    raw_logical_matrix = (
-        np.asarray(logical_from_channels, dtype=np.uint8) @ np.asarray(raw_measurement_channel_matrix, dtype=np.uint8)
-    ) % np.uint8(2)
-    merged_columns = merge_identical_fault_columns(
-        faults=faults,
-        raw_detector_matrix=raw_detector_matrix,
-        raw_logical_matrix=raw_logical_matrix,
-        raw_probabilities=raw_probabilities,
-        drop_invisible=True,
-    )
-    merge_statistics = merge_column_statistics(
-        faults=faults,
-        raw_detector_matrix=raw_detector_matrix,
-        raw_logical_matrix=raw_logical_matrix,
-        raw_probabilities=raw_probabilities,
-        merged_columns=merged_columns,
-    )
-    return CircuitFaultAnalysis(
-        faults=tuple(faults),
-        raw_probabilities=np.asarray(raw_probabilities, dtype=np.float64),
-        raw_detector_matrix=np.asarray(raw_detector_matrix, dtype=np.uint8),
-        raw_logical_matrix=np.asarray(raw_logical_matrix, dtype=np.uint8),
-        merged_columns=tuple(merged_columns),
-        stim_columns=tuple(stim_dem_columns(circuit)),
-        detector_names=tuple(str(value) for value in detector_names),
-        logical_names=tuple(str(value) for value in logical_names),
-        measurement_channel_names=tuple(str(value) for value in measurement_channel_names),
-        raw_measurement_channel_matrix=np.asarray(raw_measurement_channel_matrix, dtype=np.uint8),
-        detector_from_channels=np.asarray(detector_from_channels, dtype=np.uint8),
-        logical_from_channels=np.asarray(logical_from_channels, dtype=np.uint8),
-        raw_measurement_reference=np.asarray(reference_measurements, dtype=np.uint8),
-        measurement_channel_reference=np.asarray(reference_measurements, dtype=np.uint8),
-        merge_statistics=merge_statistics,
-    )
 
 
 @lru_cache(maxsize=16)
-def _build_rotated_surface_midswap_split_sector_conditional_bundle(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-) -> StimSplitSectorConditionalBundle:
-    import stim  # type: ignore
-
-    _ensure_real_grosscode_package()
-    from grosscode.dem.builder import load_dem_side_with_metadata_from_stim
-    from grosscode.dem.stim_fault_pipeline import (
-        circuit_measurement_names,
-        circuit_record_to_detector_logical_matrices,
-    )
-
-    schedule_bundle = _build_rotated_surface_midswap_sampling_bundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-    )
-    loaded_side = load_dem_side_with_metadata_from_stim(
-        stim_path=str(schedule_bundle.stim_path),
-        backend=f"{str(backend)}_midswap",
-        sector=str(schedule_bundle.sector),
-        error_rate=float(error_rate),
-        noisy_rounds=int(schedule_bundle.syndrome_rounds),
-        perfect_rounds=0,
-    )
-    circuit = stim.Circuit.from_file(str(schedule_bundle.stim_path))
-    measurement_names = circuit_measurement_names(circuit)
-    detector_from_measurements, logical_from_measurements, detector_names, logical_names = (
-        circuit_record_to_detector_logical_matrices(circuit)
-    )
-    analysis = _analyze_circuit_faults_relaxed_raw_measurements(
-        circuit=circuit,
-        detector_names=tuple(detector_names),
-        logical_names=tuple(logical_names),
-        measurement_channel_names=tuple(measurement_names),
-        detector_from_channels=np.asarray(detector_from_measurements, dtype=np.uint8),
-        logical_from_channels=np.asarray(logical_from_measurements, dtype=np.uint8),
-    )
-
-    detector = loaded_side.check_matrix
-    logical = loaded_side.observables_matrix
-    priors = loaded_side.priors
-    detector_csc = detector.tocsc()
-    logical_csc = logical.tocsc()
-
-    merged_by_signature: dict[tuple[int, int], object] = {}
-    for merged in tuple(analysis.merged_columns):
-        signature = (
-            _bitmask_from_support_rows([index for index, bit in enumerate(tuple(merged.detector_bits)) if int(bit) != 0]),
-            _bitmask_from_support_rows([index for index, bit in enumerate(tuple(merged.logical_bits)) if int(bit) != 0]),
-        )
-        if signature in merged_by_signature:
-            raise ValueError(f"duplicate mid-swap merged signature encountered: {signature!r}")
-        merged_by_signature[signature] = merged
-
-    time_ordered_entries: list[tuple[int, int, ProgressiveColumn, tuple[int, ...]]] = []
-    for source_column in range(int(detector.shape[1])):
-        det_start = int(detector_csc.indptr[int(source_column)])
-        det_stop = int(detector_csc.indptr[int(source_column) + 1])
-        det_rows = detector_csc.indices[det_start:det_stop].astype(np.int32, copy=False)
-        log_start = int(logical_csc.indptr[int(source_column)])
-        log_stop = int(logical_csc.indptr[int(source_column) + 1])
-        log_rows = logical_csc.indices[log_start:log_stop].astype(np.int32, copy=False)
-        detector_mask = _bitmask_from_support_rows(det_rows.tolist())
-        logical_mask = _bitmask_from_support_rows(log_rows.tolist())
-        merged = merged_by_signature.get((int(detector_mask), int(logical_mask)))
-        if merged is None:
-            raise ValueError(
-                "could not match mid-swap DEM column to Stim merged fault metadata for "
-                f"backend={backend!r} sector={sector!r} column={int(source_column)}"
-            )
-        if not math.isclose(float(merged.probability), float(priors[int(source_column)]), rel_tol=0.0, abs_tol=1e-12):
-            raise ValueError(
-                "mid-swap prior mismatch against Stim merged fault metadata for "
-                f"backend={backend!r} sector={sector!r} column={int(source_column)}: "
-                f"{float(priors[int(source_column)]):.18g} vs {float(merged.probability):.18g}"
-            )
-        source_fault_ids = tuple(int(value) for value in tuple(merged.raw_fault_ids))
-        source_faults = [analysis.faults[int(raw_id)] for raw_id in source_fault_ids]
-        touched_physical_qubits = tuple(
-            sorted(
-                {
-                    int(qubit)
-                    for fault in source_faults
-                    for qubit in tuple(int(value) for value in fault.qubits)
-                }
-            )
-        )
-        physical_time_index = min((int(fault.instruction_index) for fault in source_faults), default=int(source_column))
-        q = float(priors[int(source_column)])
-        prior_probs = (float(1.0 - q), float(q))
-        column = ProgressiveColumn(
-            family=f"stim_split_sector_midswap_{str(backend)}",
-            index=-1,
-            label=f"stim_midswap_dem_c{int(source_column)}",
-            instruction_offset=int(physical_time_index),
-            prior_probs=prior_probs,
-            prior_log_probs=tuple(
-                float("-inf") if float(value) <= 0.0 else float(math.log(float(value)))
-                for value in prior_probs
-            ),
-            detector_response_masks=(0, int(detector_mask)),
-            logical_response_masks=(0, int(logical_mask)),
-            detector_support_mask=int(detector_mask),
-            detector_support_rows=tuple(int(value) for value in det_rows.tolist()),
-            kind="pauli",
-            sector=str(sector).upper(),
-            physical_time_index=int(physical_time_index),
-            touched_physical_qubits=tuple(int(value) for value in touched_physical_qubits),
-            original_column_index=int(source_column),
-        )
-        time_ordered_entries.append(
-            (
-                int(physical_time_index),
-                int(source_column),
-                column,
-                tuple(int(value) for value in source_fault_ids),
-            )
-        )
-
-    time_ordered_entries.sort(key=lambda item: (int(item[0]), int(item[1])))
-    columns_time_ordered = tuple(
-        replace(column, index=int(order_index))
-        for order_index, (_time_index, _source_column, column, _source_fault_ids) in enumerate(time_ordered_entries)
-    )
-    source_fault_ids_by_column = tuple(
-        tuple(int(value) for value in source_fault_ids)
-        for _time_index, _source_column, _column, source_fault_ids in time_ordered_entries
-    )
-    return StimSplitSectorConditionalBundle(
-        backend=f"{str(backend)}_midswap",
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-        stim_path=str(schedule_bundle.stim_path),
-        columns_time_ordered=tuple(columns_time_ordered),
-        source_fault_ids_by_column=tuple(source_fault_ids_by_column),
-        standard_detector_metadata=tuple(schedule_bundle.standard_detector_metadata),
-        measurement_metadata=tuple(schedule_bundle.measurement_metadata),
-        lifecycles=tuple(schedule_bundle.lifecycles),
-        faults=tuple(analysis.faults),
-        detector_from_measurements=np.asarray(detector_from_measurements, dtype=np.uint8),
-        logical_from_measurements=np.asarray(logical_from_measurements, dtype=np.uint8),
-        reference_measurements=np.asarray(analysis.raw_measurement_reference, dtype=np.uint8),
-    )
 
 
 def _simulate_rotated_surface_midswap_loss_branch_effect(
@@ -36571,289 +35442,12 @@ def _simulate_rotated_surface_midswap_loss_branch_effect(
     )
 
 
-def enumerate_rotated_surface_loss_branch_specs(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-    raw_measurement_outcomes: Sequence[object],
-    loss_rate: float,
-) -> tuple[tuple[LossBranchSpec, ...], dict[int, tuple[int, ...]]]:
-    _ensure_real_grosscode_package()
-    from grosscode.codes.rotated_surface import is_rotated_surface_backend
-
-    if not is_rotated_surface_backend(str(backend)):
-        raise ValueError(f"backend must be a rotated-surface backend, got {backend!r}")
-    p_loss = float(loss_rate)
-    if p_loss < 0.0 or p_loss >= 1.0:
-        raise ValueError(f"loss_rate must lie in [0, 1), got {loss_rate!r}")
-
-    bundle = _build_stim_split_sector_conditional_bundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-    )
-    raw_outcomes = tuple(raw_measurement_outcomes)
-    if len(raw_outcomes) != int(bundle.reference_measurements.shape[0]):
-        raise ValueError(
-            "raw_measurement_outcomes length must match the circuit raw measurement count: "
-            f"got {len(raw_outcomes)} vs {int(bundle.reference_measurements.shape[0])}"
-        )
-
-    flagged_lifecycles = []
-    for lifecycle in tuple(bundle.lifecycles):
-        is_loss, _bit = _coerce_ternary_measurement(raw_outcomes[int(lifecycle.raw_measurement_index)])
-        if bool(is_loss):
-            flagged_lifecycles.append(lifecycle)
-
-    branch_specs: list[LossBranchSpec] = []
-    lifecycle_by_id = {int(lifecycle.lifecycle_id): lifecycle for lifecycle in flagged_lifecycles}
-    for lifecycle in tuple(flagged_lifecycles):
-        candidate_sites = tuple(lifecycle.candidate_sites)
-        if not candidate_sites:
-            raise ValueError(
-                f"flagged rotated-surface lifecycle {int(lifecycle.lifecycle_id)} on qubit {int(lifecycle.qubit)} "
-                "has no candidate loss sites"
-            )
-        if float(p_loss) <= 0.0:
-            raise ValueError(
-                "flagged rotated-surface lifecycles require loss_rate > 0 in the current first-loss model"
-            )
-        for rank, site in enumerate(candidate_sites):
-            detector_mask, logical_mask = _simulate_stim_measurement_loss_branch_effect(
-                stim_path=str(bundle.stim_path),
-                lifecycle=lifecycle,
-                candidate_site=site,
-                detector_from_measurements=bundle.detector_from_measurements,
-                logical_from_measurements=bundle.logical_from_measurements,
-                reference_measurements=bundle.reference_measurements,
-            )
-            branch_specs.append(
-                LossBranchSpec(
-                    lifecycle_id=int(lifecycle.lifecycle_id),
-                    branch_rank_within_lifecycle=int(rank),
-                    physical_time_index=int(site.instruction_index),
-                    standard_detector_mask=int(detector_mask),
-                    logical_mask=int(logical_mask),
-                    raw_mass=float(p_loss * ((1.0 - p_loss) ** int(rank))),
-                    label=(
-                        f"loss_m{int(lifecycle.raw_measurement_index)}_q{int(lifecycle.qubit)}_"
-                        f"i{int(site.instruction_index)}_g{int(site.target_group_index)}"
-                    ),
-                    sector=str(bundle.sector),
-                    touched_physical_qubits=(int(lifecycle.qubit),),
-                )
-            )
-
-    pauli_touched_lifecycles: dict[int, tuple[int, ...]] = {}
-    if lifecycle_by_id:
-        flagged_items = tuple(lifecycle_by_id.items())
-        for column, source_fault_ids in zip(
-            tuple(bundle.columns_time_ordered),
-            tuple(bundle.source_fault_ids_by_column),
-            strict=True,
-        ):
-            touched = set()
-            for raw_fault_id in tuple(source_fault_ids):
-                fault = bundle.faults[int(raw_fault_id)]
-                for lifecycle_id, lifecycle in flagged_items:
-                    if int(lifecycle.qubit) not in tuple(int(value) for value in fault.qubits):
-                        continue
-                    if not (
-                        int(lifecycle.start_instruction_exclusive) < int(fault.instruction_index)
-                        <= int(lifecycle.end_instruction_inclusive)
-                    ):
-                        continue
-                    touched.add(int(lifecycle_id))
-            if touched:
-                pauli_touched_lifecycles[int(column.index)] = tuple(sorted(int(value) for value in touched))
-    return tuple(branch_specs), pauli_touched_lifecycles
 
 
-def build_rotated_surface_conditional_loss_dem(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-    raw_measurement_outcomes: Sequence[object],
-    loss_rate: float,
-) -> ConditionalLossDEM:
-    _ensure_real_grosscode_package()
-    from grosscode.codes.rotated_surface import is_rotated_surface_backend
-
-    if not is_rotated_surface_backend(str(backend)):
-        raise ValueError(f"backend must be a rotated-surface backend, got {backend!r}")
-    bundle = _build_stim_split_sector_conditional_bundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-    )
-    raw_outcomes = tuple(raw_measurement_outcomes)
-    if len(raw_outcomes) != int(bundle.reference_measurements.shape[0]):
-        raise ValueError(
-            "raw_measurement_outcomes length must match the circuit raw measurement count: "
-            f"got {len(raw_outcomes)} vs {int(bundle.reference_measurements.shape[0])}"
-        )
-    endpoint_outcomes = project_raw_ternary_measurements_to_worldline_endpoints(
-        measurement_metadata=bundle.measurement_metadata,
-        raw_measurement_outcomes=raw_outcomes,
-    )
-    branch_specs, pauli_touched_lifecycles = enumerate_rotated_surface_loss_branch_specs(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-        raw_measurement_outcomes=raw_outcomes,
-        loss_rate=float(loss_rate),
-    )
-    return build_conditional_loss_dem(
-        columns_time_ordered=bundle.columns_time_ordered,
-        standard_detector_metadata=bundle.standard_detector_metadata,
-        measurement_metadata=bundle.measurement_metadata,
-        measurement_outcomes=endpoint_outcomes,
-        loss_branch_specs=tuple(branch_specs),
-        pauli_touched_lifecycles=pauli_touched_lifecycles,
-        sector=str(bundle.sector),
-    )
 
 
-def enumerate_rotated_surface_midswap_loss_branch_specs(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-    raw_measurement_outcomes: Sequence[object],
-    loss_rate: float,
-) -> tuple[tuple[LossBranchSpec, ...], dict[int, tuple[int, ...]]]:
-    _ensure_real_grosscode_package()
-    from grosscode.codes.rotated_surface import is_rotated_surface_backend
-
-    if not is_rotated_surface_backend(str(backend)):
-        raise ValueError(f"backend must be a rotated-surface backend, got {backend!r}")
-    p_loss = float(loss_rate)
-    if p_loss < 0.0 or p_loss >= 1.0:
-        raise ValueError(f"loss_rate must lie in [0, 1), got {loss_rate!r}")
-
-    bundle = _build_rotated_surface_midswap_split_sector_conditional_bundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-    )
-    schedule_bundle = _build_rotated_surface_midswap_sampling_bundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-    )
-    raw_outcomes = tuple(raw_measurement_outcomes)
-    if len(raw_outcomes) != int(bundle.reference_measurements.shape[0]):
-        raise ValueError(
-            "raw_measurement_outcomes length must match the mid-swap circuit raw measurement count: "
-            f"got {len(raw_outcomes)} vs {int(bundle.reference_measurements.shape[0])}"
-        )
-
-    flagged_lifecycles = []
-    for lifecycle in tuple(bundle.lifecycles):
-        is_loss, _bit = _coerce_ternary_measurement(raw_outcomes[int(lifecycle.raw_measurement_index)])
-        if bool(is_loss):
-            flagged_lifecycles.append(lifecycle)
-
-    branch_specs: list[LossBranchSpec] = []
-    lifecycle_by_id = {int(lifecycle.lifecycle_id): lifecycle for lifecycle in flagged_lifecycles}
-    for lifecycle in tuple(flagged_lifecycles):
-        candidate_sites = tuple(lifecycle.candidate_sites)
-        if not candidate_sites:
-            raise ValueError(
-                f"flagged mid-swap lifecycle {int(lifecycle.lifecycle_id)} has no candidate loss sites"
-            )
-        if float(p_loss) <= 0.0:
-            raise ValueError("flagged mid-swap lifecycles require loss_rate > 0 in the current first-loss model")
-        for rank, site in enumerate(candidate_sites):
-            detector_mask, logical_mask = _simulate_rotated_surface_midswap_loss_branch_effect(
-                bundle=bundle,
-                schedule_bundle=schedule_bundle,
-                lifecycle=lifecycle,
-                branch_rank=int(rank),
-            )
-            branch_specs.append(
-                LossBranchSpec(
-                    lifecycle_id=int(lifecycle.lifecycle_id),
-                    branch_rank_within_lifecycle=int(rank),
-                    physical_time_index=int(site.instruction_index),
-                    standard_detector_mask=int(detector_mask),
-                    logical_mask=int(logical_mask),
-                    raw_mass=float(p_loss * ((1.0 - p_loss) ** int(rank))),
-                    label=(
-                        f"midswap_loss_{str(lifecycle.role_kind)}{int(lifecycle.role_id)}_"
-                        f"r{int(lifecycle.round_index)}_m{int(lifecycle.raw_measurement_index)}_"
-                        f"i{int(site.instruction_index)}_g{int(site.target_group_index)}"
-                    ),
-                    sector=str(bundle.sector),
-                    touched_physical_qubits=(int(site.qubit),),
-                )
-            )
-
-    pauli_touched_lifecycles: dict[int, tuple[int, ...]] = {}
-    if lifecycle_by_id:
-        flagged_items = tuple(lifecycle_by_id.items())
-        for column, source_fault_ids in zip(
-            tuple(bundle.columns_time_ordered),
-            tuple(bundle.source_fault_ids_by_column),
-            strict=True,
-        ):
-            touched = set()
-            for raw_fault_id in tuple(source_fault_ids):
-                fault = bundle.faults[int(raw_fault_id)]
-                for lifecycle_id, lifecycle in flagged_items:
-                    if _fault_touches_lifecycle(fault=fault, lifecycle=lifecycle):
-                        touched.add(int(lifecycle_id))
-            if touched:
-                pauli_touched_lifecycles[int(column.index)] = tuple(sorted(int(value) for value in touched))
-    return tuple(branch_specs), pauli_touched_lifecycles
 
 
-def build_rotated_surface_midswap_conditional_loss_dem(
-    *,
-    backend: str,
-    sector: str,
-    error_rate: float,
-    raw_measurement_outcomes: Sequence[object],
-    loss_rate: float,
-) -> ConditionalLossDEM:
-    _ensure_real_grosscode_package()
-    from grosscode.codes.rotated_surface import is_rotated_surface_backend
-
-    if not is_rotated_surface_backend(str(backend)):
-        raise ValueError(f"backend must be a rotated-surface backend, got {backend!r}")
-    bundle = _build_rotated_surface_midswap_split_sector_conditional_bundle(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-    )
-    raw_outcomes = tuple(raw_measurement_outcomes)
-    if len(raw_outcomes) != int(bundle.reference_measurements.shape[0]):
-        raise ValueError(
-            "raw_measurement_outcomes length must match the mid-swap circuit raw measurement count: "
-            f"got {len(raw_outcomes)} vs {int(bundle.reference_measurements.shape[0])}"
-        )
-    endpoint_outcomes = project_raw_ternary_measurements_to_worldline_endpoints(
-        measurement_metadata=bundle.measurement_metadata,
-        raw_measurement_outcomes=raw_outcomes,
-    )
-    branch_specs, pauli_touched_lifecycles = enumerate_rotated_surface_midswap_loss_branch_specs(
-        backend=str(backend),
-        sector=str(sector).upper(),
-        error_rate=float(error_rate),
-        raw_measurement_outcomes=raw_outcomes,
-        loss_rate=float(loss_rate),
-    )
-    return build_conditional_loss_dem(
-        columns_time_ordered=bundle.columns_time_ordered,
-        standard_detector_metadata=bundle.standard_detector_metadata,
-        measurement_metadata=bundle.measurement_metadata,
-        measurement_outcomes=endpoint_outcomes,
-        loss_branch_specs=tuple(branch_specs),
-        pauli_touched_lifecycles=pauli_touched_lifecycles,
-        sector=str(bundle.sector),
-    )
 
 
 def build_loss_row_transform(
@@ -38134,9 +36728,9 @@ def decode_progressive(
     suffix_message_diagnostics: bool = False,
     suffix_message_persistence_ttl: int = 128,
     suffix_message_persistence_reserved_slots: int = 4,
-    stage1_reliability_correction_mu: float = 0.0,
-    stage1_reliability_llr: Sequence[float] | np.ndarray | None = None,
-    stage1_reliability_llr_clip: float = STAGE1_RELIABILITY_LLR_CLIP,
+    prior_reliability_correction_mu: float = 0.0,
+    prior_reliability_llr: Sequence[float] | np.ndarray | None = None,
+    prior_reliability_llr_clip: float = PRIOR_RELIABILITY_LLR_CLIP,
     lookahead_shortlist_size: int = 0,
     tail_exact_columns: int = 0,
     superstep_mode: str = "none",
@@ -38816,19 +37410,19 @@ def decode_progressive(
             raise ValueError(
                 "prune_ranker='near_cut_lineage_reserve_v1' is not supported with multi_score_survivor_lanes"
             )
-    if math.isnan(float(stage1_reliability_correction_mu)) or not math.isfinite(
-        float(stage1_reliability_correction_mu)
+    if math.isnan(float(prior_reliability_correction_mu)) or not math.isfinite(
+        float(prior_reliability_correction_mu)
     ):
-        raise ValueError("stage1_reliability_correction_mu must be finite")
-    if math.isnan(float(stage1_reliability_llr_clip)) or not math.isfinite(float(stage1_reliability_llr_clip)):
-        raise ValueError("stage1_reliability_llr_clip must be finite")
-    if float(stage1_reliability_llr_clip) < 0.0:
-        raise ValueError("stage1_reliability_llr_clip must be >= 0")
-    normalized_stage1_reliability_llr = _normalize_stage1_reliability_llr(stage1_reliability_llr)
-    stage1_reliability_correction_enabled = bool(
-        float(stage1_reliability_correction_mu) != 0.0
-        and normalized_stage1_reliability_llr is not None
-        and float(stage1_reliability_llr_clip) > 0.0
+        raise ValueError("prior_reliability_correction_mu must be finite")
+    if math.isnan(float(prior_reliability_llr_clip)) or not math.isfinite(float(prior_reliability_llr_clip)):
+        raise ValueError("prior_reliability_llr_clip must be finite")
+    if float(prior_reliability_llr_clip) < 0.0:
+        raise ValueError("prior_reliability_llr_clip must be >= 0")
+    normalized_prior_reliability_llr = _normalize_prior_reliability_llr(prior_reliability_llr)
+    prior_reliability_correction_enabled = bool(
+        float(prior_reliability_correction_mu) != 0.0
+        and normalized_prior_reliability_llr is not None
+        and float(prior_reliability_llr_clip) > 0.0
     )
     if bool(loss_mode):
         unsupported_args: list[str] = []
@@ -38868,8 +37462,8 @@ def decode_progressive(
             unsupported_args.append("mixed_retention_mode")
         if normalized_multi_score_survivor_lanes:
             unsupported_args.append("multi_score_survivor_lanes")
-        if bool(stage1_reliability_correction_enabled):
-            unsupported_args.append("stage1 reliability correction")
+        if bool(prior_reliability_correction_enabled):
+            unsupported_args.append("prior reliability correction")
         if str(prune_ranker_key) != "primary":
             unsupported_args.append("prune_ranker")
         if bool(unsupported_args):
@@ -39233,175 +37827,175 @@ def decode_progressive(
                 if bool(nearcut_write_injection_rows)
                 else tuple()
             ),
-            binary_frontierk_explicit_branch_count=int(binary_frontierk_fast_path_stats.explicit_branch_count),
-            binary_frontierk_skipped_no_error_branch_count=int(
-                binary_frontierk_fast_path_stats.skipped_no_error_branch_count
+            binary_frontier_explicit_branch_count=int(binary_frontier_path_stats.explicit_branch_count),
+            binary_frontier_skipped_no_error_branch_count=int(
+                binary_frontier_path_stats.skipped_no_error_branch_count
             ),
-            binary_frontierk_transition_expansion_time_s=float(
-                binary_frontierk_fast_path_stats.transition_expansion_time_s
+            binary_frontier_transition_expansion_time_s=float(
+                binary_frontier_path_stats.transition_expansion_time_s
             ),
-            binary_frontierk_merge_time_s=float(binary_frontierk_fast_path_stats.merge_time_s),
-            binary_frontierk_prune_sort_time_s=float(binary_frontierk_fast_path_stats.prune_sort_time_s),
-            binary_frontierk_total_decode_time_s=float(time.perf_counter() - decode_started),
-            binary_frontierk_model_order_cache_hit_count=int(
-                binary_frontierk_fast_path_stats.model_order_cache_hit_count
+            binary_frontier_merge_time_s=float(binary_frontier_path_stats.merge_time_s),
+            binary_frontier_prune_sort_time_s=float(binary_frontier_path_stats.prune_sort_time_s),
+            binary_frontier_total_decode_time_s=float(time.perf_counter() - decode_started),
+            binary_frontier_model_order_cache_hit_count=int(
+                binary_frontier_path_stats.model_order_cache_hit_count
             ),
-            binary_frontierk_model_order_cache_miss_count=int(
-                binary_frontierk_fast_path_stats.model_order_cache_miss_count
+            binary_frontier_model_order_cache_miss_count=int(
+                binary_frontier_path_stats.model_order_cache_miss_count
             ),
-            binary_frontierk_model_order_cache_build_time_s=float(
-                binary_frontierk_fast_path_stats.model_order_cache_build_time_s
+            binary_frontier_model_order_cache_build_time_s=float(
+                binary_frontier_path_stats.model_order_cache_build_time_s
             ),
-            binary_frontierk_model_order_layout_cache_hit_count=int(
-                binary_frontierk_fast_path_stats.model_order_layout_cache_hit_count
+            binary_frontier_model_order_layout_cache_hit_count=int(
+                binary_frontier_path_stats.model_order_layout_cache_hit_count
             ),
-            binary_frontierk_model_order_layout_cache_miss_count=int(
-                binary_frontierk_fast_path_stats.model_order_layout_cache_miss_count
+            binary_frontier_model_order_layout_cache_miss_count=int(
+                binary_frontier_path_stats.model_order_layout_cache_miss_count
             ),
-            binary_frontierk_model_order_layout_cache_build_time_s=float(
-                binary_frontierk_fast_path_stats.model_order_layout_cache_build_time_s
+            binary_frontier_model_order_layout_cache_build_time_s=float(
+                binary_frontier_path_stats.model_order_layout_cache_build_time_s
             ),
-            binary_frontierk_model_order_feature_terms_cache_hit_count=int(
-                binary_frontierk_fast_path_stats.model_order_feature_terms_cache_hit_count
+            binary_frontier_model_order_feature_terms_cache_hit_count=int(
+                binary_frontier_path_stats.model_order_feature_terms_cache_hit_count
             ),
-            binary_frontierk_model_order_feature_terms_cache_miss_count=int(
-                binary_frontierk_fast_path_stats.model_order_feature_terms_cache_miss_count
+            binary_frontier_model_order_feature_terms_cache_miss_count=int(
+                binary_frontier_path_stats.model_order_feature_terms_cache_miss_count
             ),
-            binary_frontierk_model_order_feature_terms_cache_build_time_s=float(
-                binary_frontierk_fast_path_stats.model_order_feature_terms_cache_build_time_s
+            binary_frontier_model_order_feature_terms_cache_build_time_s=float(
+                binary_frontier_path_stats.model_order_feature_terms_cache_build_time_s
             ),
-            binary_frontierk_model_order_binary_payload_cache_hit_count=int(
-                binary_frontierk_fast_path_stats.model_order_binary_payload_cache_hit_count
+            binary_frontier_model_order_binary_payload_cache_hit_count=int(
+                binary_frontier_path_stats.model_order_binary_payload_cache_hit_count
             ),
-            binary_frontierk_model_order_binary_payload_cache_miss_count=int(
-                binary_frontierk_fast_path_stats.model_order_binary_payload_cache_miss_count
+            binary_frontier_model_order_binary_payload_cache_miss_count=int(
+                binary_frontier_path_stats.model_order_binary_payload_cache_miss_count
             ),
-            binary_frontierk_model_order_binary_payload_cache_build_time_s=float(
-                binary_frontierk_fast_path_stats.model_order_binary_payload_cache_build_time_s
+            binary_frontier_model_order_binary_payload_cache_build_time_s=float(
+                binary_frontier_path_stats.model_order_binary_payload_cache_build_time_s
             ),
-            binary_frontierk_hotloop_instrumentation_enabled=bool(
-                binary_frontierk_fast_path_stats.hotloop_instrumentation_enabled
+            binary_frontier_hotloop_instrumentation_enabled=bool(
+                binary_frontier_path_stats.hotloop_instrumentation_enabled
             ),
-            binary_frontierk_parent_state_count=int(binary_frontierk_fast_path_stats.parent_state_count),
-            binary_frontierk_parent_detector_key_unique_count=int(
-                binary_frontierk_fast_path_stats.parent_detector_key_unique_count
+            binary_frontier_parent_state_count=int(binary_frontier_path_stats.parent_state_count),
+            binary_frontier_parent_detector_key_unique_count=int(
+                binary_frontier_path_stats.parent_detector_key_unique_count
             ),
-            binary_frontierk_parent_detector_key_duplicate_count=int(
-                binary_frontierk_fast_path_stats.parent_detector_key_duplicate_count
+            binary_frontier_parent_detector_key_duplicate_count=int(
+                binary_frontier_path_stats.parent_detector_key_duplicate_count
             ),
-            binary_frontierk_candidate_detector_key_unique_count=int(
-                binary_frontierk_fast_path_stats.candidate_detector_key_unique_count
+            binary_frontier_candidate_detector_key_unique_count=int(
+                binary_frontier_path_stats.candidate_detector_key_unique_count
             ),
-            binary_frontierk_candidate_detector_key_duplicate_count=int(
-                binary_frontierk_fast_path_stats.candidate_detector_key_duplicate_count
+            binary_frontier_candidate_detector_key_duplicate_count=int(
+                binary_frontier_path_stats.candidate_detector_key_duplicate_count
             ),
-            binary_frontierk_candidate_detector_key_full_state_duplicate_count=int(
-                binary_frontierk_fast_path_stats.candidate_detector_key_full_state_duplicate_count
+            binary_frontier_candidate_detector_key_full_state_duplicate_count=int(
+                binary_frontier_path_stats.candidate_detector_key_full_state_duplicate_count
             ),
-            binary_frontierk_local_pattern_sample_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_sample_count
+            binary_frontier_local_pattern_sample_count=int(
+                binary_frontier_path_stats.local_pattern_sample_count
             ),
-            binary_frontierk_local_pattern_unique_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_unique_count
+            binary_frontier_local_pattern_unique_count=int(
+                binary_frontier_path_stats.local_pattern_unique_count
             ),
-            binary_frontierk_local_pattern_duplicate_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_duplicate_count
+            binary_frontier_local_pattern_duplicate_count=int(
+                binary_frontier_path_stats.local_pattern_duplicate_count
             ),
-            binary_frontierk_local_pattern_full_table_entry_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_full_table_entry_count
+            binary_frontier_local_pattern_full_table_entry_count=int(
+                binary_frontier_path_stats.local_pattern_full_table_entry_count
             ),
-            binary_frontierk_local_pattern_full_table_oversized_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_full_table_oversized_count
+            binary_frontier_local_pattern_full_table_oversized_count=int(
+                binary_frontier_path_stats.local_pattern_full_table_oversized_count
             ),
-            binary_frontierk_local_pattern_max_unique_per_column=int(
-                binary_frontierk_fast_path_stats.local_pattern_max_unique_per_column
+            binary_frontier_local_pattern_max_unique_per_column=int(
+                binary_frontier_path_stats.local_pattern_max_unique_per_column
             ),
-            binary_frontierk_local_pattern_max_degree=int(
-                binary_frontierk_fast_path_stats.local_pattern_max_degree
+            binary_frontier_local_pattern_max_degree=int(
+                binary_frontier_path_stats.local_pattern_max_degree
             ),
-            binary_frontierk_local_pattern_max_table_entries_per_column=int(
-                binary_frontierk_fast_path_stats.local_pattern_max_table_entries_per_column
+            binary_frontier_local_pattern_max_table_entries_per_column=int(
+                binary_frontier_path_stats.local_pattern_max_table_entries_per_column
             ),
-            binary_frontierk_local_pattern_feature_table_enabled=bool(
-                binary_frontierk_fast_path_stats.local_pattern_feature_table_enabled
+            binary_frontier_local_pattern_feature_table_enabled=bool(
+                binary_frontier_path_stats.local_pattern_feature_table_enabled
             ),
-            binary_frontierk_local_pattern_feature_table_boundary_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_feature_table_boundary_count
+            binary_frontier_local_pattern_feature_table_boundary_count=int(
+                binary_frontier_path_stats.local_pattern_feature_table_boundary_count
             ),
-            binary_frontierk_local_pattern_feature_table_lookup_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_feature_table_lookup_count
+            binary_frontier_local_pattern_feature_table_lookup_count=int(
+                binary_frontier_path_stats.local_pattern_feature_table_lookup_count
             ),
-            binary_frontierk_local_pattern_feature_table_entry_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_feature_table_entry_count
+            binary_frontier_local_pattern_feature_table_entry_count=int(
+                binary_frontier_path_stats.local_pattern_feature_table_entry_count
             ),
-            binary_frontierk_local_pattern_feature_table_fallback_count=int(
-                binary_frontierk_fast_path_stats.local_pattern_feature_table_fallback_count
+            binary_frontier_local_pattern_feature_table_fallback_count=int(
+                binary_frontier_path_stats.local_pattern_feature_table_fallback_count
             ),
-            binary_frontierk_local_pattern_feature_table_max_entries_per_column=int(
-                binary_frontierk_fast_path_stats.local_pattern_feature_table_max_entries_per_column
+            binary_frontier_local_pattern_feature_table_max_entries_per_column=int(
+                binary_frontier_path_stats.local_pattern_feature_table_max_entries_per_column
             ),
-            binary_frontierk_unique_detector_score_fast_path_enabled=bool(
-                binary_frontierk_fast_path_stats.unique_detector_score_fast_path_enabled
+            binary_frontier_unique_detector_score_fast_path_enabled=bool(
+                binary_frontier_path_stats.unique_detector_score_fast_path_enabled
             ),
-            binary_frontierk_unique_detector_score_fast_path_boundary_count=int(
-                binary_frontierk_fast_path_stats.unique_detector_score_fast_path_boundary_count
+            binary_frontier_unique_detector_score_fast_path_boundary_count=int(
+                binary_frontier_path_stats.unique_detector_score_fast_path_boundary_count
             ),
-            binary_frontierk_unique_detector_score_fast_path_candidate_count=int(
-                binary_frontierk_fast_path_stats.unique_detector_score_fast_path_candidate_count
+            binary_frontier_unique_detector_score_fast_path_candidate_count=int(
+                binary_frontier_path_stats.unique_detector_score_fast_path_candidate_count
             ),
-            binary_frontierk_streaming_rank_selector_enabled=bool(
-                binary_frontierk_fast_path_stats.streaming_rank_selector_enabled
+            binary_frontier_streaming_rank_selector_enabled=bool(
+                binary_frontier_path_stats.streaming_rank_selector_enabled
             ),
-            binary_frontierk_streaming_rank_selector_boundary_count=int(
-                binary_frontierk_fast_path_stats.streaming_rank_selector_boundary_count
+            binary_frontier_streaming_rank_selector_boundary_count=int(
+                binary_frontier_path_stats.streaming_rank_selector_boundary_count
             ),
-            binary_frontierk_streaming_rank_selector_stored_candidate_count=int(
-                binary_frontierk_fast_path_stats.streaming_rank_selector_stored_candidate_count
+            binary_frontier_streaming_rank_selector_stored_candidate_count=int(
+                binary_frontier_path_stats.streaming_rank_selector_stored_candidate_count
             ),
-            binary_frontierk_streaming_rank_selector_skipped_candidate_count=int(
-                binary_frontierk_fast_path_stats.streaming_rank_selector_skipped_candidate_count
+            binary_frontier_streaming_rank_selector_skipped_candidate_count=int(
+                binary_frontier_path_stats.streaming_rank_selector_skipped_candidate_count
             ),
-            binary_frontierk_streaming_rank_selector_max_window_candidate_count=int(
-                binary_frontierk_fast_path_stats.streaming_rank_selector_max_window_candidate_count
+            binary_frontier_streaming_rank_selector_max_window_candidate_count=int(
+                binary_frontier_path_stats.streaming_rank_selector_max_window_candidate_count
             ),
-            binary_frontierk_deferred_feature_materialization_enabled=bool(
-                binary_frontierk_fast_path_stats.deferred_feature_materialization_enabled
+            binary_frontier_deferred_feature_materialization_enabled=bool(
+                binary_frontier_path_stats.deferred_feature_materialization_enabled
             ),
-            binary_frontierk_deferred_feature_materialization_boundary_count=int(
-                binary_frontierk_fast_path_stats.deferred_feature_materialization_boundary_count
+            binary_frontier_deferred_feature_materialization_boundary_count=int(
+                binary_frontier_path_stats.deferred_feature_materialization_boundary_count
             ),
-            binary_frontierk_deferred_feature_materialization_parity_feature_count=int(
-                binary_frontierk_fast_path_stats.deferred_feature_materialization_parity_feature_count
+            binary_frontier_deferred_feature_materialization_parity_feature_count=int(
+                binary_frontier_path_stats.deferred_feature_materialization_parity_feature_count
             ),
-            binary_frontierk_deferred_feature_materialization_full_feature_count=int(
-                binary_frontierk_fast_path_stats.deferred_feature_materialization_full_feature_count
+            binary_frontier_deferred_feature_materialization_full_feature_count=int(
+                binary_frontier_path_stats.deferred_feature_materialization_full_feature_count
             ),
-            binary_frontierk_deferred_feature_materialization_fallback_count=int(
-                binary_frontierk_fast_path_stats.deferred_feature_materialization_fallback_count
+            binary_frontier_deferred_feature_materialization_fallback_count=int(
+                binary_frontier_path_stats.deferred_feature_materialization_fallback_count
             ),
-            binary_frontierk_small_candidate_direct_gap_boundary_count=int(
-                binary_frontierk_fast_path_stats.small_candidate_direct_gap_boundary_count
+            binary_frontier_small_candidate_direct_gap_boundary_count=int(
+                binary_frontier_path_stats.small_candidate_direct_gap_boundary_count
             ),
-            binary_frontierk_small_candidate_direct_gap_candidate_count=int(
-                binary_frontierk_fast_path_stats.small_candidate_direct_gap_candidate_count
+            binary_frontier_small_candidate_direct_gap_candidate_count=int(
+                binary_frontier_path_stats.small_candidate_direct_gap_candidate_count
             ),
-            binary_frontierk_zero_close_mask_fast_path_boundary_count=int(
-                binary_frontierk_fast_path_stats.zero_close_mask_fast_path_boundary_count
+            binary_frontier_zero_close_mask_fast_path_boundary_count=int(
+                binary_frontier_path_stats.zero_close_mask_fast_path_boundary_count
             ),
-            binary_frontierk_zero_close_mask_fast_path_state_count=int(
-                binary_frontierk_fast_path_stats.zero_close_mask_fast_path_state_count
+            binary_frontier_zero_close_mask_fast_path_state_count=int(
+                binary_frontier_path_stats.zero_close_mask_fast_path_state_count
             ),
-            binary_frontierk_two_pass_rank_selector_enabled=bool(
-                binary_frontierk_fast_path_stats.two_pass_rank_selector_enabled
+            binary_frontier_two_pass_rank_selector_enabled=bool(
+                binary_frontier_path_stats.two_pass_rank_selector_enabled
             ),
-            binary_frontierk_two_pass_rank_selector_boundary_count=int(
-                binary_frontierk_fast_path_stats.two_pass_rank_selector_boundary_count
+            binary_frontier_two_pass_rank_selector_boundary_count=int(
+                binary_frontier_path_stats.two_pass_rank_selector_boundary_count
             ),
-            binary_frontierk_two_pass_rank_selector_candidate_count=int(
-                binary_frontierk_fast_path_stats.two_pass_rank_selector_candidate_count
+            binary_frontier_two_pass_rank_selector_candidate_count=int(
+                binary_frontier_path_stats.two_pass_rank_selector_candidate_count
             ),
-            binary_frontierk_two_pass_rank_selector_heap_boundary_count=int(
-                binary_frontierk_fast_path_stats.two_pass_rank_selector_heap_boundary_count
+            binary_frontier_two_pass_rank_selector_heap_boundary_count=int(
+                binary_frontier_path_stats.two_pass_rank_selector_heap_boundary_count
             ),
             log_mass_primary_production_path=str(log_mass_primary_production_path_key),
             log_mass_primary_production_path_used=bool(log_mass_primary_production_path_used),
@@ -39994,7 +38588,7 @@ def decode_progressive(
             "score_mode must be one of "
             f"{sorted(_BASE_PROGRESSIVE_SCORE_MODES)} or `{LOW_ERROR_LOGMASS_SCORE_MODE_PREFIX}`"
             " with optional `_e<cap>` suffix"
-            f", or `{ACTIVE_FRONTIERK_SCORE_MODE_PREFIX}` with optional `_k<beam>` suffix"
+            f", or `{ACTIVE_FRONTIER_SCORE_MODE_PREFIX}` with optional `_k<beam>` suffix"
             ", or `future_parity_logodds_a<alpha>`"
             ", or `future_parity_logodds_prefix_beta<beta>`"
             ", or `future_parity_logodds_prefix_taper_early<beta>_late<beta>[_gamma<power>]`"
@@ -40043,7 +38637,7 @@ def decode_progressive(
             f"`{PAIRLOGODDS_WIDTH_ADAPTIVE_SCORE_MODE}`, "
             "`future_component_logmass`, `future_parity_logodds[_a<alpha>]`, "
             f"`{LOW_ERROR_LOGMASS_SCORE_MODE_PREFIX}[_e<cap>]`, or "
-            f"`{ACTIVE_FRONTIERK_SCORE_MODE_PREFIX}[_k<beam>]`"
+            f"`{ACTIVE_FRONTIER_SCORE_MODE_PREFIX}[_k<beam>]`"
         )
     if bool(selective_local_lookahead_enabled) and not _score_mode_supports_boundary_secondary_rerank(
         str(selective_local_lookahead_score_mode_key)
@@ -40232,9 +38826,9 @@ def decode_progressive(
     if (
         bool(pruned_prefix_rescue_enabled)
         and str(pruned_prefix_rescue_mode_key) == "reservoir"
-        and bool(stage1_reliability_correction_enabled)
+        and bool(prior_reliability_correction_enabled)
     ):
-        raise ValueError("pruned prefix rescue reservoir mode is not supported with stage1 reliability correction")
+        raise ValueError("pruned prefix rescue reservoir mode is not supported with prior reliability correction")
     if bool(pruned_prefix_rescue_enabled) and bool(pruning_replay_enabled):
         raise ValueError("pruned prefix rescue is not supported with pruning replay")
     if bool(pruned_prefix_rescue_enabled) and int(tail_exact_columns) > 0:
@@ -40406,7 +39000,7 @@ def decode_progressive(
     state_key_correction_shift = int(num_detectors) + int(num_observables)
     exact_correction_mode = bool(return_correction) and str(correction_merge_mode_key) == "exact"
     representative_correction_mode = bool(return_correction) and str(correction_merge_mode_key) == "representative_viterbi"
-    track_representative_correction = bool(representative_correction_mode or stage1_reliability_correction_enabled)
+    track_representative_correction = bool(representative_correction_mode or prior_reliability_correction_enabled)
     classical_boundary_state_mode_key = str(classical_boundary_state_mode).strip().lower()
     if classical_boundary_state_mode_key not in {"none", "diagnostic", "kbest"}:
         raise ValueError("classical_boundary_state_mode must be one of none, diagnostic, kbest")
@@ -40530,75 +39124,75 @@ def decode_progressive(
     )
     (
         binary_transition_terms_by_column,
-        binary_frontierk_payloads_by_column,
+        binary_frontier_payloads_by_column,
     ) = _compile_binary_fast_path_column_caches(
         columns=columns,
         frontier=frontier,
         enabled=bool(binary_transition_fast_path_enabled),
     )
     future_parity_scorer_stats = FutureParityScorerStats()
-    binary_frontierk_fast_path_stats = BinaryFrontierKFastPathStats()
+    binary_frontier_path_stats = BinaryFrontierPathStats()
     binary_model_order_cache_stats_delta = _binary_model_order_cache_stats_delta(
         binary_model_order_cache_stats_start
     )
-    binary_frontierk_fast_path_stats.model_order_layout_cache_hit_count = int(
+    binary_frontier_path_stats.model_order_layout_cache_hit_count = int(
         binary_model_order_cache_stats_delta.layout_hit_count
     )
-    binary_frontierk_fast_path_stats.model_order_layout_cache_miss_count = int(
+    binary_frontier_path_stats.model_order_layout_cache_miss_count = int(
         binary_model_order_cache_stats_delta.layout_miss_count
     )
-    binary_frontierk_fast_path_stats.model_order_layout_cache_build_time_s = float(
+    binary_frontier_path_stats.model_order_layout_cache_build_time_s = float(
         binary_model_order_cache_stats_delta.layout_build_time_s
     )
-    binary_frontierk_fast_path_stats.model_order_feature_terms_cache_hit_count = int(
+    binary_frontier_path_stats.model_order_feature_terms_cache_hit_count = int(
         binary_model_order_cache_stats_delta.feature_terms_hit_count
     )
-    binary_frontierk_fast_path_stats.model_order_feature_terms_cache_miss_count = int(
+    binary_frontier_path_stats.model_order_feature_terms_cache_miss_count = int(
         binary_model_order_cache_stats_delta.feature_terms_miss_count
     )
-    binary_frontierk_fast_path_stats.model_order_feature_terms_cache_build_time_s = float(
+    binary_frontier_path_stats.model_order_feature_terms_cache_build_time_s = float(
         binary_model_order_cache_stats_delta.feature_terms_build_time_s
     )
-    binary_frontierk_fast_path_stats.model_order_binary_payload_cache_hit_count = int(
+    binary_frontier_path_stats.model_order_binary_payload_cache_hit_count = int(
         binary_model_order_cache_stats_delta.binary_payload_hit_count
     )
-    binary_frontierk_fast_path_stats.model_order_binary_payload_cache_miss_count = int(
+    binary_frontier_path_stats.model_order_binary_payload_cache_miss_count = int(
         binary_model_order_cache_stats_delta.binary_payload_miss_count
     )
-    binary_frontierk_fast_path_stats.model_order_binary_payload_cache_build_time_s = float(
+    binary_frontier_path_stats.model_order_binary_payload_cache_build_time_s = float(
         binary_model_order_cache_stats_delta.binary_payload_build_time_s
     )
-    binary_frontierk_fast_path_stats.model_order_cache_hit_count = int(
-        binary_frontierk_fast_path_stats.model_order_layout_cache_hit_count
-        + binary_frontierk_fast_path_stats.model_order_feature_terms_cache_hit_count
-        + binary_frontierk_fast_path_stats.model_order_binary_payload_cache_hit_count
+    binary_frontier_path_stats.model_order_cache_hit_count = int(
+        binary_frontier_path_stats.model_order_layout_cache_hit_count
+        + binary_frontier_path_stats.model_order_feature_terms_cache_hit_count
+        + binary_frontier_path_stats.model_order_binary_payload_cache_hit_count
     )
-    binary_frontierk_fast_path_stats.model_order_cache_miss_count = int(
-        binary_frontierk_fast_path_stats.model_order_layout_cache_miss_count
-        + binary_frontierk_fast_path_stats.model_order_feature_terms_cache_miss_count
-        + binary_frontierk_fast_path_stats.model_order_binary_payload_cache_miss_count
+    binary_frontier_path_stats.model_order_cache_miss_count = int(
+        binary_frontier_path_stats.model_order_layout_cache_miss_count
+        + binary_frontier_path_stats.model_order_feature_terms_cache_miss_count
+        + binary_frontier_path_stats.model_order_binary_payload_cache_miss_count
     )
-    binary_frontierk_fast_path_stats.model_order_cache_build_time_s = float(
-        binary_frontierk_fast_path_stats.model_order_layout_cache_build_time_s
-        + binary_frontierk_fast_path_stats.model_order_feature_terms_cache_build_time_s
-        + binary_frontierk_fast_path_stats.model_order_binary_payload_cache_build_time_s
+    binary_frontier_path_stats.model_order_cache_build_time_s = float(
+        binary_frontier_path_stats.model_order_layout_cache_build_time_s
+        + binary_frontier_path_stats.model_order_feature_terms_cache_build_time_s
+        + binary_frontier_path_stats.model_order_binary_payload_cache_build_time_s
     )
-    binary_frontierk_fast_path_stats.hotloop_instrumentation_enabled = bool(
+    binary_frontier_path_stats.hotloop_instrumentation_enabled = bool(
         binary_hotloop_instrumentation_enabled
     )
-    binary_frontierk_fast_path_stats.local_pattern_feature_table_enabled = bool(
+    binary_frontier_path_stats.local_pattern_feature_table_enabled = bool(
         binary_local_pattern_feature_table_enabled
     )
-    binary_frontierk_fast_path_stats.unique_detector_score_fast_path_enabled = bool(
+    binary_frontier_path_stats.unique_detector_score_fast_path_enabled = bool(
         binary_unique_detector_score_fast_path_enabled
     )
-    binary_frontierk_fast_path_stats.streaming_rank_selector_enabled = bool(
+    binary_frontier_path_stats.streaming_rank_selector_enabled = bool(
         binary_streaming_rank_selector_enabled
     )
-    binary_frontierk_fast_path_stats.two_pass_rank_selector_enabled = bool(
+    binary_frontier_path_stats.two_pass_rank_selector_enabled = bool(
         binary_two_pass_rank_selector_enabled
     )
-    binary_frontierk_fast_path_stats.deferred_feature_materialization_enabled = bool(
+    binary_frontier_path_stats.deferred_feature_materialization_enabled = bool(
         binary_deferred_feature_materialization_enabled
     )
     log_mass_primary_production_path_used = bool(
@@ -42298,7 +40892,7 @@ def decode_progressive(
                     ),
                     nearcut_injection_row_mode=str(nearcut_injection_row_mode_key),
                 )
-                binary_frontierk_fast_path_stats.prune_sort_time_s += float(
+                binary_frontier_path_stats.prune_sort_time_s += float(
                     time.perf_counter() - prune_started
                 )
                 logical_class_reserve_applied_count += int(logical_reserve_applied)
@@ -42552,7 +41146,7 @@ def decode_progressive(
             )
 
             binary_transition_payload = (
-                binary_frontierk_payloads_by_column[int(column_index)]
+                binary_frontier_payloads_by_column[int(column_index)]
                 if bool(binary_transition_fast_path_enabled)
                 else None
             )
@@ -42639,7 +41233,7 @@ def decode_progressive(
                 and forward_guidance_replay_layout is None
                 and not bool(forward_cut_state_lookahead_requested)
                 and str(score_mode_key) != "forward_terminal_lookahead"
-                and not bool(stage1_reliability_correction_enabled)
+                and not bool(prior_reliability_correction_enabled)
                 and learned_score_config is None
                 and not bool(nearcut_runtime_active)
                 and not bool(track_best_path)
@@ -42668,7 +41262,7 @@ def decode_progressive(
                     truth_logical_retained_prefix_mass_step,
                     truth_logical_discarded_prefix_mass_step,
                     truth_logical_discarded_prefix_mass_fraction_step,
-                ) = _advance_binary_frontierk_logodds_primary_topk_fast_path(
+                ) = _advance_binary_frontier_logodds_primary_topk_fast_path(
                     state_log_mass=state_log_mass,
                     current_detector_features=current_detector_features,
                     binary_payload=binary_transition_payload,
@@ -42711,7 +41305,7 @@ def decode_progressive(
                     ),
                     hotloop_instrumentation_enabled=bool(binary_hotloop_instrumentation_enabled),
                     future_parity_scorer_stats=future_parity_scorer_stats,
-                    binary_fast_path_stats=binary_frontierk_fast_path_stats,
+                    binary_fast_path_stats=binary_frontier_path_stats,
                 )
                 fused_binary_primary_topk_prune_applied = True
             elif bool(use_binary_transition_fast_path) and binary_transition_payload is not None:
@@ -42724,7 +41318,7 @@ def decode_progressive(
                     incoming_count_by_key,
                     transition_count,
                     closure_reject_count,
-                ) = _advance_binary_frontierk_logodds_fast_path(
+                ) = _advance_binary_frontier_logodds_fast_path(
                     state_log_mass=state_log_mass,
                     state_viterbi=state_viterbi,
                     state_viterbi_rep_cost=state_viterbi_rep_cost,
@@ -42742,7 +41336,7 @@ def decode_progressive(
                     log_mass_primary_only=bool(log_mass_primary_production_path_used),
                     sparse_viterbi_maps_enabled=bool(log_mass_primary_sparse_viterbi_enabled),
                     future_parity_scorer_stats=future_parity_scorer_stats,
-                    binary_fast_path_stats=binary_frontierk_fast_path_stats,
+                    binary_fast_path_stats=binary_frontier_path_stats,
                 )
             elif bool(use_binary_transition_fast_path):
                 (
@@ -43384,11 +41978,11 @@ def decode_progressive(
                     next_parent=next_parent,
                     next_min_nonzero_steps=next_min_nonzero_steps,
                     representative_correction_by_key=(
-                        next_representative_correction if bool(stage1_reliability_correction_enabled) else None
+                        next_representative_correction if bool(prior_reliability_correction_enabled) else None
                     ),
-                    stage1_reliability_correction_mu=float(stage1_reliability_correction_mu),
-                    stage1_reliability_llr=normalized_stage1_reliability_llr,
-                    stage1_reliability_llr_clip=float(stage1_reliability_llr_clip),
+                    prior_reliability_correction_mu=float(prior_reliability_correction_mu),
+                    prior_reliability_llr=normalized_prior_reliability_llr,
+                    prior_reliability_llr_clip=float(prior_reliability_llr_clip),
                     beam_size=(None if beam_size is None else int(beam_size)),
                     beam_score_gap_threshold=effective_beam_score_gap_threshold,
                     beam_score_gap_no_path_guard_threshold=beam_score_gap_no_path_guard_threshold,
@@ -43710,7 +42304,7 @@ def decode_progressive(
                     ),
                     nearcut_injection_row_mode=str(nearcut_injection_row_mode_key),
                 )
-                binary_frontierk_fast_path_stats.prune_sort_time_s += float(
+                binary_frontier_path_stats.prune_sort_time_s += float(
                     time.perf_counter() - prune_started
                 )
                 logical_class_reserve_applied_count += int(logical_reserve_applied)

@@ -22,7 +22,7 @@ if str(REPO_ROOT) not in sys.path:
 os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ.get("TMPDIR", "/tmp")) / "frontier_mplconfig"))
 
 from tools import frontier_decoder as frontier
-from tools import gross144_dem_x_progressive_report as dem_report
+from tools import dem_loader
 
 
 PER_SHOT_FIELDS = [
@@ -82,18 +82,6 @@ PER_SHOT_FIELDS = [
     "escalation_reason",
     "escalation_K",
     "escalation_Delta",
-    "stage1_status",
-    "stage1_accept",
-    "stage1_selected_direction",
-    "stage1_logical_hat",
-    "stage1_forward_status",
-    "stage1_forward_logical_hat",
-    "stage1_backward_status",
-    "stage1_backward_logical_hat",
-    "stage1_transition_evals_total",
-    "stage2_transition_evals_total",
-    "stage1_forward_candidate_cols",
-    "stage1_backward_candidate_cols",
     "status",
     "frame_ok",
     "frame_fail_type",
@@ -517,7 +505,7 @@ def _split_rows(rows: Sequence[SampleRow], shards: int) -> list[list[SampleRow]]
 
 
 def _load_family_pair(task: Mapping[str, object]):
-    forward_family = dem_report._load_dem_family(
+    forward_family = dem_loader.load_dem_family(
         backend=str(task["backend"]),
         p_location=float(task["p_location"]),
         scope=str(task["scope"]),
@@ -532,9 +520,9 @@ def _load_family_pair(task: Mapping[str, object]):
     if bool(needs_backward):
         backward_order = str(task["backward_column_order"]).strip().lower()
         if backward_order in {"bwd_deadline", "backward_deadline_reorder"}:
-            backward_family = dem_report._build_backward_deadline_ordered_family(base_family=forward_family)
+            backward_family = dem_loader.build_backward_deadline_ordered_family(base_family=forward_family)
         else:
-            backward_family = dem_report._load_dem_family(
+            backward_family = dem_loader.load_dem_family(
                 backend=str(task["backend"]),
                 p_location=float(task["p_location"]),
                 scope=str(task["scope"]),
@@ -942,10 +930,6 @@ def _row_from_native_replay_payload(
         committee_disagreed = _boolish(payload.get("committee_disagreed", False))
     direction_mode = str(task.get("direction_mode", ""))
     selected_direction = str(payload.get("selected_direction", "forward"))
-    stage1_status = str(payload.get("stage1_status", ""))
-    stage1_logical_hat = payload.get("stage1_logical_hat")
-    stage1_forward_logical_hat = payload.get("stage1_forward_logical_hat", forward_logical_hat)
-    stage1_backward_logical_hat = payload.get("stage1_backward_logical_hat", backward_logical_hat)
     primary_logical_hat = payload.get("primary_logical_hat", logical_hat)
     escalated = _boolish(payload.get("escalated", False))
     escalation_reason = str(payload.get("escalation_reason", ""))
@@ -996,14 +980,14 @@ def _row_from_native_replay_payload(
         "primary_selected_direction": str(payload.get("primary_selected_direction", selected_direction)),
         "primary_status": str(payload.get("primary_status", status)),
         "primary_logical_hat": "" if primary_logical_hat is None else int(primary_logical_hat),
-        "primary_forward_status": str(payload.get("stage1_forward_status", forward_status)),
+        "primary_forward_status": str(payload.get("primary_forward_status", forward_status)),
         "primary_forward_logical_hat": ""
-        if stage1_forward_logical_hat is None
-        else int(stage1_forward_logical_hat),
-        "primary_backward_status": str(payload.get("stage1_backward_status", backward_status)),
+        if forward_logical_hat is None
+        else int(forward_logical_hat),
+        "primary_backward_status": str(payload.get("primary_backward_status", backward_status)),
         "primary_backward_logical_hat": ""
-        if stage1_backward_logical_hat is None
-        else int(stage1_backward_logical_hat),
+        if backward_logical_hat is None
+        else int(backward_logical_hat),
         "forward_log_evidence": float(payload.get("forward_log_evidence", float("nan"))),
         "backward_log_evidence": float(payload.get("backward_log_evidence", float("nan"))),
         "forward_terminal_top_log_mass_gap": float(payload.get("forward_terminal_top_log_mass_gap", float("nan"))),
@@ -1017,22 +1001,6 @@ def _row_from_native_replay_payload(
         "escalation_reason": str(escalation_reason),
         "escalation_K": int(task.get("escalation_K", 0) or 0),
         "escalation_Delta": float(task.get("escalation_Delta", float("nan"))),
-        "stage1_status": str(stage1_status),
-        "stage1_accept": _boolish(payload.get("stage1_accept", False)),
-        "stage1_selected_direction": str(payload.get("stage1_selected_direction", "")),
-        "stage1_logical_hat": "" if stage1_logical_hat is None else int(stage1_logical_hat),
-        "stage1_forward_status": str(payload.get("stage1_forward_status", "")),
-        "stage1_forward_logical_hat": ""
-        if stage1_forward_logical_hat is None
-        else int(stage1_forward_logical_hat),
-        "stage1_backward_status": str(payload.get("stage1_backward_status", "")),
-        "stage1_backward_logical_hat": ""
-        if stage1_backward_logical_hat is None
-        else int(stage1_backward_logical_hat),
-        "stage1_transition_evals_total": int(payload.get("stage1_transition_evals_total", 0)),
-        "stage2_transition_evals_total": int(payload.get("stage2_transition_evals_total", 0)),
-        "stage1_forward_candidate_cols": int(payload.get("stage1_forward_candidate_cols", 0)),
-        "stage1_backward_candidate_cols": int(payload.get("stage1_backward_candidate_cols", 0)),
         "status": str(status),
         "frame_ok": bool(fail_type == "success"),
         "frame_fail_type": str(fail_type),

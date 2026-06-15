@@ -15,16 +15,8 @@ from pathlib import Path
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-_REPO_ROOT = Path(__file__).resolve().parents[1]
-
 from tools import frontier_decoder as frontier
-from tools.gross144_dem_x_progressive_report import _load_dem_family
-
-
-DEFAULT_SAMPLE_ROWS = Path(
-    "results/20260523_circuit_level_fer_psweep_adaptive_v1/"
-    "bb144/p0p001/samples/sample_rows_s0_4999.csv"
-)
+from tools.dem_loader import load_dem_family
 
 
 def _parse_args() -> argparse.Namespace:
@@ -34,7 +26,7 @@ def _parse_args() -> argparse.Namespace:
             "the accepted BB144/Gross split-sector DEM benchmark."
         )
     )
-    parser.add_argument("--sample-rows", type=Path, default=DEFAULT_SAMPLE_ROWS)
+    parser.add_argument("--sample-rows", type=Path, required=True)
     parser.add_argument("--backend", default="bravyi_depth7")
     parser.add_argument("--p-location", type=float, default=0.001)
     parser.add_argument("--column-order", default="deadline_reorder")
@@ -92,7 +84,7 @@ def _load_syndromes(sample_rows: Path, scopes: tuple[str, ...], rows_per_scope: 
 
 
 def _build_models(*, backend: str, p_location: float, column_order: str, scope: str, syndrome: int):
-    family = _load_dem_family(
+    family = load_dem_family(
         backend=str(backend),
         p_location=float(p_location),
         scope=str(scope),
