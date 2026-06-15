@@ -15,7 +15,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Callable, Iterable, Mapping, Sequence
 
-os.environ.setdefault("MPLCONFIGDIR", "/tmp/mplcache_betterbeam")
+os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ.get("TMPDIR", "/tmp")) / "frontier_mplconfig"))
 
 import matplotlib
 

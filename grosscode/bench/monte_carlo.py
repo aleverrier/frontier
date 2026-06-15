@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, MutableMapping, Sequence
 
-os.environ.setdefault("MPLCONFIGDIR", "/tmp/mplcache_betterbeam")
+os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ.get("TMPDIR", "/tmp")) / "frontier_mplconfig"))
 
 import matplotlib
 
@@ -26,7 +26,7 @@ from grosscode.decoders.local_round.windowed_local_round import WindowedLocalRou
 from grosscode.model import DEFAULT_HX, DEFAULT_HZ, GrossSideModel, clip_prob
 
 
-DEFAULT_RESULTS_BASE = Path("/Users/anthony/research/better-beam/results")
+DEFAULT_RESULTS_BASE = Path("results")
 DEFAULT_DECODERS = ("baseline_bposd", "full_block_minsum", "windowed_minsum", "local_round_topk")
 
 

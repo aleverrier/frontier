@@ -9,7 +9,7 @@ from typing import Mapping, Sequence
 
 import numpy as np
 
-os.environ.setdefault("MPLCONFIGDIR", "/tmp/mplcache_betterbeam")
+os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ.get("TMPDIR", "/tmp")) / "frontier_mplconfig"))
 
 from grosscode.nonbinary_cnot import CNOTLocationSideProblem, build_cnot_location_problem
 from grosscode.utils.paths import resolve_qtanner_root

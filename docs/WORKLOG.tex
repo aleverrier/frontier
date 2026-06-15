@@ -3,11 +3,11 @@
 \subsection*{2026-06-15}
 
 \begin{itemize}
-\item Created the initial \texttt{frontier} export from the \texttt{better-beam} decoder code.
+\item Created the initial \texttt{frontier} export.
 \item Selected repo shape 3 and decoder mode 3: native C++ decoder plus DEM replay/benchmark CLI, with forward \texttt{deadline\_reorder} and backward \texttt{backward\_deadline\_reorder}.
 \item Public modes are limited to \texttt{forward\_only}, \texttt{backward\_only}, and \texttt{fwd\_bwd\_committee}.
 \item The two-stage decoder is intentionally not exposed in the public CLI or native Python wrapper.
-\item Validation completed: build \texttt{\_frontier\_fast\_native}, compile exported Python modules, run \texttt{pytest} with \texttt{3 passed}, and run the smoke benchmark with \texttt{--K 16 --Delta 100 --shots 3}.
+\item Validation completed: build \texttt{\_frontier\_native}, compile exported Python modules, run \texttt{pytest} with \texttt{3 passed}, and run the smoke benchmark with \texttt{--K 16 --Delta 100 --shots 3}.
 \end{itemize}
 
 \subsection*{Open Items}
@@ -22,7 +22,15 @@
 \begin{itemize}
 \item Renamed the public exported modules and extension to \texttt{frontier\_*}, including \texttt{\_frontier\_native}, \texttt{frontier\_native.py}, \texttt{tools/frontier\_decoder.py}, \texttt{tools/frontier\_sample\_replay.py}, and \texttt{tools/frontier\_bb144\_benchmark.py}.
 \item Renamed public Python API types/functions to \texttt{Frontier*} / \texttt{decode\_frontier*}.
-\item Added README matrix-availability notes: static matrix files are not checked in; in-repo constructors cover surface-code checks and generated rotated-surface DEMs, while the accepted Gross split-sector DEM builder needs a public \texttt{qtanner-ssf} checkout via \texttt{GROSSCODE\_QTANNER\_ROOT} or \texttt{QTANNER\_ROOT}.
+\item Added README matrix-availability notes: static matrix files are not checked in; in-repo constructors cover surface-code checks and generated rotated-surface DEMs, while the accepted Gross split-sector DEM builder needs optional public Gross-code matrix/circuit assets.
+\end{itemize}
+
+\subsection*{2026-06-15 Public Path Cleanup}
+
+\begin{itemize}
+\item Removed private checkout examples and hardcoded local filesystem defaults from README text, worklogs, and exported Python helpers.
+\item Changed optional Gross/Tanner asset handling to require explicit public asset configuration instead of silently falling back to a local developer path.
+\item Renamed temporary cache defaults to \texttt{frontier} names.
 \end{itemize}
 
 \subsection*{2026-06-15 BB144/Gross Reproducibility Docs}

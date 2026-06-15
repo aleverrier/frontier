@@ -1497,7 +1497,7 @@ def write_report(run_dir: Path, report_path: Path) -> Path:
         "",
         "## Smoke vs matched benchmark",
         "",
-        "- Smoke results remain in `/Users/anthony/research/better-beam/reports/benchmarks.md` and the earlier `_smoke_*` result roots. They were useful for wiring and sanity checks only.",
+        "- Earlier smoke results were useful for wiring and sanity checks only; the matched rows below are the comparable benchmark results.",
         "- This report is the first matched benchmark because every compared decoder below uses the same `bravyi_depth7` split-sector task family, p-grid, shot counts, frame-seed protocol, and `12 noisy + 1 perfect` round structure.",
         f"- {baseline_note}",
         "",

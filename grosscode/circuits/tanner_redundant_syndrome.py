@@ -14,12 +14,8 @@ import scipy.sparse as sp
 from grosscode.utils.gf2 import binary_csr_mod2, dense_mod2, nullspace_basis_dense, rank_dense_mod2
 
 
-DEFAULT_TANNER_HX = Path(
-    "/Users/anthony/research/qtanner-search/data/lrz_paper_mtx/633x633/HX_C2C2_144_12_11.mtx"
-)
-DEFAULT_TANNER_HZ = Path(
-    "/Users/anthony/research/qtanner-search/data/lrz_paper_mtx/633x633/HZ_C2C2_144_12_11.mtx"
-)
+DEFAULT_TANNER_HX = Path("data/lrz_paper_mtx/633x633/HX_C2C2_144_12_11.mtx")
+DEFAULT_TANNER_HZ = Path("data/lrz_paper_mtx/633x633/HZ_C2C2_144_12_11.mtx")
 DetectorMode = Literal["raw_only", "raw_plus_relations"]
 
 
@@ -55,7 +51,10 @@ def load_tanner144_css_matrices(
     hx_source = Path(hx_path)
     hz_source = Path(hz_path)
     if not hx_source.exists() or not hz_source.exists():
-        raise FileNotFoundError(f"Tanner144 MTX files missing: {hx_source} and/or {hz_source}")
+        raise FileNotFoundError(
+            f"Tanner144 MTX files missing: {hx_source} and/or {hz_source}. "
+            "Pass hx_path/hz_path for the public Tanner144 matrix files."
+        )
     hx = binary_csr_mod2(spio.mmread(str(hx_source))).tocsr()
     hz = binary_csr_mod2(spio.mmread(str(hz_source))).tocsr()
     if hx.shape != hz.shape:

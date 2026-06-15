@@ -10630,7 +10630,7 @@ def _pairlogodds_atlas_path_from_env() -> str:
     path = str(os.environ.get(PAIRLOGODDS_ATLAS_CSV_ENV, "")).strip()
     if not path:
         raise RuntimeError(
-            f"pair_selection='atlas' requires {PAIRLOGODDS_ATLAS_CSV_ENV}=/path/to/row_correlation_atlas.csv"
+            f"pair_selection='atlas' requires {PAIRLOGODDS_ATLAS_CSV_ENV} to point to row_correlation_atlas.csv"
         )
     return str(path)
 
@@ -34960,7 +34960,7 @@ def _generated_rotated_surface_midswap_stim_path(
     error_rate: float,
     syndrome_rounds: int,
 ) -> Path:
-    cache_root = Path(tempfile.gettempdir()) / "better_beam_backend_stim"
+    cache_root = Path(tempfile.gettempdir()) / "frontier_backend_stim"
     cache_root.mkdir(parents=True, exist_ok=True)
     rate_tag = str(float(error_rate)).replace("-", "m").replace(".", "p")
     name = (

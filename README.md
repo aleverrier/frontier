@@ -2,8 +2,7 @@
 
 Frontier decoder export.
 
-This repository contains the working C++-accelerated frontier decoder path
-selected from the `better-beam` research tree:
+This repository contains the working C++-accelerated frontier decoder path:
 
 - native C++ binary frontier engine (`_frontier_native`)
 - forward-only, backward-only, and forward/backward committee decoding
@@ -37,7 +36,7 @@ Use `frontier-replay` for matched sample rows:
 
 ```bash
 frontier-replay \
-  --sample-rows path/to/sample_rows.csv \
+  --sample-rows sample_rows.csv \
   --out-dir results/frontier_replay \
   --code bb144 \
   --backend bravyi_depth7 \
@@ -81,13 +80,11 @@ non-default circuit family. The accepted detector-side matrices are
 `D_X = D_Z = 936 x 8784`, `O_X = O_Z = 12 x 8784`, with 12 noisy
 syndrome-extraction rounds.
 
-Prerequisite for the default Gross benchmark:
-
-```bash
-export QTANNER_ROOT=/path/to/qtanner-ssf
-# or:
-export GROSSCODE_QTANNER_ROOT=/path/to/qtanner-ssf
-```
+Prerequisite for the default Gross benchmark: install or otherwise configure
+the optional public Gross-code matrix/circuit assets used by
+`grosscode.dem.builder.build_split_sector_problem(...)`. The reproduction
+commands below assume those assets are already visible to the Python
+environment.
 
 ### Fresh Side-Level Monte Carlo
 
@@ -134,7 +131,7 @@ the requested shot ids and must include at least:
 
 ```bash
 frontier-replay \
-  --sample-rows path/to/sample_rows.csv \
+  --sample-rows sample_rows.csv \
   --out-dir results/bb144_p0p004_frontier_replay_k512_Delta12 \
   --code bb144 \
   --backend bravyi_depth7 \
@@ -166,8 +163,8 @@ or `.npz` matrix files.
 - Gross split-sector detector-side DEM:
   `grosscode.dem.builder.build_split_sector_problem(...)` returns `D_X`, `D_Z`,
   `O_X`, `O_Z`, priors, and metadata. For `backend="bravyi_depth7"`, this uses
-  the public Gross Stim circuits and `HX/HZ` matrices from `qtanner-ssf`; set
-  `GROSSCODE_QTANNER_ROOT` or `QTANNER_ROOT` to that checkout.
+  optional public Gross-code matrix/circuit assets that must be installed or
+  configured before running the BB144/Gross commands.
 - Rotated-surface code-capacity checks:
   `grosscode.codes.rotated_surface.load_rotated_surface_code(...)` constructs
   `HX/HZ` in repo, and rotated-surface DEMs are generated from Stim

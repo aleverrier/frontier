@@ -19,7 +19,6 @@ def load_worker_a_baseline_module(root: Optional[Path] = None):
         candidates.append(Path(env_root))
     if root is not None:
         candidates.append(Path(root))
-    candidates.append(Path("/Users/anthony/research/gross-baseline"))
 
     for candidate_root in candidates:
         module_path = candidate_root / "clamped_decoder.py"

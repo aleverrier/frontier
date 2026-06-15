@@ -149,7 +149,7 @@ def generated_rotated_surface_stim_path(
 ) -> Path:
     spec = get_rotated_surface_backend_spec(str(backend))
     rounds = int(spec.syndrome_rounds if syndrome_rounds is None else syndrome_rounds)
-    cache_root = Path(tempfile.gettempdir()) / "better_beam_backend_stim"
+    cache_root = Path(tempfile.gettempdir()) / "frontier_backend_stim"
     cache_root.mkdir(parents=True, exist_ok=True)
     rate_tag = str(float(error_rate)).replace("-", "m").replace(".", "p")
     name = f"{spec.backend},memory_{str(sector).upper()},error_rate={rate_tag},syndrome_rounds={int(rounds)}.stim"

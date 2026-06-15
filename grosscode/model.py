@@ -11,16 +11,44 @@ import numpy as np
 import scipy.io as spio
 import scipy.sparse as sp
 
-
-QTANNER_ROOT = Path("/Users/anthony/research/qtanner-ssf")
-if str(QTANNER_ROOT) not in sys.path:
-    sys.path.insert(0, str(QTANNER_ROOT))
-
-from qtanner_decoder import build_row_space, compute_syndrome, in_row_space, read_mtx, row_sets_to_masks  # type: ignore  # noqa: E402
+from grosscode.utils.paths import resolve_qtanner_root
 
 
-DEFAULT_HX = QTANNER_ROOT / "gross_code" / "HX_Gross_144_12_12.mtx"
-DEFAULT_HZ = QTANNER_ROOT / "gross_code" / "HZ_Gross_144_12_12.mtx"
+@lru_cache(maxsize=1)
+def _qtanner_helpers():
+    try:
+        from qtanner_decoder import build_row_space, compute_syndrome, in_row_space, read_mtx, row_sets_to_masks  # type: ignore
+    except ModuleNotFoundError:
+        try:
+            root = resolve_qtanner_root()
+        except FileNotFoundError as exc:  # pragma: no cover - optional public benchmark dependency
+            raise ModuleNotFoundError(
+                "Gross-code matrix helpers require the optional qtanner_decoder module. "
+                "Install the public Gross benchmark assets or put qtanner_decoder on PYTHONPATH."
+            ) from exc
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        try:
+            from qtanner_decoder import build_row_space, compute_syndrome, in_row_space, read_mtx, row_sets_to_masks  # type: ignore
+        except ModuleNotFoundError as exc:  # pragma: no cover - optional public benchmark dependency
+            raise ModuleNotFoundError(
+                "Gross-code matrix helpers require the optional qtanner_decoder module. "
+                "Install the public Gross benchmark assets or put qtanner_decoder on PYTHONPATH."
+            ) from exc
+    return build_row_space, compute_syndrome, in_row_space, read_mtx, row_sets_to_masks
+
+
+DEFAULT_HX = Path("gross_code") / "HX_Gross_144_12_12.mtx"
+DEFAULT_HZ = Path("gross_code") / "HZ_Gross_144_12_12.mtx"
+
+
+def _resolve_matrix_path(path: Path) -> Path:
+    candidate = Path(path).expanduser()
+    if candidate.exists() or candidate.is_absolute():
+        return candidate
+    if candidate == DEFAULT_HX or candidate == DEFAULT_HZ:
+        return resolve_qtanner_root() / candidate
+    return candidate
 
 Side = Literal["x", "z"]
 
@@ -131,7 +159,10 @@ class GrossSideModel:
         hx_path: Path = DEFAULT_HX,
         hz_path: Path = DEFAULT_HZ,
     ) -> "GrossSideModel":
-        h_path, stabilizer_path = _load_side_paths(side, Path(hx_path), Path(hz_path))
+        h_path_raw, stabilizer_path_raw = _load_side_paths(side, Path(hx_path), Path(hz_path))
+        h_path = _resolve_matrix_path(h_path_raw)
+        stabilizer_path = _resolve_matrix_path(stabilizer_path_raw)
+        build_row_space, _compute_syndrome, _in_row_space, read_mtx, row_sets_to_masks = _qtanner_helpers()
         h_sets, n_h = read_mtx(str(h_path))
         stabilizer_sets, n_stab = read_mtx(str(stabilizer_path))
         if int(n_h) != int(n_stab):
@@ -288,6 +319,7 @@ class GrossSideModel:
         return bool(np.array_equal(predicted.astype(np.uint8), np.asarray(observed, dtype=np.uint8)))
 
     def logical_status(self, true_total: np.ndarray, correction: np.ndarray) -> str:
+        _build_row_space, compute_syndrome, in_row_space, _read_mtx, _row_sets_to_masks = _qtanner_helpers()
         residual = np.asarray(true_total, dtype=np.uint8).reshape(-1) ^ np.asarray(correction, dtype=np.uint8).reshape(-1)
         if residual.size != self.n_data:
             raise ValueError("correction length mismatch")

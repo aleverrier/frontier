@@ -12,10 +12,10 @@ REPO_ROOT = Path(__file__).resolve().parent
 UPSTREAM_REPO_URL = "https://github.com/gongaa/SlidingWindowDecoder.git"
 UPSTREAM_COMMIT = "05d6b1f478f2b044effdc7477278647dfb99db07"
 DEFAULT_UPSTREAM_REPO_DIR = REPO_ROOT / "external" / "SlidingWindowDecoder"
-DEFAULT_MPLCONFIGDIR = Path(os.environ.get("TMPDIR", "/tmp")) / "mplcache_betterbeam"
-LOCAL_PATCH_VERSION = "better_beam_sliding_window_patch_v10"
-BUILD_SENTINEL = ".better_beam_build.json"
-PATCH_SENTINEL = ".better_beam_patch.json"
+DEFAULT_MPLCONFIGDIR = Path(os.environ.get("TMPDIR", "/tmp")) / "frontier_mplconfig"
+LOCAL_PATCH_VERSION = "frontier_sliding_window_patch_v10"
+BUILD_SENTINEL = ".frontier_build.json"
+PATCH_SENTINEL = ".frontier_patch.json"
 
 
 if "MPLCONFIGDIR" not in os.environ:
@@ -300,7 +300,7 @@ from .osd_window import osd_window
 
 try:
     from .bp4_osd import bp4_osd
-except Exception:  # optional in better-beam local build
+except Exception:  # optional local build dependency
     bp4_osd = None
 
 from . import __file__

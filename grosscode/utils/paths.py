@@ -8,12 +8,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RESULTS_ROOT = REPO_ROOT / "results"
-DEFAULT_QTANNER_ROOT = Path(
-    os.environ.get("GROSSCODE_QTANNER_ROOT", os.environ.get("QTANNER_ROOT", "/Users/anthony/research/qtanner-ssf"))
-)
 
 
-def resolve_cache_root(root: str | Path | None = None, *, app_name: str = "better_beam") -> Path:
+def resolve_cache_root(root: str | Path | None = None, *, app_name: str = "frontier") -> Path:
     if root is not None:
         path = Path(root).expanduser()
     else:
@@ -33,16 +30,24 @@ def resolve_cache_root(root: str | Path | None = None, *, app_name: str = "bette
 
 
 def resolve_qtanner_root(root: str | Path | None = None) -> Path:
-    path = Path(root) if root is not None else DEFAULT_QTANNER_ROOT
+    configured_root = root or os.environ.get("GROSSCODE_QTANNER_ROOT") or os.environ.get("QTANNER_ROOT")
+    if configured_root is None:
+        raise FileNotFoundError(
+            "Gross-code matrix/circuit assets are not configured. Install the optional public "
+            "Gross benchmark assets or set GROSSCODE_QTANNER_ROOT/QTANNER_ROOT in your environment."
+        )
+    path = Path(configured_root).expanduser()
     if not path.exists():
         raise FileNotFoundError(
-            f"qtanner root not found: {path}. Set GROSSCODE_QTANNER_ROOT or QTANNER_ROOT to the public gross-code repo."
+            f"Gross-code matrix/circuit asset root not found: {path}. "
+            "Install the optional public Gross benchmark assets or set "
+            "GROSSCODE_QTANNER_ROOT/QTANNER_ROOT in your environment."
         )
     return path
 
 
 def ensure_mplconfigdir() -> Path:
-    mpl_dir = Path(tempfile.gettempdir()) / "mplcache_grosscode"
+    mpl_dir = Path(tempfile.gettempdir()) / "frontier_mplconfig"
     mpl_dir.mkdir(parents=True, exist_ok=True)
     os.environ.setdefault("MPLCONFIGDIR", str(mpl_dir))
     return mpl_dir

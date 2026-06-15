@@ -19,7 +19,7 @@ import numpy as np
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
-os.environ.setdefault("MPLCONFIGDIR", "/tmp/mplcache_betterbeam")
+os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ.get("TMPDIR", "/tmp")) / "frontier_mplconfig"))
 
 from tools import frontier_decoder as frontier
 from tools import gross144_dem_x_progressive_report as dem_report
