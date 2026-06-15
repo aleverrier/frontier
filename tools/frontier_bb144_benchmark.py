@@ -19,7 +19,7 @@ _MPLCONFIGDIR = _REPO_ROOT / "results" / "mplconfig"
 _MPLCONFIGDIR.mkdir(parents=True, exist_ok=True)
 os.environ.setdefault("MPLCONFIGDIR", str(_MPLCONFIGDIR))
 
-from tools import frontier_fast_decoder as fast
+from tools import frontier_decoder as frontier
 from tools.gross144_dem_x_progressive_report import _load_dem_family
 
 
@@ -94,14 +94,14 @@ def _build_models(*, backend: str, p_location: float, column_order: str, scope: 
         scope=str(scope),
         column_order=str(column_order),
     )
-    model = fast.FrontierFastModel(
+    model = frontier.FrontierModel(
         columns=family.columns,
         layout=family.layout,
         num_detectors=int(family.matrix_rows),
         num_observables=int(family.logical_rows),
     )
-    forward = fast._coerce_model(model, syndrome_int=int(syndrome), direction="forward")
-    backward = fast._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
+    forward = frontier._coerce_model(model, syndrome_int=int(syndrome), direction="forward")
+    backward = frontier._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
     return family, forward, backward
 
 
@@ -124,8 +124,8 @@ def _mean_stats_value(payloads: tuple[dict[str, object], ...], key: str) -> floa
 def _decode_payloads(
     *,
     mode: str,
-    forward: fast.FrontierFastModel,
-    backward: fast.FrontierFastModel,
+    forward: frontier.FrontierModel,
+    backward: frontier.FrontierModel,
     syndromes: tuple[int, ...],
     K: int,
     Delta: float,
@@ -134,7 +134,7 @@ def _decode_payloads(
     int_metric_scale: int,
 ) -> tuple[dict[str, object], ...]:
     if str(mode) == "replay":
-        return fast._decode_frontier_fast_native_binary_committee_many_replay_payloads(
+        return frontier._decode_frontier_native_binary_committee_many_replay_payloads(
             forward,
             backward,
             syndromes,
@@ -145,7 +145,7 @@ def _decode_payloads(
             int_metric_scale=int(int_metric_scale),
             _assume_compatible=True,
         )
-    return fast._decode_frontier_fast_native_binary_committee_many_payloads(
+    return frontier._decode_frontier_native_binary_committee_many_payloads(
         forward,
         backward,
         syndromes,

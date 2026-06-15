@@ -1,4 +1,4 @@
-"""Gross-code DEM helpers vendored for the FrontierFast export.
+"""Gross-code DEM helpers vendored for the Frontier export.
 
 This package intentionally keeps its top-level import small. Import concrete
 submodules such as ``grosscode.dem.builder`` directly when needed.

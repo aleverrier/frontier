@@ -18,9 +18,9 @@ if __package__ in {None, ""}:
 from tools import steane_progressive_decoder as progressive
 
 try:
-    import frontier_fast_native as _frontier_fast_native
+    import frontier_native as _frontier_native
 except Exception:  # pragma: no cover - optional native extension may be absent.
-    _frontier_fast_native = None
+    _frontier_native = None
 
 _SCORE_ALPHA = 0.8
 _NATIVE_MAX_DETECTOR_LIMBS = 64
@@ -57,7 +57,7 @@ def _score_mode_for_alpha(score_alpha: float) -> str:
 
 
 @dataclass(frozen=True, slots=True)
-class FrontierFastModel:
+class FrontierModel:
     columns: tuple[progressive.ProgressiveColumn, ...]
     layout: progressive.ProgressiveFrontierLayout
     num_detectors: int
@@ -67,7 +67,7 @@ class FrontierFastModel:
 
 
 @dataclass(frozen=True, slots=True)
-class FrontierFastStats:
+class FrontierStats:
     processed_columns: int
     transition_evals: int
     max_pre_prune_state_count: int
@@ -82,7 +82,7 @@ class FrontierFastStats:
 
 
 @dataclass(frozen=True, slots=True)
-class FrontierFastCommitteeMember:
+class FrontierCommitteeMember:
     direction: str
     status: str
     logical_hat: int | None
@@ -92,16 +92,16 @@ class FrontierFastCommitteeMember:
 
 
 @dataclass(frozen=True, slots=True)
-class FrontierFastResult:
+class FrontierResult:
     status: str
     logical_hat: int | None
     log_evidence: float
     terminal_log_masses: dict[int, float]
-    stats: FrontierFastStats
+    stats: FrontierStats
     direction: str | None = None
     engine: str = ""
     terminal_top_log_mass_gap: float = float("nan")
-    committee_members: tuple[FrontierFastCommitteeMember, ...] = tuple()
+    committee_members: tuple[FrontierCommitteeMember, ...] = tuple()
 
 
 def _logaddexp_pair(a: float, b: float) -> float:
@@ -158,7 +158,7 @@ def _looks_like_factor_transition(value: object) -> bool:
 
 
 def _coerce_columns(problem_or_model: object) -> tuple[progressive.ProgressiveColumn, ...]:
-    if isinstance(problem_or_model, FrontierFastModel):
+    if isinstance(problem_or_model, FrontierModel):
         return tuple(problem_or_model.columns)
     model = getattr(problem_or_model, "family", problem_or_model)
     if hasattr(model, "factor_transitions"):
@@ -175,7 +175,7 @@ def _coerce_columns(problem_or_model: object) -> tuple[progressive.ProgressiveCo
             return tuple(progressive._columns_from_factor_transitions(items))
         return tuple(items)
     raise TypeError(
-        "decode_frontier_fast expects a FrontierFastModel, an object with .columns, "
+        "decode_frontier expects a FrontierModel, an object with .columns, "
         "or a sequence of ProgressiveColumn/FactorTransition objects"
     )
 
@@ -185,10 +185,10 @@ def _coerce_model(
     *,
     syndrome_int: int,
     direction: str = "forward",
-) -> FrontierFastModel:
-    if isinstance(problem_or_model, FrontierFastModel) and str(direction) == "forward":
+) -> FrontierModel:
+    if isinstance(problem_or_model, FrontierModel) and str(direction) == "forward":
         return problem_or_model
-    if isinstance(problem_or_model, FrontierFastModel) and str(direction) == "backward":
+    if isinstance(problem_or_model, FrontierModel) and str(direction) == "backward":
         backward_columns = (
             tuple(problem_or_model.backward_columns)
             if problem_or_model.backward_columns is not None
@@ -202,7 +202,7 @@ def _coerce_model(
                 num_detectors=int(problem_or_model.num_detectors),
             )
         )
-        return FrontierFastModel(
+        return FrontierModel(
             columns=tuple(backward_columns),
             layout=backward_layout,
             num_detectors=int(problem_or_model.num_detectors),
@@ -233,7 +233,7 @@ def _coerce_model(
         layout = getattr(model, "layout", None)
     if layout is None:
         layout = progressive.build_frontier_layout(list(columns), num_detectors=int(num_detectors))
-    return FrontierFastModel(
+    return FrontierModel(
         columns=tuple(columns),
         layout=layout,
         num_detectors=int(num_detectors),
@@ -271,7 +271,7 @@ def _select_keys_by_score_gap(
     return tuple(sorted((int(key) for key in survivors), key=rank, reverse=True))
 
 
-def _frontier_fast_top_posteriors(result: FrontierFastResult) -> tuple[float, float]:
+def _frontier_top_posteriors(result: FrontierResult) -> tuple[float, float]:
     if str(result.status) != "ok" or not math.isfinite(float(result.log_evidence)):
         return float("nan"), float("nan")
     posteriors = sorted(
@@ -297,8 +297,8 @@ def _terminal_gap(terminal_log_masses: Mapping[int, float]) -> float:
     return float(ranked[0] - ranked[1])
 
 
-def _empty_stats(*, started: float, processed_columns: int = 0, no_path_count: int = 1) -> FrontierFastStats:
-    return FrontierFastStats(
+def _empty_stats(*, started: float, processed_columns: int = 0, no_path_count: int = 1) -> FrontierStats:
+    return FrontierStats(
         processed_columns=int(processed_columns),
         transition_evals=0,
         max_pre_prune_state_count=0,
@@ -352,14 +352,14 @@ def _is_binary_fastpath_compatible(
 
 
 def native_binary_available() -> bool:
-    return _frontier_fast_native is not None and bool(_frontier_fast_native.is_available())
+    return _frontier_native is not None and bool(_frontier_native.is_available())
 
 
 def native_choice_available() -> bool:
-    native_module = getattr(_frontier_fast_native, "_native", None)
+    native_module = getattr(_frontier_native, "_native", None)
     return (
         native_binary_available()
-        and hasattr(_frontier_fast_native, "NativeChoiceFrontierModel")
+        and hasattr(_frontier_native, "NativeChoiceFrontierModel")
         and hasattr(native_module, "make_choice_model")
         and hasattr(native_module, "decode_choice")
     )
@@ -416,7 +416,7 @@ def _choice_row_terms(
 
 
 def _native_collect_phase_timing_enabled() -> bool:
-    return str(os.environ.get("FRONTIERFAST_NATIVE_PHASE_TIMING", "0")).strip().lower() in {
+    return str(os.environ.get("FRONTIER_NATIVE_PHASE_TIMING", "0")).strip().lower() in {
         "1",
         "true",
         "on",
@@ -425,7 +425,7 @@ def _native_collect_phase_timing_enabled() -> bool:
 
 
 def _native_force_full_key_enabled() -> bool:
-    return str(os.environ.get("FRONTIERFAST_NATIVE_FORCE_FULL_KEY", "0")).strip().lower() in {
+    return str(os.environ.get("FRONTIER_NATIVE_FORCE_FULL_KEY", "0")).strip().lower() in {
         "1",
         "true",
         "on",
@@ -434,7 +434,7 @@ def _native_force_full_key_enabled() -> bool:
 
 
 def _native_small_pattern_table_disabled() -> bool:
-    return str(os.environ.get("FRONTIERFAST_NATIVE_DISABLE_SMALL_PATTERN_TABLE", "0")).strip().lower() in {
+    return str(os.environ.get("FRONTIER_NATIVE_DISABLE_SMALL_PATTERN_TABLE", "0")).strip().lower() in {
         "1",
         "true",
         "on",
@@ -442,7 +442,7 @@ def _native_small_pattern_table_disabled() -> bool:
     }
 
 
-def _native_cache_key(model: FrontierFastModel) -> tuple[tuple[int, ...], int, int, int, int, int, int]:
+def _native_cache_key(model: FrontierModel) -> tuple[tuple[int, ...], int, int, int, int, int, int]:
     return (
         tuple(int(id(column)) for column in tuple(model.columns)),
         int(id(model.layout)),
@@ -454,7 +454,7 @@ def _native_cache_key(model: FrontierFastModel) -> tuple[tuple[int, ...], int, i
     )
 
 
-def _native_binary_model_spec(model: FrontierFastModel) -> dict[str, object] | None:
+def _native_binary_model_spec(model: FrontierModel) -> dict[str, object] | None:
     n_limbs = _detector_limb_count(int(model.num_detectors))
     n_logical_limbs = _detector_limb_count(int(model.num_observables))
     if int(n_limbs) > int(_NATIVE_MAX_DETECTOR_LIMBS):
@@ -518,7 +518,7 @@ def _native_binary_model_spec(model: FrontierFastModel) -> dict[str, object] | N
     }
 
 
-def _native_choice_model_spec(model: FrontierFastModel) -> dict[str, object] | None:
+def _native_choice_model_spec(model: FrontierModel) -> dict[str, object] | None:
     n_limbs = _detector_limb_count(int(model.num_detectors))
     n_logical_limbs = _detector_limb_count(int(model.num_observables))
     if int(n_limbs) > int(_NATIVE_MAX_DETECTOR_LIMBS):
@@ -642,7 +642,7 @@ def _is_native_choice_compatible(
     return bool(compatible)
 
 
-def _get_native_binary_model(model: FrontierFastModel) -> object:
+def _get_native_binary_model(model: FrontierModel) -> object:
     if not native_binary_available():
         raise RuntimeError("native frontier binary extension is not built")
     key = _native_cache_key(model)
@@ -652,14 +652,14 @@ def _get_native_binary_model(model: FrontierFastModel) -> object:
     spec = _native_binary_model_spec(model)
     if spec is None:
         raise ValueError("native frontier binary engine requested for an unsupported model")
-    native_model = _frontier_fast_native.NativeBinaryFrontierModel(spec)
+    native_model = _frontier_native.NativeBinaryFrontierModel(spec)
     if len(_NATIVE_MODEL_CACHE) >= 32:
         _NATIVE_MODEL_CACHE.clear()
     _NATIVE_MODEL_CACHE[key] = native_model
     return native_model
 
 
-def _get_native_choice_model(model: FrontierFastModel) -> object:
+def _get_native_choice_model(model: FrontierModel) -> object:
     if not native_choice_available():
         raise RuntimeError("native frontier choice extension is not built")
     key = _native_cache_key(model)
@@ -669,15 +669,15 @@ def _get_native_choice_model(model: FrontierFastModel) -> object:
     spec = _native_choice_model_spec(model)
     if spec is None:
         raise ValueError("native frontier choice engine requested for an unsupported model")
-    native_model = _frontier_fast_native.NativeChoiceFrontierModel(spec)
+    native_model = _frontier_native.NativeChoiceFrontierModel(spec)
     if len(_NATIVE_CHOICE_MODEL_CACHE) >= 32:
         _NATIVE_CHOICE_MODEL_CACHE.clear()
     _NATIVE_CHOICE_MODEL_CACHE[key] = native_model
     return native_model
 
 
-def _frontier_fast_stats_from_native(payload: Mapping[str, object]) -> FrontierFastStats:
-    return FrontierFastStats(
+def _frontier_stats_from_native(payload: Mapping[str, object]) -> FrontierStats:
+    return FrontierStats(
         processed_columns=int(payload.get("processed_columns", 0)),
         transition_evals=int(payload.get("transition_evals", 0)),
         max_pre_prune_state_count=int(payload.get("max_pre_prune_state_count", 0)),
@@ -692,18 +692,18 @@ def _frontier_fast_stats_from_native(payload: Mapping[str, object]) -> FrontierF
     )
 
 
-def _frontier_fast_result_from_native_payload(
+def _frontier_result_from_native_payload(
     payload: Mapping[str, object],
     *,
     direction: str | None = None,
     engine: str = "native_binary",
-) -> FrontierFastResult:
+) -> FrontierResult:
     status = str(payload.get("status", "no_path"))
     terminal_log_masses = {
         int(logical): float(log_mass)
         for logical, log_mass in dict(payload.get("terminal_log_masses", {})).items()
     }
-    return FrontierFastResult(
+    return FrontierResult(
         status=str(status),
         logical_hat=(
             None
@@ -712,14 +712,14 @@ def _frontier_fast_result_from_native_payload(
         ),
         log_evidence=float(payload.get("log_evidence", float("-inf"))),
         terminal_log_masses=dict(sorted(terminal_log_masses.items())),
-        stats=_frontier_fast_stats_from_native(dict(payload.get("stats", {}))),
+        stats=_frontier_stats_from_native(dict(payload.get("stats", {}))),
         direction=direction,
         engine=str(engine),
         terminal_top_log_mass_gap=float(payload.get("terminal_top_log_mass_gap", float("nan"))),
     )
 
 
-def _decode_frontier_fast_native_binary(
+def _decode_frontier_native_binary(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
     *,
@@ -730,7 +730,7 @@ def _decode_frontier_fast_native_binary(
     int_metric_scale: int = 1024,
     direction: str | None = None,
     _assume_compatible: bool = False,
-) -> FrontierFastResult:
+) -> FrontierResult:
     if int(K) <= 0:
         raise ValueError("K must be positive")
     if float(Delta) < 0.0:
@@ -753,10 +753,10 @@ def _decode_frontier_fast_native_binary(
         str(metric_mode),
         int(int_metric_scale),
     )
-    return _frontier_fast_result_from_native_payload(payload, direction=direction)
+    return _frontier_result_from_native_payload(payload, direction=direction)
 
 
-def _decode_frontier_fast_native_choice(
+def _decode_frontier_native_choice(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
     *,
@@ -765,7 +765,7 @@ def _decode_frontier_fast_native_choice(
     score_alpha: float = _SCORE_ALPHA,
     direction: str | None = None,
     _assume_compatible: bool = False,
-) -> FrontierFastResult:
+) -> FrontierResult:
     if int(K) <= 0:
         raise ValueError("K must be positive")
     if float(Delta) < 0.0:
@@ -784,10 +784,10 @@ def _decode_frontier_fast_native_choice(
         float(Delta),
         float(score_alpha),
     )
-    return _frontier_fast_result_from_native_payload(payload, direction=direction, engine="native_choice")
+    return _frontier_result_from_native_payload(payload, direction=direction, engine="native_choice")
 
 
-def _decode_frontier_fast_native_binary_many(
+def _decode_frontier_native_binary_many(
     problem_or_model: object,
     syndromes: Sequence[int | np.ndarray | Sequence[int]],
     *,
@@ -798,7 +798,7 @@ def _decode_frontier_fast_native_binary_many(
     int_metric_scale: int = 1024,
     direction: str | None = None,
     _assume_compatible: bool = False,
-) -> tuple[FrontierFastResult, ...]:
+) -> tuple[FrontierResult, ...]:
     if int(K) <= 0:
         raise ValueError("K must be positive")
     if float(Delta) < 0.0:
@@ -824,12 +824,12 @@ def _decode_frontier_fast_native_binary_many(
         int(int_metric_scale),
     )
     return tuple(
-        _frontier_fast_result_from_native_payload(dict(payload), direction=direction)
+        _frontier_result_from_native_payload(dict(payload), direction=direction)
         for payload in tuple(payloads)
     )
 
 
-def _decode_frontier_fast_native_binary_many_payloads(
+def _decode_frontier_native_binary_many_payloads(
     problem_or_model: object,
     syndromes: Sequence[int | np.ndarray | Sequence[int]],
     *,
@@ -868,7 +868,7 @@ def _decode_frontier_fast_native_binary_many_payloads(
     return tuple(payload for payload in tuple(payloads))
 
 
-def _decode_frontier_fast_native_choice_many_payloads(
+def _decode_frontier_native_choice_many_payloads(
     problem_or_model: object,
     syndromes: Sequence[int | np.ndarray | Sequence[int]],
     *,
@@ -900,7 +900,7 @@ def _decode_frontier_fast_native_choice_many_payloads(
     return tuple(payload for payload in tuple(payloads))
 
 
-def _decode_frontier_fast_native_choice_many(
+def _decode_frontier_native_choice_many(
     problem_or_model: object,
     syndromes: Sequence[int | np.ndarray | Sequence[int]],
     *,
@@ -909,8 +909,8 @@ def _decode_frontier_fast_native_choice_many(
     score_alpha: float = _SCORE_ALPHA,
     direction: str | None = None,
     _assume_compatible: bool = False,
-) -> tuple[FrontierFastResult, ...]:
-    payloads = _decode_frontier_fast_native_choice_many_payloads(
+) -> tuple[FrontierResult, ...]:
+    payloads = _decode_frontier_native_choice_many_payloads(
         problem_or_model,
         syndromes,
         K=int(K),
@@ -919,14 +919,14 @@ def _decode_frontier_fast_native_choice_many(
         _assume_compatible=bool(_assume_compatible),
     )
     return tuple(
-        _frontier_fast_result_from_native_payload(dict(payload), direction=direction, engine="native_choice")
+        _frontier_result_from_native_payload(dict(payload), direction=direction, engine="native_choice")
         for payload in tuple(payloads)
     )
 
 
-def _decode_frontier_fast_native_binary_committee_many_payloads(
-    forward_model: FrontierFastModel,
-    backward_model: FrontierFastModel,
+def _decode_frontier_native_binary_committee_many_payloads(
+    forward_model: FrontierModel,
+    backward_model: FrontierModel,
     syndromes: Sequence[int | np.ndarray | Sequence[int]],
     *,
     K: int,
@@ -975,9 +975,9 @@ def _decode_frontier_fast_native_binary_committee_many_payloads(
     return tuple(payload for payload in tuple(payloads))
 
 
-def _decode_frontier_fast_native_binary_committee_many_replay_payloads(
-    forward_model: FrontierFastModel,
-    backward_model: FrontierFastModel,
+def _decode_frontier_native_binary_committee_many_replay_payloads(
+    forward_model: FrontierModel,
+    backward_model: FrontierModel,
     syndromes: Sequence[int | np.ndarray | Sequence[int]],
     *,
     K: int,
@@ -1037,11 +1037,11 @@ def _progressive_terminal_log_masses(result: progressive.ProgressiveDecodeResult
     return {}
 
 
-def _frontier_fast_stats_from_progressive(
+def _frontier_stats_from_progressive(
     result: progressive.ProgressiveDecodeResult,
     *,
     started: float,
-) -> FrontierFastStats:
+) -> FrontierStats:
     expanded_counts = tuple(int(value) for value in tuple(result.expanded_transition_count_by_column))
     candidate_counts = tuple(int(value) for value in tuple(result.beam_candidate_state_count_by_column))
     state_counts = tuple(int(value) for value in tuple(result.state_count_by_column))
@@ -1049,7 +1049,7 @@ def _frontier_fast_stats_from_progressive(
     max_pre = int(getattr(result, "max_pre_prune_state_count", 0) or 0)
     if int(max_pre) <= 0 and candidate_counts:
         max_pre = max(candidate_counts)
-    return FrontierFastStats(
+    return FrontierStats(
         processed_columns=int(len(expanded_counts)),
         transition_evals=int(sum(expanded_counts)),
         max_pre_prune_state_count=int(max_pre),
@@ -1064,31 +1064,31 @@ def _frontier_fast_stats_from_progressive(
     )
 
 
-def _frontier_fast_result_from_progressive(
+def _frontier_result_from_progressive(
     result: progressive.ProgressiveDecodeResult,
     *,
     started: float,
     direction: str | None,
     engine: str,
-) -> FrontierFastResult:
+) -> FrontierResult:
     status = "ok" if str(result.status) == "ok" else "no_path"
     terminal_log_masses = _progressive_terminal_log_masses(result) if status == "ok" else {}
     terminal_gap = float(getattr(result, "terminal_top_log_mass_gap", float("nan")))
     if not math.isfinite(float(terminal_gap)) and terminal_log_masses:
         terminal_gap = _terminal_gap(terminal_log_masses)
-    return FrontierFastResult(
+    return FrontierResult(
         status=str(status),
         logical_hat=(int(result.logical_hat) if status == "ok" else None),
         log_evidence=(float(result.log_evidence) if status == "ok" else float("-inf")),
         terminal_log_masses=dict(sorted(terminal_log_masses.items())),
-        stats=_frontier_fast_stats_from_progressive(result, started=float(started)),
+        stats=_frontier_stats_from_progressive(result, started=float(started)),
         direction=direction,
         engine=str(engine),
         terminal_top_log_mass_gap=float(terminal_gap),
     )
 
 
-def _decode_frontier_fast_binary_adapter(
+def _decode_frontier_binary_adapter(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
     *,
@@ -1097,7 +1097,7 @@ def _decode_frontier_fast_binary_adapter(
     score_alpha: float = _SCORE_ALPHA,
     direction: str | None = None,
     _assume_compatible: bool = False,
-) -> FrontierFastResult:
+) -> FrontierResult:
     started = time.perf_counter()
     if int(K) <= 0:
         raise ValueError("K must be positive")
@@ -1142,7 +1142,7 @@ def _decode_frontier_fast_binary_adapter(
             else:
                 os.environ[str(name)] = str(old_value)
 
-    return _frontier_fast_result_from_progressive(
+    return _frontier_result_from_progressive(
         result,
         started=float(started),
         direction=direction,
@@ -1150,7 +1150,7 @@ def _decode_frontier_fast_binary_adapter(
     )
 
 
-def _decode_frontier_fast_python_reference(
+def _decode_frontier_python_reference(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
     *,
@@ -1158,7 +1158,7 @@ def _decode_frontier_fast_python_reference(
     Delta: float,
     score_alpha: float = _SCORE_ALPHA,
     direction: str | None = None,
-) -> FrontierFastResult:
+) -> FrontierResult:
     """Decode with the pure Python frontier reference implementation.
 
     V1 uses packed integer state keys, merges by posterior log-mass, and prunes
@@ -1174,7 +1174,7 @@ def _decode_frontier_fast_python_reference(
     columns = tuple(model.columns)
     if not columns:
         stats = _empty_stats(started=started, no_path_count=0)
-        return FrontierFastResult(
+        return FrontierResult(
             status="ok" if int(syndrome_int) == 0 else "no_path",
             logical_hat=0 if int(syndrome_int) == 0 else None,
             log_evidence=0.0 if int(syndrome_int) == 0 else float("-inf"),
@@ -1247,7 +1247,7 @@ def _decode_frontier_fast_python_reference(
         max_pre_prune = max(int(max_pre_prune), int(candidate_count))
         sum_pre_prune += int(candidate_count)
         if not next_log_mass:
-            stats = FrontierFastStats(
+            stats = FrontierStats(
                 processed_columns=int(processed_columns),
                 transition_evals=int(transition_evals),
                 max_pre_prune_state_count=int(max_pre_prune),
@@ -1260,7 +1260,7 @@ def _decode_frontier_fast_python_reference(
                 prune_time_s=float(prune_time_s),
                 total_time_s=float(time.perf_counter() - started),
             )
-            return FrontierFastResult(
+            return FrontierResult(
                 status="no_path",
                 logical_hat=None,
                 log_evidence=float("-inf"),
@@ -1324,7 +1324,7 @@ def _decode_frontier_fast_python_reference(
         log_evidence = _logaddexp_many(terminal_log_masses.values())
         no_path_count = 0
 
-    stats = FrontierFastStats(
+    stats = FrontierStats(
         processed_columns=int(processed_columns),
         transition_evals=int(transition_evals),
         max_pre_prune_state_count=int(max_pre_prune),
@@ -1337,7 +1337,7 @@ def _decode_frontier_fast_python_reference(
         prune_time_s=float(prune_time_s),
         total_time_s=float(time.perf_counter() - started),
     )
-    return FrontierFastResult(
+    return FrontierResult(
         status=str(status),
         logical_hat=logical_hat,
         log_evidence=float(log_evidence),
@@ -1349,7 +1349,7 @@ def _decode_frontier_fast_python_reference(
     )
 
 
-def decode_frontier_fast(
+def decode_frontier(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
     *,
@@ -1359,7 +1359,7 @@ def decode_frontier_fast(
     metric_mode: str = "logsumexp_float",
     int_metric_scale: int = 1024,
     _engine: str = "auto",
-) -> FrontierFastResult:
+) -> FrontierResult:
     """Decode with frontier.
 
     `_engine` is a private test hook: `auto` dispatches strict binary models to
@@ -1386,7 +1386,7 @@ def decode_frontier_fast(
     model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_int))
 
     if engine == "python":
-        return _decode_frontier_fast_python_reference(
+        return _decode_frontier_python_reference(
             model,
             int(syndrome_int),
             K=int(K),
@@ -1399,7 +1399,7 @@ def decode_frontier_fast(
             raise RuntimeError("native frontier binary extension is not built")
         if not bool(native_compatible):
             raise ValueError("native frontier binary engine requested for an unsupported model")
-        return _decode_frontier_fast_native_binary(
+        return _decode_frontier_native_binary(
             model,
             int(syndrome_int),
             K=int(K),
@@ -1419,7 +1419,7 @@ def decode_frontier_fast(
             raise RuntimeError("native frontier choice extension is not built")
         if not bool(choice_compatible):
             raise ValueError("native frontier choice engine requested for an unsupported model")
-        return _decode_frontier_fast_native_choice(
+        return _decode_frontier_native_choice(
             model,
             int(syndrome_int),
             K=int(K),
@@ -1428,7 +1428,7 @@ def decode_frontier_fast(
             _assume_compatible=True,
         )
     if engine == "auto" and bool(native_compatible):
-        return _decode_frontier_fast_native_binary(
+        return _decode_frontier_native_binary(
             model,
             int(syndrome_int),
             K=int(K),
@@ -1444,7 +1444,7 @@ def decode_frontier_fast(
     if engine == "binary":
         if not bool(compatible):
             raise ValueError("binary frontier engine requested for an unsupported model")
-        return _decode_frontier_fast_binary_adapter(
+        return _decode_frontier_binary_adapter(
             model,
             int(syndrome_int),
             K=int(K),
@@ -1453,7 +1453,7 @@ def decode_frontier_fast(
             _assume_compatible=True,
         )
     if bool(compatible):
-        return _decode_frontier_fast_binary_adapter(
+        return _decode_frontier_binary_adapter(
             model,
             int(syndrome_int),
             K=int(K),
@@ -1464,7 +1464,7 @@ def decode_frontier_fast(
     if engine == "auto":
         choice_compatible = _is_native_choice_compatible(model, syndrome=int(syndrome_int))
         if bool(choice_compatible):
-            return _decode_frontier_fast_native_choice(
+            return _decode_frontier_native_choice(
                 model,
                 int(syndrome_int),
                 K=int(K),
@@ -1472,7 +1472,7 @@ def decode_frontier_fast(
                 score_alpha=float(score_alpha),
                 _assume_compatible=True,
             )
-    return _decode_frontier_fast_python_reference(
+    return _decode_frontier_python_reference(
         model,
         int(syndrome_int),
         K=int(K),
@@ -1481,9 +1481,9 @@ def decode_frontier_fast(
     )
 
 
-def _committee_member_summary(*, direction: str, result: FrontierFastResult) -> FrontierFastCommitteeMember:
-    top1, _top2 = _frontier_fast_top_posteriors(result)
-    return FrontierFastCommitteeMember(
+def _committee_member_summary(*, direction: str, result: FrontierResult) -> FrontierCommitteeMember:
+    top1, _top2 = _frontier_top_posteriors(result)
+    return FrontierCommitteeMember(
         direction=str(direction),
         status=str(result.status),
         logical_hat=result.logical_hat,
@@ -1495,7 +1495,7 @@ def _committee_member_summary(*, direction: str, result: FrontierFastResult) -> 
 
 def _committee_selection_key(
     *,
-    result: FrontierFastResult,
+    result: FrontierResult,
     direction: str,
     preferred_direction: str = "forward",
 ) -> tuple[float, ...]:
@@ -1514,7 +1514,7 @@ def _committee_selection_key(
     terminal_gap = float(result.terminal_top_log_mass_gap)
     if math.isnan(float(terminal_gap)):
         terminal_gap = float("-inf")
-    top1_posterior, _top2_posterior = _frontier_fast_top_posteriors(result)
+    top1_posterior, _top2_posterior = _frontier_top_posteriors(result)
     top1_key = float(top1_posterior) if math.isfinite(float(top1_posterior)) else float("-inf")
     preferred_bonus = 1.0 if str(direction) == str(preferred_direction) else 0.0
     return (
@@ -1527,7 +1527,7 @@ def _committee_selection_key(
     )
 
 
-def decode_frontier_fast_committee(
+def decode_frontier_committee(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
     *,
@@ -1537,12 +1537,12 @@ def decode_frontier_fast_committee(
     metric_mode: str = "logsumexp_float",
     int_metric_scale: int = 1024,
     _engine: str = "auto",
-) -> FrontierFastResult:
+) -> FrontierResult:
     syndrome_int = _syndrome_to_int(syndrome)
     forward_model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_int), direction="forward")
     backward_model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_int), direction="backward")
     forward_result = replace(
-        decode_frontier_fast(
+        decode_frontier(
             forward_model,
             int(syndrome_int),
             K=int(K),
@@ -1555,7 +1555,7 @@ def decode_frontier_fast_committee(
         direction="forward",
     )
     backward_result = replace(
-        decode_frontier_fast(
+        decode_frontier(
             backward_model,
             int(syndrome_int),
             K=int(K),
@@ -1620,10 +1620,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--Delta", "--delta", dest="Delta", type=float, default=8.0)
     parser.add_argument("--shots", type=int, default=20)
     args = parser.parse_args(argv)
-    results: list[FrontierFastResult] = []
+    results: list[FrontierResult] = []
     for shot in range(int(args.shots)):
         syndrome = int(shot & 1)
-        results.append(decode_frontier_fast(_smoke_columns(), syndrome, K=int(args.K), Delta=float(args.Delta)))
+        results.append(decode_frontier(_smoke_columns(), syndrome, K=int(args.K), Delta=float(args.Delta)))
     ok_results = [result for result in results if result.status == "ok"]
     mean_transition_evals = (
         float(sum(result.stats.transition_evals for result in results)) / float(max(1, len(results)))

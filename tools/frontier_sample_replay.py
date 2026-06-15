@@ -21,7 +21,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/mplcache_betterbeam")
 
-from tools import frontier_fast_decoder as fast
+from tools import frontier_decoder as frontier
 from tools import gross144_dem_x_progressive_report as dem_report
 
 
@@ -201,18 +201,18 @@ class SampleRow:
 
 @dataclass(frozen=True, slots=True)
 class DecodeBundle:
-    selected: fast.FrontierFastResult
-    forward: fast.FrontierFastResult | None
-    backward: fast.FrontierFastResult | None
+    selected: frontier.FrontierResult
+    forward: frontier.FrontierResult | None
+    backward: frontier.FrontierResult | None
     selected_direction: str
     transition_evals_total: int
     forward_engine: str = ""
     backward_engine: str = ""
     selected_K: int = 0
     selected_Delta: float = float("nan")
-    primary_selected: fast.FrontierFastResult | None = None
-    primary_forward: fast.FrontierFastResult | None = None
-    primary_backward: fast.FrontierFastResult | None = None
+    primary_selected: frontier.FrontierResult | None = None
+    primary_forward: frontier.FrontierResult | None = None
+    primary_backward: frontier.FrontierResult | None = None
     primary_selected_direction: str = ""
     primary_transition_evals_total: int = 0
     committee_disagreed: bool = False
@@ -290,7 +290,7 @@ def _iter_set_bits(mask: int) -> Iterable[int]:
 
 
 def _pressure_active_width(
-    model: fast.FrontierFastModel,
+    model: frontier.FrontierModel,
     *,
     syndrome: int,
     beta: float,
@@ -308,7 +308,7 @@ def _pressure_active_width(
 
 
 def _pressure_candidate_gate(
-    model: fast.FrontierFastModel,
+    model: frontier.FrontierModel,
     *,
     syndrome: int,
     beta: float,
@@ -351,8 +351,8 @@ def _pressure_candidate_gate(
 
 def _direction_pressure(
     *,
-    model: fast.FrontierFastModel,
-    backward_model: fast.FrontierFastModel | None,
+    model: frontier.FrontierModel,
+    backward_model: frontier.FrontierModel | None,
     syndrome: int,
     estimator: str,
     beta: float,
@@ -368,7 +368,7 @@ def _direction_pressure(
             candidate_gate=str(candidate_gate),
         )
     if backward_model is None:
-        backward_model = fast._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
+        backward_model = frontier._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
     if estimator_key == "active_width":
         scorer = _pressure_active_width
         return DirectionPressure(
@@ -543,8 +543,8 @@ def _load_family_pair(task: Mapping[str, object]):
     return forward_family, backward_family
 
 
-def _make_model(forward_family, backward_family) -> fast.FrontierFastModel:
-    return fast.FrontierFastModel(
+def _make_model(forward_family, backward_family) -> frontier.FrontierModel:
+    return frontier.FrontierModel(
         columns=tuple(forward_family.columns),
         layout=forward_family.layout,
         num_detectors=int(forward_family.matrix_rows),
@@ -554,7 +554,7 @@ def _make_model(forward_family, backward_family) -> fast.FrontierFastModel:
     )
 
 
-def _committee_outcome(result: fast.FrontierFastResult | None) -> tuple[str, int | None]:
+def _committee_outcome(result: frontier.FrontierResult | None) -> tuple[str, int | None]:
     if result is None:
         return ("missing", None)
     logical = None if result.logical_hat is None else int(result.logical_hat)
@@ -562,15 +562,15 @@ def _committee_outcome(result: fast.FrontierFastResult | None) -> tuple[str, int
 
 
 def _committee_disagreed(
-    forward_result: fast.FrontierFastResult | None,
-    backward_result: fast.FrontierFastResult | None,
+    forward_result: frontier.FrontierResult | None,
+    backward_result: frontier.FrontierResult | None,
 ) -> bool:
     if forward_result is None or backward_result is None:
         return False
     return _committee_outcome(forward_result) != _committee_outcome(backward_result)
 
 
-def _primary_or_selected(bundle: DecodeBundle) -> fast.FrontierFastResult:
+def _primary_or_selected(bundle: DecodeBundle) -> frontier.FrontierResult:
     return bundle.primary_selected if bundle.primary_selected is not None else bundle.selected
 
 
@@ -615,7 +615,7 @@ def _escalated_bundle(
 
 def _select_committee(
     *,
-    model: fast.FrontierFastModel,
+    model: frontier.FrontierModel,
     syndrome: int,
     K: int,
     Delta: float,
@@ -624,9 +624,9 @@ def _select_committee(
     metric_mode: str = "logsumexp_float",
     int_metric_scale: int = 1024,
 ) -> DecodeBundle:
-    forward_model = fast._coerce_model(model, syndrome_int=int(syndrome), direction="forward")
-    backward_model = fast._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
-    forward_result = fast.decode_frontier_fast(
+    forward_model = frontier._coerce_model(model, syndrome_int=int(syndrome), direction="forward")
+    backward_model = frontier._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
+    forward_result = frontier.decode_frontier(
         forward_model,
         int(syndrome),
         K=int(K),
@@ -636,7 +636,7 @@ def _select_committee(
         int_metric_scale=int(int_metric_scale),
         _engine=str(engine),
     )
-    backward_result = fast.decode_frontier_fast(
+    backward_result = frontier.decode_frontier(
         backward_model,
         int(syndrome),
         K=int(K),
@@ -648,7 +648,7 @@ def _select_committee(
     )
     selected_direction, selected = max(
         (("forward", forward_result), ("backward", backward_result)),
-        key=lambda item: fast._committee_selection_key(
+        key=lambda item: frontier._committee_selection_key(
             result=item[1],
             direction=str(item[0]),
             preferred_direction="forward",
@@ -677,15 +677,15 @@ def _select_committee(
 
 
 def _bundle_from_committee_results(
-    forward_result: fast.FrontierFastResult,
-    backward_result: fast.FrontierFastResult,
+    forward_result: frontier.FrontierResult,
+    backward_result: frontier.FrontierResult,
     *,
     K: int,
     Delta: float,
 ) -> DecodeBundle:
     selected_direction, selected = max(
         (("forward", forward_result), ("backward", backward_result)),
-        key=lambda item: fast._committee_selection_key(
+        key=lambda item: frontier._committee_selection_key(
             result=item[1],
             direction=str(item[0]),
             preferred_direction="forward",
@@ -784,15 +784,15 @@ def _bundle_from_native_committee_payloads(
             preferred_direction="forward",
         ),
     )
-    forward_result = fast._frontier_fast_result_from_native_payload(
+    forward_result = frontier._frontier_result_from_native_payload(
         dict(forward_payload),
         direction="forward",
     )
-    backward_result = fast._frontier_fast_result_from_native_payload(
+    backward_result = frontier._frontier_result_from_native_payload(
         dict(backward_payload),
         direction="backward",
     )
-    selected = fast._frontier_fast_result_from_native_payload(
+    selected = frontier._frontier_result_from_native_payload(
         dict(selected_payload),
         direction=str(selected_direction),
     )
@@ -826,7 +826,7 @@ def _bundle_from_native_selected_committee_payload(
     Delta: float,
 ) -> DecodeBundle:
     selected_direction = str(payload.get("selected_direction", "forward"))
-    selected = fast._frontier_fast_result_from_native_payload(
+    selected = frontier._frontier_result_from_native_payload(
         dict(payload),
         direction=str(selected_direction),
     )
@@ -849,7 +849,7 @@ def _bundle_from_native_selected_committee_payload(
 
 def _decode_many_native_replay_payloads(
     *,
-    model: fast.FrontierFastModel,
+    model: frontier.FrontierModel,
     samples: Sequence[SampleRow],
     decoder_mode: str,
     direction_mode: str = "",
@@ -861,14 +861,14 @@ def _decode_many_native_replay_payloads(
     int_metric_scale: int = 1024,
     escalate_on_committee_disagreement: bool = False,
 ) -> tuple[dict[str, object], ...] | None:
-    if str(os.environ.get("FRONTIERFAST_SAMPLE_REPLAY_DISABLE_FLAT_NATIVE_REPLAY", "")).strip().lower() in {
+    if str(os.environ.get("FRONTIER_SAMPLE_REPLAY_DISABLE_FLAT_NATIVE_REPLAY", "")).strip().lower() in {
         "1",
         "true",
         "on",
         "yes",
     }:
         return None
-    if str(engine) not in {"auto", "native_binary"} or not fast.native_binary_available():
+    if str(engine) not in {"auto", "native_binary"} or not frontier.native_binary_available():
         return None
     if str(decoder_mode) != "bidirectional_committee" or bool(escalate_on_committee_disagreement):
         return None
@@ -877,13 +877,13 @@ def _decode_many_native_replay_payloads(
         return tuple()
     syndromes = tuple(int(sample.syndrome) for sample in sample_tuple)
     try:
-        forward_model = fast._coerce_model(model, syndrome_int=int(syndromes[0]), direction="forward")
-        backward_model = fast._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
-        if not fast._is_native_binary_compatible(forward_model, syndrome=int(syndromes[0])):
+        forward_model = frontier._coerce_model(model, syndrome_int=int(syndromes[0]), direction="forward")
+        backward_model = frontier._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
+        if not frontier._is_native_binary_compatible(forward_model, syndrome=int(syndromes[0])):
             return None
-        if not fast._is_native_binary_compatible(backward_model, syndrome=int(syndromes[0])):
+        if not frontier._is_native_binary_compatible(backward_model, syndrome=int(syndromes[0])):
             return None
-        return fast._decode_frontier_fast_native_binary_committee_many_replay_payloads(
+        return frontier._decode_frontier_native_binary_committee_many_replay_payloads(
             forward_model,
             backward_model,
             syndromes,
@@ -1061,7 +1061,7 @@ def _row_from_native_replay_payload(
 
 def _decode_one(
     *,
-    model: fast.FrontierFastModel,
+    model: frontier.FrontierModel,
     syndrome: int,
     decoder_mode: str,
     K: int,
@@ -1082,7 +1082,7 @@ def _decode_one(
         raise ValueError("this export supports only forward, backward, and bidirectional_committee modes")
     backward_pressure_model = None
     if str(pressure_estimator) != "none":
-        backward_pressure_model = fast._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
+        backward_pressure_model = frontier._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
     pressure = _direction_pressure(
         model=model,
         backward_model=backward_pressure_model,
@@ -1123,8 +1123,8 @@ def _decode_one(
             )
         return _copy_pressure(primary, pressure)
     if str(decoder_mode) == "backward":
-        backward_model = fast._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
-        result = fast.decode_frontier_fast(
+        backward_model = frontier._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
+        result = frontier.decode_frontier(
             backward_model,
             int(syndrome),
             K=int(K),
@@ -1151,7 +1151,7 @@ def _decode_one(
             ),
             pressure,
         )
-    result = fast.decode_frontier_fast(
+    result = frontier.decode_frontier(
         model,
         int(syndrome),
         K=int(K),
@@ -1182,7 +1182,7 @@ def _decode_one(
 
 def _decode_many_native_bundles(
     *,
-    model: fast.FrontierFastModel,
+    model: frontier.FrontierModel,
     samples: Sequence[SampleRow],
     decoder_mode: str,
     K: int,
@@ -1201,7 +1201,7 @@ def _decode_many_native_bundles(
 ) -> tuple[DecodeBundle, ...] | None:
     if str(decoder_mode) not in {"forward", "backward", "bidirectional_committee"}:
         raise ValueError("this export supports only forward, backward, and bidirectional_committee modes")
-    if str(engine) not in {"auto", "native_binary"} or not fast.native_binary_available():
+    if str(engine) not in {"auto", "native_binary"} or not frontier.native_binary_available():
         return None
     sample_tuple = tuple(samples)
     if not sample_tuple:
@@ -1209,11 +1209,11 @@ def _decode_many_native_bundles(
     syndromes = tuple(int(sample.syndrome) for sample in sample_tuple)
     try:
         if str(decoder_mode) == "bidirectional_committee":
-            forward_model = fast._coerce_model(model, syndrome_int=int(syndromes[0]), direction="forward")
-            backward_model = fast._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
-            if not fast._is_native_binary_compatible(forward_model, syndrome=int(syndromes[0])):
+            forward_model = frontier._coerce_model(model, syndrome_int=int(syndromes[0]), direction="forward")
+            backward_model = frontier._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
+            if not frontier._is_native_binary_compatible(forward_model, syndrome=int(syndromes[0])):
                 return None
-            if not fast._is_native_binary_compatible(backward_model, syndrome=int(syndromes[0])):
+            if not frontier._is_native_binary_compatible(backward_model, syndrome=int(syndromes[0])):
                 return None
             pressures = tuple(
                 _direction_pressure(
@@ -1230,7 +1230,7 @@ def _decode_many_native_bundles(
             has_pressure = str(pressure_estimator) != "none"
             if not bool(escalate_on_committee_disagreement) and not bool(has_pressure):
                 try:
-                    selected_payloads = fast._decode_frontier_fast_native_binary_committee_many_payloads(
+                    selected_payloads = frontier._decode_frontier_native_binary_committee_many_payloads(
                         forward_model,
                         backward_model,
                         syndromes,
@@ -1252,7 +1252,7 @@ def _decode_many_native_bundles(
                     )
                 except (AttributeError, RuntimeError):
                     pass
-            forward_payloads = fast._decode_frontier_fast_native_binary_many_payloads(
+            forward_payloads = frontier._decode_frontier_native_binary_many_payloads(
                 forward_model,
                 syndromes,
                 K=int(K),
@@ -1262,7 +1262,7 @@ def _decode_many_native_bundles(
                 int_metric_scale=int(int_metric_scale),
                 _assume_compatible=True,
             )
-            backward_payloads = fast._decode_frontier_fast_native_binary_many_payloads(
+            backward_payloads = frontier._decode_frontier_native_binary_many_payloads(
                 backward_model,
                 syndromes,
                 K=int(K),
@@ -1295,7 +1295,7 @@ def _decode_many_native_bundles(
                 return primary_bundles
             escalated_syndromes = tuple(int(syndromes[index]) for index in escalation_indices)
             try:
-                selected_payloads = fast._decode_frontier_fast_native_binary_committee_many_payloads(
+                selected_payloads = frontier._decode_frontier_native_binary_committee_many_payloads(
                     forward_model,
                     backward_model,
                     escalated_syndromes,
@@ -1316,7 +1316,7 @@ def _decode_many_native_bundles(
                     for payload in selected_payloads
                 )
             except (AttributeError, RuntimeError):
-                escalated_forward_payloads = fast._decode_frontier_fast_native_binary_many_payloads(
+                escalated_forward_payloads = frontier._decode_frontier_native_binary_many_payloads(
                     forward_model,
                     escalated_syndromes,
                     K=int(escalation_K),
@@ -1326,7 +1326,7 @@ def _decode_many_native_bundles(
                     int_metric_scale=int(int_metric_scale),
                     _assume_compatible=True,
                 )
-                escalated_backward_payloads = fast._decode_frontier_fast_native_binary_many_payloads(
+                escalated_backward_payloads = frontier._decode_frontier_native_binary_many_payloads(
                     backward_model,
                     escalated_syndromes,
                     K=int(escalation_K),
@@ -1360,8 +1360,8 @@ def _decode_many_native_bundles(
                 )
             return tuple(out)
         if str(decoder_mode) == "backward":
-            backward_model = fast._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
-            if not fast._is_native_binary_compatible(backward_model, syndrome=int(syndromes[0])):
+            backward_model = frontier._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
+            if not frontier._is_native_binary_compatible(backward_model, syndrome=int(syndromes[0])):
                 return None
             pressures = tuple(
                 _direction_pressure(
@@ -1375,7 +1375,7 @@ def _decode_many_native_bundles(
                 )
                 for syndrome in syndromes
             )
-            results = fast._decode_frontier_fast_native_binary_many(
+            results = frontier._decode_frontier_native_binary_many(
                 backward_model,
                 syndromes,
                 K=int(K),
@@ -1406,10 +1406,10 @@ def _decode_many_native_bundles(
                 )
                 for index, result in enumerate(results)
             )
-        if not fast._is_native_binary_compatible(model, syndrome=int(syndromes[0])):
+        if not frontier._is_native_binary_compatible(model, syndrome=int(syndromes[0])):
             return None
         backward_model = (
-            fast._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
+            frontier._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
             if str(pressure_estimator) != "none"
             else None
         )
@@ -1425,7 +1425,7 @@ def _decode_many_native_bundles(
             )
             for syndrome in syndromes
         )
-        results = fast._decode_frontier_fast_native_binary_many(
+        results = frontier._decode_frontier_native_binary_many(
             model,
             syndromes,
             K=int(K),
@@ -1474,7 +1474,7 @@ def _boolish(value: object) -> bool:
     return str(value).strip().lower() in {"1", "true", "t", "yes", "y"}
 
 
-def _terminal_truth_rank(result: fast.FrontierFastResult, *, truth_logical: int) -> tuple[bool, int | None]:
+def _terminal_truth_rank(result: frontier.FrontierResult, *, truth_logical: int) -> tuple[bool, int | None]:
     if str(result.status) != "ok":
         return (False, None)
     masses = dict(result.terminal_log_masses)
@@ -1532,26 +1532,26 @@ def _decoder_label(decoder_mode: str) -> str:
     return "frontier auto"
 
 
-def _result_decision(result: fast.FrontierFastResult | None) -> str:
+def _result_decision(result: frontier.FrontierResult | None) -> str:
     if result is None:
         return ""
     logical = "" if result.logical_hat is None else str(int(result.logical_hat))
     return f"{result.status}:{logical}"
 
 
-def _result_log_evidence(result: fast.FrontierFastResult | None) -> float:
+def _result_log_evidence(result: frontier.FrontierResult | None) -> float:
     return float("nan") if result is None else float(result.log_evidence)
 
 
-def _result_terminal_gap(result: fast.FrontierFastResult | None) -> float:
+def _result_terminal_gap(result: frontier.FrontierResult | None) -> float:
     return float("nan") if result is None else float(result.terminal_top_log_mass_gap)
 
 
-def _result_transition_evals(result: fast.FrontierFastResult | None) -> int:
+def _result_transition_evals(result: frontier.FrontierResult | None) -> int:
     return 0 if result is None else int(result.stats.transition_evals)
 
 
-def _result_max_post(result: fast.FrontierFastResult | None) -> int:
+def _result_max_post(result: frontier.FrontierResult | None) -> int:
     return 0 if result is None else int(result.stats.max_post_prune_state_count)
 
 
@@ -2434,7 +2434,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "pressure_gamma": float(args.pressure_gamma),
         "candidate_pressure_gate": str(args.candidate_pressure_gate),
         "engine": str(args.engine),
-        "frontier_fast_native_available": bool(fast.native_binary_available()),
+        "frontier_native_available": bool(frontier.native_binary_available()),
         "scopes": list(scopes),
         "cpus": int(args.cpus),
         "shards_per_side": int(args.shards_per_side),

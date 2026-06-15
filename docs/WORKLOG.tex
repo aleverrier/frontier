@@ -16,3 +16,11 @@
 \item Pushed to GitHub: \texttt{\detokenize{git@github.com:aleverrier/frontier.git}}, branch \texttt{main}; first published commit was \texttt{3b45933}.
 \item Decide whether to later refactor the native C++ file to physically delete the unused internal stage1/stage2 implementation code.
 \end{itemize}
+
+\subsection*{2026-06-15 Naming and Matrix Docs Cleanup}
+
+\begin{itemize}
+\item Renamed the public exported modules and extension to \texttt{frontier\_*}, including \texttt{\_frontier\_native}, \texttt{frontier\_native.py}, \texttt{tools/frontier\_decoder.py}, \texttt{tools/frontier\_sample\_replay.py}, and \texttt{tools/frontier\_bb144\_benchmark.py}.
+\item Renamed public Python API types/functions to \texttt{Frontier*} / \texttt{decode\_frontier*}.
+\item Added README matrix-availability notes: static matrix files are not checked in; in-repo constructors cover surface-code checks and generated rotated-surface DEMs, while the accepted Gross split-sector DEM builder needs a public \texttt{qtanner-ssf} checkout via \texttt{GROSSCODE\_QTANNER\_ROOT} or \texttt{QTANNER\_ROOT}.
+\end{itemize}

@@ -10,15 +10,16 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "matplotlib>=3.8",
+  "ldpc>=2.4",
   "numpy>=2.0",
   "scipy>=1.12",
   "stim>=1.15",
 ]
 
 [project.scripts]
-frontier-smoke = "tools.frontier_fast_decoder:main"
-frontier-replay = "tools.frontier_fast_sample_replay:main"
-frontier-bb144-benchmark = "tools.frontier_fast_bb144_benchmark:main"
+frontier-smoke = "tools.frontier_decoder:main"
+frontier-replay = "tools.frontier_sample_replay:main"
+frontier-bb144-benchmark = "tools.frontier_bb144_benchmark:main"
 
 [tool.setuptools.packages.find]
 include = ["grosscode*", "tools*"]

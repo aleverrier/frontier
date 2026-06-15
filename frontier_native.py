@@ -5,7 +5,7 @@ from typing import Any, Mapping, Sequence
 
 
 try:
-    import _frontier_fast_native as _native
+    import _frontier_native as _native
 except ImportError:  # pragma: no cover - exercised when extension is not built.
     _native = None
 

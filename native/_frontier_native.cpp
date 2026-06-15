@@ -136,7 +136,7 @@ std::int64_t quantize_metric_s1024_cached(double value, std::int64_t cached_s102
 }
 
 bool batch_workspace_reuse_disabled() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_BATCH_WORKSPACE_REUSE");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_BATCH_WORKSPACE_REUSE");
     if (raw == nullptr) return false;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
@@ -145,7 +145,6 @@ bool batch_workspace_reuse_disabled() {
 std::size_t native_batch_thread_count(std::size_t job_count) {
     if (job_count <= 1) return 1;
     const char* raw = std::getenv("FRONTIER_NATIVE_BATCH_THREADS");
-    if (raw == nullptr) raw = std::getenv("FRONTIERFAST_NATIVE_BATCH_THREADS");
     if (raw == nullptr) return 1;
     const std::string value(raw);
     if (value.empty() || value == "1" || value == "off" || value == "false" || value == "no") {
@@ -166,14 +165,14 @@ std::size_t native_batch_thread_count(std::size_t job_count) {
 }
 
 bool one_pass_prune_disabled() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_ONE_PASS_PRUNE");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_ONE_PASS_PRUNE");
     if (raw == nullptr) return false;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
 }
 
 std::size_t one_pass_prune_min_candidates() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_ONE_PASS_PRUNE_MIN");
+    const char* raw = std::getenv("FRONTIER_NATIVE_ONE_PASS_PRUNE_MIN");
     if (raw == nullptr) return kOnePassPruneMinCandidates;
     try {
         return std::max<std::size_t>(1U, static_cast<std::size_t>(std::stoul(std::string(raw))));
@@ -183,34 +182,34 @@ std::size_t one_pass_prune_min_candidates() {
 }
 
 bool final_prune_sort_disabled() {
-    const char* force_sort_raw = std::getenv("FRONTIERFAST_NATIVE_ENABLE_FINAL_PRUNE_SORT");
+    const char* force_sort_raw = std::getenv("FRONTIER_NATIVE_ENABLE_FINAL_PRUNE_SORT");
     if (force_sort_raw != nullptr) {
         const std::string force_value(force_sort_raw);
         if (force_value == "1" || force_value == "true" || force_value == "on" || force_value == "yes") {
             return false;
         }
     }
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_FINAL_PRUNE_SORT");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_FINAL_PRUNE_SORT");
     if (raw == nullptr) return true;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
 }
 
 bool close_empty_split_merge_disabled() {
-    const char* enable_raw = std::getenv("FRONTIERFAST_NATIVE_ENABLE_CLOSE_EMPTY_SPLIT_MERGE");
+    const char* enable_raw = std::getenv("FRONTIER_NATIVE_ENABLE_CLOSE_EMPTY_SPLIT_MERGE");
     if (enable_raw == nullptr) return true;
     const std::string enable_value(enable_raw);
     if (!(enable_value == "1" || enable_value == "true" || enable_value == "on" || enable_value == "yes")) {
         return true;
     }
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_CLOSE_EMPTY_SPLIT_MERGE");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_CLOSE_EMPTY_SPLIT_MERGE");
     if (raw == nullptr) return false;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
 }
 
 bool compact_close_empty_split_merge_disabled() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_COMPACT_CLOSE_EMPTY_SPLIT_MERGE");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_COMPACT_CLOSE_EMPTY_SPLIT_MERGE");
     if (raw != nullptr) {
         const std::string value(raw);
         return value == "1" || value == "true" || value == "on" || value == "yes";
@@ -219,35 +218,35 @@ bool compact_close_empty_split_merge_disabled() {
 }
 
 bool no_merge_transition_disabled() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_NO_MERGE_TRANSITION");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_NO_MERGE_TRANSITION");
     if (raw == nullptr) return false;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
 }
 
 bool single_parent_step_disabled() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_SINGLE_PARENT_STEP");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_SINGLE_PARENT_STEP");
     if (raw == nullptr) return false;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
 }
 
 bool small_state_step_disabled() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_SMALL_STATE_STEP");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_SMALL_STATE_STEP");
     if (raw == nullptr) return false;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
 }
 
 bool native_profile_enabled() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_PROFILE");
+    const char* raw = std::getenv("FRONTIER_NATIVE_PROFILE");
     if (raw == nullptr) return false;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
 }
 
 bool small_pattern_table_disabled() {
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_DISABLE_SMALL_PATTERN_TABLE");
+    const char* raw = std::getenv("FRONTIER_NATIVE_DISABLE_SMALL_PATTERN_TABLE");
     if (raw == nullptr) return false;
     const std::string value(raw);
     return value == "1" || value == "true" || value == "on" || value == "yes";
@@ -1059,7 +1058,7 @@ std::unique_ptr<ChoiceNativeModel> parse_choice_model(PyObject* spec) {
 }
 
 void capsule_destructor(PyObject* capsule) {
-    void* ptr = PyCapsule_GetPointer(capsule, "frontier_fast_native_model");
+    void* ptr = PyCapsule_GetPointer(capsule, "frontier_native_model");
     if (ptr != nullptr) {
         delete static_cast<NativeModel*>(ptr);
     } else {
@@ -1068,7 +1067,7 @@ void capsule_destructor(PyObject* capsule) {
 }
 
 void choice_capsule_destructor(PyObject* capsule) {
-    void* ptr = PyCapsule_GetPointer(capsule, "frontier_fast_native_choice_model");
+    void* ptr = PyCapsule_GetPointer(capsule, "frontier_native_choice_model");
     if (ptr != nullptr) {
         delete static_cast<ChoiceNativeModel*>(ptr);
     } else {
@@ -1077,7 +1076,7 @@ void choice_capsule_destructor(PyObject* capsule) {
 }
 
 NativeModel* model_from_capsule(PyObject* capsule) {
-    void* ptr = PyCapsule_GetPointer(capsule, "frontier_fast_native_model");
+    void* ptr = PyCapsule_GetPointer(capsule, "frontier_native_model");
     if (ptr == nullptr) {
         throw std::runtime_error("invalid native frontier model capsule");
     }
@@ -1085,7 +1084,7 @@ NativeModel* model_from_capsule(PyObject* capsule) {
 }
 
 ChoiceNativeModel* choice_model_from_capsule(PyObject* capsule) {
-    void* ptr = PyCapsule_GetPointer(capsule, "frontier_fast_native_choice_model");
+    void* ptr = PyCapsule_GetPointer(capsule, "frontier_native_choice_model");
     if (ptr == nullptr) {
         throw std::runtime_error("invalid native frontier choice model capsule");
     }
@@ -6846,7 +6845,7 @@ PyObject* py_make_model(PyObject*, PyObject* args) {
     }
     try {
         std::unique_ptr<NativeModel> model = parse_model(spec);
-        return PyCapsule_New(model.release(), "frontier_fast_native_model", capsule_destructor);
+        return PyCapsule_New(model.release(), "frontier_native_model", capsule_destructor);
     } catch (const std::exception& exc) {
         PyErr_SetString(PyExc_ValueError, exc.what());
         return nullptr;
@@ -6860,7 +6859,7 @@ PyObject* py_make_choice_model(PyObject*, PyObject* args) {
     }
     try {
         std::unique_ptr<ChoiceNativeModel> model = parse_choice_model(spec);
-        return PyCapsule_New(model.release(), "frontier_fast_native_choice_model", choice_capsule_destructor);
+        return PyCapsule_New(model.release(), "frontier_native_choice_model", choice_capsule_destructor);
     } catch (const std::exception& exc) {
         PyErr_SetString(PyExc_ValueError, exc.what());
         return nullptr;
@@ -7411,7 +7410,7 @@ PyMethodDef methods[] = {
 
 PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
-    "_frontier_fast_native",
+    "_frontier_native",
     "Native binary frontier engine.",
     -1,
     methods,
@@ -7419,6 +7418,6 @@ PyModuleDef module = {
 
 }  // namespace
 
-PyMODINIT_FUNC PyInit__frontier_fast_native(void) {
+PyMODINIT_FUNC PyInit__frontier_native(void) {
     return PyModule_Create(&module);
 }
