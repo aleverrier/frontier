@@ -138,7 +138,6 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--metadata-out", type=Path, help="Optional metadata JSON path.")
     parser.add_argument("--backend", default="bravyi_depth7")
     parser.add_argument("--p-location", type=float, required=True)
-    parser.add_argument("--initial-data-error-rate", type=float)
     parser.add_argument("--shots", type=int, required=True, help="Number of shots per selected scope.")
     parser.add_argument("--shot-start", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20260615)
@@ -172,7 +171,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     problem = build_split_sector_problem(
         backend=str(args.backend),
         error_rate=float(args.p_location),
-        initial_data_error_rate=args.initial_data_error_rate,
     )
     matrix_by_scope: dict[str, dict[str, object]] = {}
     for scope in scopes:
@@ -221,9 +219,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     payload = {
         "backend": str(args.backend),
         "p_location": float(args.p_location),
-        "initial_data_error_rate": (
-            None if args.initial_data_error_rate is None else float(args.initial_data_error_rate)
-        ),
         "shot_start": int(args.shot_start),
         "shots_per_scope": int(args.shots),
         "scopes": list(scopes),

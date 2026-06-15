@@ -7,7 +7,7 @@
 - Public modes are limited to `forward_only`, `backward_only`, and `fwd_bwd_committee`.
 - Validation completed:
   - `python setup.py build_ext --inplace`
-  - `python -m py_compile frontier_native.py tools/dem_loader.py tools/frontier_decoder.py tools/frontier_sample_replay.py tools/frontier_bb144_benchmark.py tools/steane_progressive_decoder.py tests/test_frontier_export.py`
+  - `python -m py_compile frontier_native.py tools/dem_loader.py tools/frontier_decoder.py tools/frontier_sample_replay.py tools/frontier_bb144_benchmark.py tools/frontier_progressive.py tests/test_frontier_export.py`
   - `python -m pytest -q` (`3 passed`)
   - `python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
 
@@ -33,7 +33,7 @@
 - Audited the standalone export file-by-file for the intended public surface: frontier on BB/Gross and surface-code detector-side matrices.
 - Removed the legacy `grosscode/decoders/**` package, including full BP/min-sum, windowed BP/min-sum, local-round, triangle-quotient, triangle small-set-flip, and structure-aware decoder families.
 - Removed old research-only support trees: `grosscode/bench/**`, `grosscode/polar_dem/**`, projected-location/min-sum helpers, triangle-basis/reference-recovery helpers, Tanner redundant extraction, nonbinary CNOT/quaternary BP helpers, and legacy model/baseline modules.
-- Kept the frontier/native path, BB/Gross/generalized-bicycle/rotated-surface/surface matrix builders, and split-sector DEM builder.
+- Kept the frontier/native path, BB144/Gross/generalized-bicycle/rotated-surface/surface matrix builders, and split-sector DEM builder.
 - Added `docs/FILE_SCOPE.md` as the file-by-file retained-scope audit.
 
 ## 2026-06-15 BB144/Gross Reproducibility Docs
@@ -49,9 +49,8 @@
 - Removed archived report, triangle-ordering, and Stim fault-analysis helper files that were not required by the public decoder path.
 - Removed physically dead native C++ code for non-public staged decoding and removed staged replay CSV fields.
 - Made `frontier-bb144-benchmark` require an explicit `--sample-rows` file instead of defaulting to a local `results/...` path.
-- Renamed the retained prune-block helper to `tools/frontier_prune_blocks.py`.
 - Validation completed after tightening:
-  - `PYTHONPYCACHEPREFIX=/tmp/frontier_pycache python -m py_compile frontier_native.py tools/dem_loader.py tools/frontier_decoder.py tools/frontier_sample_replay.py tools/frontier_bb144_benchmark.py tools/steane_progressive_decoder.py tools/frontier_prune_blocks.py tests/test_frontier_export.py`
+  - `python -m py_compile frontier_native.py tools/dem_loader.py tools/frontier_decoder.py tools/frontier_sample_replay.py tools/frontier_bb144_benchmark.py tools/frontier_progressive.py tests/test_frontier_export.py` with bytecode redirected outside the repo
   - `python setup.py build_ext --inplace`
   - `python -m pytest -q -p no:cacheprovider` (`3 passed`)
   - `python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
@@ -72,11 +71,28 @@
 - Made `frontier-dem-info` load all requested matrices before printing its CSV header, so missing assets no longer produce a partial CSV.
 - Removed replay summary warnings when pressure diagnostics are disabled.
 - Validation completed:
-  - `PYTHONPYCACHEPREFIX=/tmp/frontier_pycache /tmp/frontier-fresh-SDHYq1/frontier/.venv/bin/python -m py_compile ...`
-  - `PYTHONPYCACHEPREFIX=/tmp/frontier_pycache /tmp/frontier-fresh-SDHYq1/frontier/.venv/bin/python -m pytest -q -p no:cacheprovider` (`6 passed`)
+  - `python -m py_compile ...` from a fresh-clone virtual environment, with bytecode redirected outside the repo
+  - `python -m pytest -q -p no:cacheprovider` from that fresh-clone virtual environment (`6 passed`)
   - `python setup.py build_ext --inplace` using the fresh-clone venv interpreter
   - `python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
   - `python -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder`
-  - `GROSSCODE_ASSET_ROOT=/tmp/missing python -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder` now prints a one-line missing-assets error and no CSV header
+  - a bad `GROSSCODE_ASSET_ROOT` override now prints a one-line missing-assets error and no CSV header
   - `python -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder` reports `936x8784` detector matrices for both memory sectors from bundled assets
   - generated and replayed sample rows for `rotated_surface_d3` and a 10-shot BB144/Gross `p=0.001`, `Delta=12`, `K=512`, `fwd_bwd_committee` native replay
+
+## 2026-06-15 BB144 Reproduction Success Criteria
+
+- Added a README section explaining how a fresh user can tell that the BB144/Gross `p=0.001`, `Delta=12`, `K=512`, `fwd_bwd_committee` reproduction worked.
+- Documented the expected `frontier-dem-info` matrix output: `memory_X` and `memory_Z` detector matrices are `936x8784`, logical matrices are `12x8784`, with 12 noisy rounds and `deadline_reorder`.
+- Documented the expected generated workload shape: 20,000 side rows for 10,000 paired full-frame shots, 40 replay shard tasks when `--shards-per-side 20` is used, and a complete native replay recorded in `run_metadata.json`.
+- Clarified that `summary_by_scope.csv` contains `memory_X`, `memory_Z`, and `combined`, and that the `combined` row is the strict full logical FER over paired side rows.
+- Avoided claiming a zero FER estimate: at `p=0.001`, 10k shots is a smoke-scale reproducibility sample, and no observed failures should be reported as below the resolution of that sample rather than as evidence that the FER is zero.
+- Avoided quoting a wall-clock target in the README. Wall-clock timing is machine-dependent; the README now asks timing reports to include machine/Python/workers/native availability/batch size and points to transition-evaluation counts for more machine-independent comparison.
+
+## 2026-06-15 Minimal Public Cleanup
+
+- Removed the non-self-contained external BB circuit-generation bridge because it depended on a checkout that is not part of this repo.
+- Removed the remaining replay re-decode CLI flags, CSV fields, metadata fields, and report text. The retained replay modes are forward-only, backward-only, and forward/backward committee with the requested `K` and `Delta`.
+- Replaced the old large progressive helper with `tools/frontier_progressive.py`, which contains only the frontier column/layout/order helpers required by the public decoder and DEM loader.
+- Removed an obsolete sample-row option that only applied to the deleted external constructor path.
+- Cleaned docs and worklogs to avoid exact local temporary clone paths while keeping the reproducibility commands and validation notes useful.

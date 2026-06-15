@@ -16,11 +16,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from grosscode.codes.bivariate_bicycle import get_bivariate_bicycle_backend_spec, is_bivariate_bicycle_backend
 from grosscode.codes.generalized_bicycle import get_generalized_bicycle_backend_spec, is_generalized_bicycle_backend
 from grosscode.codes.rotated_surface import is_rotated_surface_backend
 from grosscode.dem.builder import build_split_sector_problem, load_dem_side_with_metadata_from_stim
-from tools import steane_progressive_decoder as progressive
+from tools import frontier_progressive as progressive
 
 
 SUPPORTED_COLUMN_ORDERS = (
@@ -67,13 +66,6 @@ def _benchmark_descriptor(backend: str) -> tuple[str, str]:
         return (
             "Gross split-sector DEM",
             "accepted public split-sector detector-side DEM benchmark",
-        )
-    if is_bivariate_bicycle_backend(backend_text):
-        spec = get_bivariate_bicycle_backend_spec(backend_text)
-        label = f"BB [[{int(spec.n)},{int(spec.k)},{int(spec.distance)}]]"
-        return (
-            f"{label} split-sector DEM",
-            f"{label} detector-side DEM benchmark built locally from the BB circuit constructor",
         )
     if is_generalized_bicycle_backend(backend_text):
         spec = get_generalized_bicycle_backend_spec(backend_text)
@@ -151,7 +143,6 @@ def load_dem_family(
     backend: str,
     p_location: float,
     scope: str,
-    initial_data_error_rate: float | None = None,
     column_order: str = "deadline_reorder",
     stim_path: Path | None = None,
     external_benchmark_label: str | None = None,
@@ -170,7 +161,6 @@ def load_dem_family(
             backend=str(backend),
             p_location=float(p_location),
             scope=str(scope),
-            initial_data_error_rate=initial_data_error_rate,
             column_order="deadline_reorder",
             stim_path=stim_path,
             external_benchmark_label=external_benchmark_label,
@@ -205,17 +195,11 @@ def load_dem_family(
         problem = build_split_sector_problem(
             backend=str(backend),
             error_rate=float(p_location),
-            initial_data_error_rate=initial_data_error_rate,
         )
         benchmark_title, benchmark_description = _benchmark_descriptor(str(backend))
-        init_note = (
-            ""
-            if initial_data_error_rate is None
-            else f", initial_data_error_rate={float(initial_data_error_rate):.6g}"
-        )
         benchmark_source_note = (
             f"{benchmark_description} from `grosscode.dem.builder.build_split_sector_problem(backend={backend!r}, "
-            f"error_rate={float(p_location):.6g}{init_note})`."
+            f"error_rate={float(p_location):.6g})`."
         )
 
     scope_key = str(scope)

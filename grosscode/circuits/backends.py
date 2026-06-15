@@ -4,12 +4,6 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from grosscode.codes.bivariate_bicycle import (
-    BB_90_8_10_BACKEND,
-    ensure_bivariate_bicycle_stim_file,
-    get_bivariate_bicycle_backend_spec,
-    is_bivariate_bicycle_backend,
-)
 from grosscode.codes.generalized_bicycle import (
     ensure_generalized_bicycle_stim_file,
     get_generalized_bicycle_backend_spec,
@@ -82,15 +76,12 @@ def resolve_backend_circuit(
     backend: str,
     sector: str,
     error_rate: float = 0.004,
-    initial_data_error_rate: float | None = None,
     syndrome_rounds: int = 12,
     asset_root: str | Path | None = None,
 ) -> ResolvedBackendCircuit:
     sector_norm = sector.upper()
     if sector_norm not in {"X", "Z"}:
         raise ValueError("sector must be 'X' or 'Z'")
-    if initial_data_error_rate is not None and not is_bivariate_bicycle_backend(backend):
-        raise ValueError("--initial-data-error-rate is only supported for bivariate-bicycle backends")
     if backend == "depth8_candidate":
         raise ScheduleResolutionError(
             "backend='depth8_candidate' is not publicly reconstructible in this repo yet. "
@@ -116,38 +107,6 @@ def resolve_backend_circuit(
             schedule_notes=(
                 f"Rotated surface-code memory circuit generated locally from Stim with distance {int(spec.distance)} and rounds {int(rounds)}.",
                 "The detector-side DEM is built directly from the generated Stim circuit and uses the rotated_memory_x / rotated_memory_z task family.",
-            ),
-        )
-    if is_bivariate_bicycle_backend(backend):
-        spec = get_bivariate_bicycle_backend_spec(backend)
-        rounds = int(spec.syndrome_rounds if int(syndrome_rounds) == 12 else syndrome_rounds)
-        stim_path = ensure_bivariate_bicycle_stim_file(
-            backend=str(backend),
-            sector=sector_norm,
-            error_rate=float(error_rate),
-            initial_data_error_rate=initial_data_error_rate,
-            syndrome_rounds=int(rounds),
-        )
-        pinit_note = (
-            ""
-            if initial_data_error_rate is None
-            else (
-                f" Initial data-qubit preparation errors are replacement-set to "
-                f"p_init={float(initial_data_error_rate):.6g}; all other location errors use "
-                f"p={float(error_rate):.6g}."
-            )
-        )
-        return ResolvedBackendCircuit(
-            backend=str(backend),
-            sector=sector_norm,
-            error_rate=float(error_rate),
-            syndrome_rounds=int(rounds),
-            stim_path=stim_path,
-            noisy_rounds=int(rounds),
-            perfect_rounds=1,
-            schedule_notes=(
-                f"Non-default BB [[{int(spec.n)},{int(spec.k)},{int(spec.distance)}]] circuit generated locally from the SlidingWindowDecoder constructor.{pinit_note}",
-                "The detector-side DEM is derived from that locally generated Stim circuit, not from the accepted public Gross split-sector benchmark.",
             ),
         )
     if is_generalized_bicycle_backend(backend):

@@ -15,7 +15,7 @@ import numpy as np
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from tools import steane_progressive_decoder as progressive
+from tools import frontier_progressive as progressive
 
 try:
     import frontier_native as _frontier_native
@@ -1023,71 +1023,6 @@ def _decode_frontier_native_binary_committee_many_replay_payloads(
     return tuple(payload for payload in tuple(payloads))
 
 
-def _progressive_terminal_log_masses(result: progressive.ProgressiveDecodeResult) -> dict[int, float]:
-    if tuple(result.terminal_logical_log_mass_items):
-        return {
-            int(logical): float(log_mass)
-            for logical, log_mass in tuple(result.terminal_logical_log_mass_items)
-        }
-    if tuple(result.terminal_logical_class_summaries):
-        return {
-            int(summary.logical_mask): float(summary.log_mass)
-            for summary in tuple(result.terminal_logical_class_summaries)
-        }
-    return {}
-
-
-def _frontier_stats_from_progressive(
-    result: progressive.ProgressiveDecodeResult,
-    *,
-    started: float,
-) -> FrontierStats:
-    expanded_counts = tuple(int(value) for value in tuple(result.expanded_transition_count_by_column))
-    candidate_counts = tuple(int(value) for value in tuple(result.beam_candidate_state_count_by_column))
-    state_counts = tuple(int(value) for value in tuple(result.state_count_by_column))
-    post_counts = state_counts[1:] if len(state_counts) == len(expanded_counts) + 1 else state_counts
-    max_pre = int(getattr(result, "max_pre_prune_state_count", 0) or 0)
-    if int(max_pre) <= 0 and candidate_counts:
-        max_pre = max(candidate_counts)
-    return FrontierStats(
-        processed_columns=int(len(expanded_counts)),
-        transition_evals=int(sum(expanded_counts)),
-        max_pre_prune_state_count=int(max_pre),
-        max_post_prune_state_count=int(max(post_counts, default=0)),
-        sum_pre_prune_state_count=int(sum(candidate_counts)),
-        sum_post_prune_state_count=int(sum(post_counts)),
-        no_path_count=0 if str(result.status) == "ok" else 1,
-        transition_time_s=float(getattr(result, "binary_frontier_transition_expansion_time_s", 0.0) or 0.0),
-        merge_time_s=float(getattr(result, "binary_frontier_merge_time_s", 0.0) or 0.0),
-        prune_time_s=float(getattr(result, "binary_frontier_prune_sort_time_s", 0.0) or 0.0),
-        total_time_s=float(time.perf_counter() - float(started)),
-    )
-
-
-def _frontier_result_from_progressive(
-    result: progressive.ProgressiveDecodeResult,
-    *,
-    started: float,
-    direction: str | None,
-    engine: str,
-) -> FrontierResult:
-    status = "ok" if str(result.status) == "ok" else "no_path"
-    terminal_log_masses = _progressive_terminal_log_masses(result) if status == "ok" else {}
-    terminal_gap = float(getattr(result, "terminal_top_log_mass_gap", float("nan")))
-    if not math.isfinite(float(terminal_gap)) and terminal_log_masses:
-        terminal_gap = _terminal_gap(terminal_log_masses)
-    return FrontierResult(
-        status=str(status),
-        logical_hat=(int(result.logical_hat) if status == "ok" else None),
-        log_evidence=(float(result.log_evidence) if status == "ok" else float("-inf")),
-        terminal_log_masses=dict(sorted(terminal_log_masses.items())),
-        stats=_frontier_stats_from_progressive(result, started=float(started)),
-        direction=direction,
-        engine=str(engine),
-        terminal_top_log_mass_gap=float(terminal_gap),
-    )
-
-
 def _decode_frontier_binary_adapter(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
@@ -1098,56 +1033,15 @@ def _decode_frontier_binary_adapter(
     direction: str | None = None,
     _assume_compatible: bool = False,
 ) -> FrontierResult:
-    started = time.perf_counter()
-    if int(K) <= 0:
-        raise ValueError("K must be positive")
-    if float(Delta) < 0.0:
-        raise ValueError("Delta must be non-negative")
-    syndrome_int = _syndrome_to_int(syndrome)
-    model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_int))
-    if not bool(_assume_compatible) and not _is_binary_fastpath_compatible(model, syndrome=int(syndrome_int)):
-        raise ValueError("binary frontier engine requested for an unsupported model")
-
-    env_overrides = {
-        "FRONTIER_BINARY_TRANSITION_FAST_PATH": "1",
-        "FRONTIER_PRUNE_PRIMARY_TOPK_FAST_PATH": "1",
-        "FRONTIER_FUSED_BINARY_PRIMARY_TOPK_FAST_PATH": "1",
-        "FRONTIER_BINARY_LOCAL_PATTERN_FEATURE_TABLE": "1",
-        "FRONTIER_BINARY_UNIQUE_DETECTOR_SCORE_FAST_PATH": "1",
-        "FRONTIER_BINARY_SMALL_CANDIDATE_DIRECT_GAP": "1",
-        "FRONTIER_BINARY_ZERO_CLOSE_MASK_FAST_PATH": "1",
-    }
-    previous_env = {name: os.environ.get(name) for name in env_overrides}
-    try:
-        for name, value in env_overrides.items():
-            os.environ[str(name)] = str(value)
-        result = progressive.decode_progressive(
-            list(model.columns),
-            target_syndrome=int(syndrome_int),
-            num_detectors=int(model.num_detectors),
-            num_observables=int(model.num_observables),
-            beam_size=int(K),
-            beam_score_gap_threshold=float(Delta),
-            score_mode=_score_mode_for_alpha(float(score_alpha)),
-            layout=model.layout,
-            track_best_path=False,
-            merge_duplicate_states=True,
-            return_terminal_maps=True,
-            future_parity_scorer="cached",
-        )
-    finally:
-        for name, old_value in previous_env.items():
-            if old_value is None:
-                os.environ.pop(str(name), None)
-            else:
-                os.environ[str(name)] = str(old_value)
-
-    return _frontier_result_from_progressive(
-        result,
-        started=float(started),
+    result = _decode_frontier_python_reference(
+        problem_or_model,
+        syndrome,
+        K=int(K),
+        Delta=float(Delta),
+        score_alpha=float(score_alpha),
         direction=direction,
-        engine="binary",
     )
+    return replace(result, engine="binary")
 
 
 def _decode_frontier_python_reference(

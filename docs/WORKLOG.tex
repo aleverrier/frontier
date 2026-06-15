@@ -38,7 +38,7 @@
 \item Audited the standalone export file-by-file for the intended public surface: frontier on BB/Gross and surface-code detector-side matrices.
 \item Removed the legacy \texttt{\detokenize{grosscode/decoders/**}} package, including full BP/min-sum, windowed BP/min-sum, local-round, triangle-quotient, triangle small-set-flip, and structure-aware decoder families.
 \item Removed old research-only support trees: \texttt{\detokenize{grosscode/bench/**}}, \texttt{\detokenize{grosscode/polar_dem/**}}, projected-location/min-sum helpers, triangle-basis/reference-recovery helpers, Tanner redundant extraction, nonbinary CNOT/quaternary BP helpers, and legacy model/baseline modules.
-\item Kept the frontier/native path, BB/Gross/generalized-bicycle/rotated-surface/surface matrix builders, and split-sector DEM builder.
+\item Kept the frontier/native path, BB144/Gross/generalized-bicycle/rotated-surface/surface matrix builders, and split-sector DEM builder.
 \item Added \texttt{\detokenize{docs/FILE_SCOPE.md}} as the file-by-file retained-scope audit.
 \end{itemize}
 
@@ -58,8 +58,7 @@
 \item Removed archived report, triangle-ordering, and Stim fault-analysis helper files that were not required by the public decoder path.
 \item Removed physically dead native C++ code for non-public staged decoding and removed staged replay CSV fields.
 \item Made \texttt{\detokenize{frontier-bb144-benchmark}} require an explicit \texttt{\detokenize{--sample-rows}} file instead of defaulting to a local \texttt{\detokenize{results/...}} path.
-\item Renamed the retained prune-block helper to \texttt{\detokenize{tools/frontier_prune_blocks.py}}.
-\item Validation completed after tightening: Python compile with bytecode redirected to \texttt{\detokenize{/tmp/frontier_pycache}}, native build, \texttt{\detokenize{pytest -q -p no:cacheprovider}} with \texttt{3 passed}, frontier smoke with \texttt{\detokenize{--K 16 --Delta 100 --shots 3}}, real \texttt{\detokenize{rotated_surface_d3}} DEM loading through \texttt{\detokenize{tools.dem_loader}}, and help checks for \texttt{\detokenize{tools.dem_loader}} and \texttt{\detokenize{tools.frontier_bb144_benchmark}}.
+\item Validation completed after tightening: Python compile with bytecode redirected outside the repo, native build, \texttt{\detokenize{pytest -q -p no:cacheprovider}} with \texttt{3 passed}, frontier smoke with \texttt{\detokenize{--K 16 --Delta 100 --shots 3}}, real \texttt{\detokenize{rotated_surface_d3}} DEM loading through \texttt{\detokenize{tools.dem_loader}}, and help checks for \texttt{\detokenize{tools.dem_loader}} and \texttt{\detokenize{tools.frontier_bb144_benchmark}}.
 \end{itemize}
 
 \subsection*{2026-06-15 Fresh-Clone Reproducibility Fixes}
@@ -75,5 +74,26 @@
 \item Documented the complete fresh BB144/Gross DEM reproduction flow at \(p=0.001\), \(\Delta=12\), \(K=512\), and \texttt{\detokenize{fwd_bwd_committee}}: generate 10k matched sample rows, then replay them with the native engine.
 \item Made \texttt{\detokenize{frontier-dem-info}} load all requested matrices before printing its CSV header, so missing assets no longer produce a partial CSV.
 \item Removed replay summary warnings when pressure diagnostics are disabled.
-\item Validation completed: Python compile with bytecode redirected to \texttt{\detokenize{/tmp/frontier_pycache}}, \texttt{\detokenize{pytest -q -p no:cacheprovider}} with \texttt{6 passed}, native build through the fresh-clone venv interpreter, frontier smoke with \texttt{\detokenize{--K 16 --Delta 100 --shots 3}}, \texttt{\detokenize{rotated_surface_d3}} DEM loading, clean one-line missing-assets handling for a bad BB144/Gross \texttt{\detokenize{GROSSCODE_ASSET_ROOT}} override, bundled BB144/Gross matrix loading without an override, and generated-row native replays for both \texttt{\detokenize{rotated_surface_d3}} and a 10-shot BB144/Gross \(p=0.001\), \(\Delta=12\), \(K=512\), \texttt{\detokenize{fwd_bwd_committee}} run.
+\item Validation completed: Python compile with bytecode redirected outside the repo, \texttt{\detokenize{pytest -q -p no:cacheprovider}} with \texttt{6 passed}, native build through the fresh-clone venv interpreter, frontier smoke with \texttt{\detokenize{--K 16 --Delta 100 --shots 3}}, \texttt{\detokenize{rotated_surface_d3}} DEM loading, clean one-line missing-assets handling for a bad BB144/Gross \texttt{\detokenize{GROSSCODE_ASSET_ROOT}} override, bundled BB144/Gross matrix loading without an override, and generated-row native replays for both \texttt{\detokenize{rotated_surface_d3}} and a 10-shot BB144/Gross \(p=0.001\), \(\Delta=12\), \(K=512\), \texttt{\detokenize{fwd_bwd_committee}} run.
+\end{itemize}
+
+\subsection*{2026-06-15 BB144 Reproduction Success Criteria}
+
+\begin{itemize}
+\item Added a README section explaining how a fresh user can tell that the BB144/Gross \(p=0.001\), \(\Delta=12\), \(K=512\), \texttt{\detokenize{fwd_bwd_committee}} reproduction worked.
+\item Documented the expected \texttt{\detokenize{frontier-dem-info}} matrix output: \texttt{\detokenize{memory_X}} and \texttt{\detokenize{memory_Z}} detector matrices are \texttt{\detokenize{936x8784}}, logical matrices are \texttt{\detokenize{12x8784}}, with 12 noisy rounds and \texttt{\detokenize{deadline_reorder}}.
+\item Documented the expected generated workload shape: 20,000 side rows for 10,000 paired full-frame shots, 40 replay shard tasks when \texttt{\detokenize{--shards-per-side 20}} is used, and a complete native replay recorded in \texttt{\detokenize{run_metadata.json}}.
+\item Clarified that \texttt{\detokenize{summary_by_scope.csv}} contains \texttt{\detokenize{memory_X}}, \texttt{\detokenize{memory_Z}}, and \texttt{\detokenize{combined}}, and that the \texttt{\detokenize{combined}} row is the strict full logical FER over paired side rows.
+\item Avoided claiming \(\mathrm{FER}=0\): at \(p=0.001\), 10k shots is a smoke-scale reproducibility sample, and no observed failures should be reported as below the resolution of that sample rather than as evidence that the FER is zero.
+\item Avoided quoting a wall-clock target in the README. Timing is machine-dependent; the README now asks timing reports to include machine/Python/workers/native availability/batch size and points to transition-evaluation counts for more machine-independent comparison.
+\end{itemize}
+
+\subsection*{2026-06-15 Minimal Public Cleanup}
+
+\begin{itemize}
+\item Removed the non-self-contained external BB circuit-generation bridge because it depended on a checkout that is not part of this repo.
+\item Removed the remaining replay re-decode CLI flags, CSV fields, metadata fields, and report text. The retained replay modes are forward-only, backward-only, and forward/backward committee with the requested \(K\) and \(\Delta\).
+\item Replaced the old large progressive helper with \texttt{\detokenize{tools/frontier_progressive.py}}, which contains only the frontier column/layout/order helpers required by the public decoder and DEM loader.
+\item Removed an obsolete sample-row option that only applied to the deleted external constructor path.
+\item Cleaned docs and worklogs to avoid exact local temporary clone paths while keeping the reproducibility commands and validation notes useful.
 \end{itemize}

@@ -9,7 +9,7 @@ from tools import dem_loader
 from tools import frontier_decoder as frontier
 from tools import frontier_sample_rows
 from tools import frontier_sample_replay as replay
-from tools import steane_progressive_decoder as progressive
+from tools import frontier_progressive as progressive
 
 
 def _factor(
@@ -146,8 +146,6 @@ def test_pressure_means_are_nan_without_runtime_warning() -> None:
                 "failure_diagnosis": "success",
                 "decode_s": 0.1,
                 "transition_evals_total": 10,
-                "primary_transition_evals_total": 10,
-                "escalation_transition_evals_total": 0,
                 "pressure_forward": float("nan"),
                 "pressure_backward": float("nan"),
                 "processed_columns": 1,

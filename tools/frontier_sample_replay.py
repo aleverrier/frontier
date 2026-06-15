@@ -41,8 +41,6 @@ PER_SHOT_FIELDS = [
     "noisy_rounds",
     "K",
     "Delta",
-    "selected_K",
-    "selected_Delta",
     "score_alpha",
     "metric_mode",
     "int_metric_scale",
@@ -62,13 +60,6 @@ PER_SHOT_FIELDS = [
     "selected_direction_matches_committee_direction",
     "forward_decision",
     "backward_decision",
-    "primary_selected_direction",
-    "primary_status",
-    "primary_logical_hat",
-    "primary_forward_status",
-    "primary_forward_logical_hat",
-    "primary_backward_status",
-    "primary_backward_logical_hat",
     "forward_log_evidence",
     "backward_log_evidence",
     "forward_terminal_top_log_mass_gap",
@@ -78,10 +69,6 @@ PER_SHOT_FIELDS = [
     "forward_max_post_prune_state_count",
     "backward_max_post_prune_state_count",
     "committee_disagreed",
-    "escalated",
-    "escalation_reason",
-    "escalation_K",
-    "escalation_Delta",
     "status",
     "frame_ok",
     "frame_fail_type",
@@ -96,8 +83,6 @@ PER_SHOT_FIELDS = [
     "failure_diagnosis",
     "decode_s",
     "transition_evals_total",
-    "primary_transition_evals_total",
-    "escalation_transition_evals_total",
     "selected_transition_evals",
     "max_pre_prune_state_count",
     "max_post_prune_state_count",
@@ -145,8 +130,6 @@ SUMMARY_FIELDS = [
     "p_location",
     "K",
     "Delta",
-    "escalation_K",
-    "escalation_Delta",
     "score_alpha",
     "metric_mode",
     "int_metric_scale",
@@ -164,12 +147,8 @@ SUMMARY_FIELDS = [
     "selected_backward_fraction",
     "engine_requested",
     "engines_seen",
-    "escalated",
-    "escalation_fraction",
     "committee_disagreed",
     "committee_disagreement_rate",
-    "primary_transition_evals_total_mean",
-    "escalation_transition_evals_total_mean",
     "sample_rows",
 ]
 
@@ -196,19 +175,7 @@ class DecodeBundle:
     transition_evals_total: int
     forward_engine: str = ""
     backward_engine: str = ""
-    selected_K: int = 0
-    selected_Delta: float = float("nan")
-    primary_selected: frontier.FrontierResult | None = None
-    primary_forward: frontier.FrontierResult | None = None
-    primary_backward: frontier.FrontierResult | None = None
-    primary_selected_direction: str = ""
-    primary_transition_evals_total: int = 0
     committee_disagreed: bool = False
-    escalated: bool = False
-    escalation_reason: str = ""
-    escalation_K: int = 0
-    escalation_Delta: float = float("nan")
-    escalation_transition_evals_total: int = 0
     pressure_estimator: str = "none"
     pressure_beta: float = 8.0
     pressure_gamma: float = 2.0
@@ -404,19 +371,7 @@ def _copy_pressure(bundle: DecodeBundle, pressure: DirectionPressure) -> DecodeB
         transition_evals_total=int(bundle.transition_evals_total),
         forward_engine=str(bundle.forward_engine),
         backward_engine=str(bundle.backward_engine),
-        selected_K=int(bundle.selected_K),
-        selected_Delta=float(bundle.selected_Delta),
-        primary_selected=bundle.primary_selected,
-        primary_forward=bundle.primary_forward,
-        primary_backward=bundle.primary_backward,
-        primary_selected_direction=str(bundle.primary_selected_direction),
-        primary_transition_evals_total=int(bundle.primary_transition_evals_total),
         committee_disagreed=bool(bundle.committee_disagreed),
-        escalated=bool(bundle.escalated),
-        escalation_reason=str(bundle.escalation_reason),
-        escalation_K=int(bundle.escalation_K),
-        escalation_Delta=float(bundle.escalation_Delta),
-        escalation_transition_evals_total=int(bundle.escalation_transition_evals_total),
         pressure_estimator=str(pressure.estimator),
         pressure_beta=float(pressure.beta),
         pressure_gamma=float(pressure.gamma),
@@ -558,49 +513,6 @@ def _committee_disagreed(
     return _committee_outcome(forward_result) != _committee_outcome(backward_result)
 
 
-def _primary_or_selected(bundle: DecodeBundle) -> frontier.FrontierResult:
-    return bundle.primary_selected if bundle.primary_selected is not None else bundle.selected
-
-
-def _escalated_bundle(
-    *,
-    primary: DecodeBundle,
-    escalated: DecodeBundle,
-    reason: str,
-    escalation_K: int,
-    escalation_Delta: float,
-) -> DecodeBundle:
-    primary_selected = _primary_or_selected(primary)
-    return DecodeBundle(
-        selected=escalated.selected,
-        forward=escalated.forward,
-        backward=escalated.backward,
-        selected_direction=str(escalated.selected_direction),
-        transition_evals_total=int(primary.transition_evals_total) + int(escalated.transition_evals_total),
-        forward_engine=str(escalated.forward_engine),
-        backward_engine=str(escalated.backward_engine),
-        selected_K=int(escalation_K),
-        selected_Delta=float(escalation_Delta),
-        primary_selected=primary_selected,
-        primary_forward=primary.primary_forward if primary.primary_forward is not None else primary.forward,
-        primary_backward=primary.primary_backward if primary.primary_backward is not None else primary.backward,
-        primary_selected_direction=str(primary.primary_selected_direction or primary.selected_direction),
-        primary_transition_evals_total=int(primary.primary_transition_evals_total or primary.transition_evals_total),
-        committee_disagreed=bool(primary.committee_disagreed),
-        escalated=True,
-        escalation_reason=str(reason),
-        escalation_K=int(escalation_K),
-        escalation_Delta=float(escalation_Delta),
-        escalation_transition_evals_total=int(escalated.transition_evals_total),
-        pressure_estimator=str(primary.pressure_estimator),
-        pressure_beta=float(primary.pressure_beta),
-        pressure_gamma=float(primary.pressure_gamma),
-        candidate_pressure_gate=str(primary.candidate_pressure_gate),
-        pressure_forward=float(primary.pressure_forward),
-        pressure_backward=float(primary.pressure_backward),
-    )
-
-
 def _select_committee(
     *,
     model: frontier.FrontierModel,
@@ -652,14 +564,6 @@ def _select_committee(
         + int(backward_result.stats.transition_evals),
         forward_engine=str(forward_result.engine),
         backward_engine=str(backward_result.engine),
-        selected_K=int(K),
-        selected_Delta=float(Delta),
-        primary_selected=selected,
-        primary_forward=forward_result,
-        primary_backward=backward_result,
-        primary_selected_direction=str(selected_direction),
-        primary_transition_evals_total=int(forward_result.stats.transition_evals)
-        + int(backward_result.stats.transition_evals),
         committee_disagreed=bool(disagreed),
     )
 
@@ -689,14 +593,6 @@ def _bundle_from_committee_results(
         + int(backward_result.stats.transition_evals),
         forward_engine=str(forward_result.engine),
         backward_engine=str(backward_result.engine),
-        selected_K=int(K),
-        selected_Delta=float(Delta),
-        primary_selected=selected,
-        primary_forward=forward_result,
-        primary_backward=backward_result,
-        primary_selected_direction=str(selected_direction),
-        primary_transition_evals_total=int(forward_result.stats.transition_evals)
-        + int(backward_result.stats.transition_evals),
         committee_disagreed=bool(disagreed),
     )
 
@@ -796,13 +692,6 @@ def _bundle_from_native_committee_payloads(
         transition_evals_total=int(transition_total),
         forward_engine="native_binary",
         backward_engine="native_binary",
-        selected_K=int(K),
-        selected_Delta=float(Delta),
-        primary_selected=selected,
-        primary_forward=forward_result,
-        primary_backward=backward_result,
-        primary_selected_direction=str(selected_direction),
-        primary_transition_evals_total=int(transition_total),
         committee_disagreed=bool(disagreed),
     )
 
@@ -827,11 +716,6 @@ def _bundle_from_native_selected_committee_payload(
         transition_evals_total=int(transition_total),
         forward_engine="native_binary",
         backward_engine="native_binary",
-        selected_K=int(K),
-        selected_Delta=float(Delta),
-        primary_selected=selected,
-        primary_selected_direction=str(selected_direction),
-        primary_transition_evals_total=int(transition_total),
     )
 
 
@@ -847,7 +731,6 @@ def _decode_many_native_replay_payloads(
     engine: str,
     metric_mode: str = "logsumexp_float",
     int_metric_scale: int = 1024,
-    escalate_on_committee_disagreement: bool = False,
 ) -> tuple[dict[str, object], ...] | None:
     if str(os.environ.get("FRONTIER_SAMPLE_REPLAY_DISABLE_FLAT_NATIVE_REPLAY", "")).strip().lower() in {
         "1",
@@ -858,7 +741,7 @@ def _decode_many_native_replay_payloads(
         return None
     if str(engine) not in {"auto", "native_binary"} or not frontier.native_binary_available():
         return None
-    if str(decoder_mode) != "bidirectional_committee" or bool(escalate_on_committee_disagreement):
+    if str(decoder_mode) != "bidirectional_committee":
         return None
     sample_tuple = tuple(samples)
     if not sample_tuple:
@@ -928,13 +811,7 @@ def _row_from_native_replay_payload(
         committee_disagreed = (forward_status, forward_logical_hat) != (backward_status, backward_logical_hat)
     if "committee_disagreed" in payload:
         committee_disagreed = _boolish(payload.get("committee_disagreed", False))
-    direction_mode = str(task.get("direction_mode", ""))
     selected_direction = str(payload.get("selected_direction", "forward"))
-    primary_logical_hat = payload.get("primary_logical_hat", logical_hat)
-    escalated = _boolish(payload.get("escalated", False))
-    escalation_reason = str(payload.get("escalation_reason", ""))
-    primary_transition_total = int(payload.get("primary_transition_evals_total", transition_total))
-    escalation_transition_total = int(payload.get("escalation_transition_evals_total", 0))
     decoder_label = (
         "frontier auto fwd/bwd committee"
         if str(task["decoder_mode"]) == "bidirectional_committee"
@@ -956,8 +833,6 @@ def _row_from_native_replay_payload(
         "noisy_rounds": int(forward_family.noisy_rounds),
         "K": int(task["K"]),
         "Delta": float(task["Delta"]),
-        "selected_K": int(task["K"]),
-        "selected_Delta": float(task["Delta"]),
         "score_alpha": float(task["score_alpha"]),
         "metric_mode": str(task.get("metric_mode", "logsumexp_float")),
         "int_metric_scale": int(task.get("int_metric_scale", 1024) or 1024),
@@ -977,17 +852,6 @@ def _row_from_native_replay_payload(
         "selected_direction_matches_committee_direction": True,
         "forward_decision": f"{forward_status}:{'' if forward_logical_hat is None else int(forward_logical_hat)}",
         "backward_decision": f"{backward_status}:{'' if backward_logical_hat is None else int(backward_logical_hat)}",
-        "primary_selected_direction": str(payload.get("primary_selected_direction", selected_direction)),
-        "primary_status": str(payload.get("primary_status", status)),
-        "primary_logical_hat": "" if primary_logical_hat is None else int(primary_logical_hat),
-        "primary_forward_status": str(payload.get("primary_forward_status", forward_status)),
-        "primary_forward_logical_hat": ""
-        if forward_logical_hat is None
-        else int(forward_logical_hat),
-        "primary_backward_status": str(payload.get("primary_backward_status", backward_status)),
-        "primary_backward_logical_hat": ""
-        if backward_logical_hat is None
-        else int(backward_logical_hat),
         "forward_log_evidence": float(payload.get("forward_log_evidence", float("nan"))),
         "backward_log_evidence": float(payload.get("backward_log_evidence", float("nan"))),
         "forward_terminal_top_log_mass_gap": float(payload.get("forward_terminal_top_log_mass_gap", float("nan"))),
@@ -997,10 +861,6 @@ def _row_from_native_replay_payload(
         "forward_max_post_prune_state_count": int(payload.get("forward_max_post_prune_state_count", 0)),
         "backward_max_post_prune_state_count": int(payload.get("backward_max_post_prune_state_count", 0)),
         "committee_disagreed": bool(committee_disagreed),
-        "escalated": bool(escalated),
-        "escalation_reason": str(escalation_reason),
-        "escalation_K": int(task.get("escalation_K", 0) or 0),
-        "escalation_Delta": float(task.get("escalation_Delta", float("nan"))),
         "status": str(status),
         "frame_ok": bool(fail_type == "success"),
         "frame_fail_type": str(fail_type),
@@ -1015,8 +875,6 @@ def _row_from_native_replay_payload(
         "failure_diagnosis": str(failure_diagnosis),
         "decode_s": float(decode_s),
         "transition_evals_total": int(transition_total),
-        "primary_transition_evals_total": int(primary_transition_total),
-        "escalation_transition_evals_total": int(escalation_transition_total),
         "selected_transition_evals": int(payload.get("selected_transition_evals", 0)),
         "max_pre_prune_state_count": int(payload.get("max_pre_prune_state_count", 0)),
         "max_post_prune_state_count": int(payload.get("max_post_prune_state_count", 0)),
@@ -1042,9 +900,6 @@ def _decode_one(
     pressure_beta: float = 8.0,
     pressure_gamma: float = 2.0,
     candidate_pressure_gate: str = "all_but_one",
-    escalate_on_committee_disagreement: bool = False,
-    escalation_K: int = 0,
-    escalation_Delta: float = float("nan"),
 ) -> DecodeBundle:
     if str(decoder_mode) not in {"forward", "backward", "bidirectional_committee"}:
         raise ValueError("this export supports only forward, backward, and bidirectional_committee modes")
@@ -1061,35 +916,19 @@ def _decode_one(
         candidate_gate=str(candidate_pressure_gate),
     )
     if str(decoder_mode) == "bidirectional_committee":
-        primary = _select_committee(
-            model=model,
-            syndrome=int(syndrome),
-            K=int(K),
-            Delta=float(Delta),
-            score_alpha=float(score_alpha),
-            metric_mode=str(metric_mode),
-            int_metric_scale=int(int_metric_scale),
-            engine=str(engine),
-        )
-        if bool(escalate_on_committee_disagreement) and bool(primary.committee_disagreed):
-            escalated = _select_committee(
+        return _copy_pressure(
+            _select_committee(
                 model=model,
                 syndrome=int(syndrome),
-                K=int(escalation_K),
-                Delta=float(escalation_Delta),
+                K=int(K),
+                Delta=float(Delta),
                 score_alpha=float(score_alpha),
                 metric_mode=str(metric_mode),
                 int_metric_scale=int(int_metric_scale),
                 engine=str(engine),
-            )
-            return _escalated_bundle(
-                primary=_copy_pressure(primary, pressure),
-                escalated=escalated,
-                reason="committee_disagreement",
-                escalation_K=int(escalation_K),
-                escalation_Delta=float(escalation_Delta),
-            )
-        return _copy_pressure(primary, pressure)
+            ),
+            pressure,
+        )
     if str(decoder_mode) == "backward":
         backward_model = frontier._coerce_model(model, syndrome_int=int(syndrome), direction="backward")
         result = frontier.decode_frontier(
@@ -1110,12 +949,6 @@ def _decode_one(
                 selected_direction="backward",
                 transition_evals_total=int(result.stats.transition_evals),
                 backward_engine=str(result.engine),
-                selected_K=int(K),
-                selected_Delta=float(Delta),
-                primary_selected=result,
-                primary_backward=result,
-                primary_selected_direction="backward",
-                primary_transition_evals_total=int(result.stats.transition_evals),
             ),
             pressure,
         )
@@ -1137,12 +970,6 @@ def _decode_one(
             selected_direction="forward",
             transition_evals_total=int(result.stats.transition_evals),
             forward_engine=str(result.engine),
-            selected_K=int(K),
-            selected_Delta=float(Delta),
-            primary_selected=result,
-            primary_forward=result,
-            primary_selected_direction="forward",
-            primary_transition_evals_total=int(result.stats.transition_evals),
         ),
         pressure,
     )
@@ -1163,9 +990,6 @@ def _decode_many_native_bundles(
     pressure_beta: float = 8.0,
     pressure_gamma: float = 2.0,
     candidate_pressure_gate: str = "all_but_one",
-    escalate_on_committee_disagreement: bool = False,
-    escalation_K: int = 0,
-    escalation_Delta: float = float("nan"),
 ) -> tuple[DecodeBundle, ...] | None:
     if str(decoder_mode) not in {"forward", "backward", "bidirectional_committee"}:
         raise ValueError("this export supports only forward, backward, and bidirectional_committee modes")
@@ -1196,7 +1020,7 @@ def _decode_many_native_bundles(
                 for syndrome in syndromes
             )
             has_pressure = str(pressure_estimator) != "none"
-            if not bool(escalate_on_committee_disagreement) and not bool(has_pressure):
+            if not bool(has_pressure):
                 try:
                     selected_payloads = frontier._decode_frontier_native_binary_committee_many_payloads(
                         forward_model,
@@ -1240,7 +1064,7 @@ def _decode_many_native_bundles(
                 int_metric_scale=int(int_metric_scale),
                 _assume_compatible=True,
             )
-            primary_bundles = tuple(
+            bundles = tuple(
                 _copy_pressure(
                     _bundle_from_native_committee_payloads(
                         forward_payload,
@@ -1254,79 +1078,7 @@ def _decode_many_native_bundles(
                     zip(forward_payloads, backward_payloads, strict=True)
                 )
             )
-            if not bool(escalate_on_committee_disagreement):
-                return primary_bundles
-            escalation_indices = tuple(
-                index for index, bundle in enumerate(primary_bundles) if bool(bundle.committee_disagreed)
-            )
-            if not escalation_indices:
-                return primary_bundles
-            escalated_syndromes = tuple(int(syndromes[index]) for index in escalation_indices)
-            try:
-                selected_payloads = frontier._decode_frontier_native_binary_committee_many_payloads(
-                    forward_model,
-                    backward_model,
-                    escalated_syndromes,
-                    K=int(escalation_K),
-                    Delta=float(escalation_Delta),
-                    score_alpha=float(score_alpha),
-                    metric_mode=str(metric_mode),
-                    int_metric_scale=int(int_metric_scale),
-                    _assume_compatible=True,
-                    compact_payload=True,
-                )
-                escalated_bundles = tuple(
-                    _bundle_from_native_selected_committee_payload(
-                        payload,
-                        K=int(escalation_K),
-                        Delta=float(escalation_Delta),
-                    )
-                    for payload in selected_payloads
-                )
-            except (AttributeError, RuntimeError):
-                escalated_forward_payloads = frontier._decode_frontier_native_binary_many_payloads(
-                    forward_model,
-                    escalated_syndromes,
-                    K=int(escalation_K),
-                    Delta=float(escalation_Delta),
-                    score_alpha=float(score_alpha),
-                    metric_mode=str(metric_mode),
-                    int_metric_scale=int(int_metric_scale),
-                    _assume_compatible=True,
-                )
-                escalated_backward_payloads = frontier._decode_frontier_native_binary_many_payloads(
-                    backward_model,
-                    escalated_syndromes,
-                    K=int(escalation_K),
-                    Delta=float(escalation_Delta),
-                    score_alpha=float(score_alpha),
-                    metric_mode=str(metric_mode),
-                    int_metric_scale=int(int_metric_scale),
-                    _assume_compatible=True,
-                )
-                escalated_bundles = tuple(
-                    _bundle_from_native_committee_payloads(
-                        forward_payload,
-                        backward_payload,
-                        K=int(escalation_K),
-                        Delta=float(escalation_Delta),
-                    )
-                    for forward_payload, backward_payload in zip(
-                        escalated_forward_payloads,
-                        escalated_backward_payloads,
-                        strict=True,
-                    )
-                )
-            out = list(primary_bundles)
-            for index, escalated_bundle in zip(escalation_indices, escalated_bundles, strict=True):
-                out[int(index)] = _escalated_bundle(
-                    primary=primary_bundles[int(index)],
-                    escalated=escalated_bundle,
-                    reason="committee_disagreement",
-                    escalation_K=int(escalation_K),
-                    escalation_Delta=float(escalation_Delta),
-                )
-            return tuple(out)
+            return bundles
         if str(decoder_mode) == "backward":
             backward_model = frontier._coerce_model(model, syndrome_int=int(syndromes[0]), direction="backward")
             if not frontier._is_native_binary_compatible(backward_model, syndrome=int(syndromes[0])):
@@ -1363,12 +1115,6 @@ def _decode_many_native_bundles(
                         selected_direction="backward",
                         transition_evals_total=int(result.stats.transition_evals),
                         backward_engine=str(result.engine),
-                        selected_K=int(K),
-                        selected_Delta=float(Delta),
-                        primary_selected=result,
-                        primary_backward=result,
-                        primary_selected_direction="backward",
-                        primary_transition_evals_total=int(result.stats.transition_evals),
                     ),
                     pressures[int(index)],
                 )
@@ -1413,12 +1159,6 @@ def _decode_many_native_bundles(
                     selected_direction="forward",
                     transition_evals_total=int(result.stats.transition_evals),
                     forward_engine=str(result.engine),
-                    selected_K=int(K),
-                    selected_Delta=float(Delta),
-                    primary_selected=result,
-                    primary_forward=result,
-                    primary_selected_direction="forward",
-                    primary_transition_evals_total=int(result.stats.transition_evals),
                 ),
                 pressures[int(index)],
             )
@@ -1551,9 +1291,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
             pressure_beta=float(task.get("pressure_beta", 8.0)),
             pressure_gamma=float(task.get("pressure_gamma", 2.0)),
             candidate_pressure_gate=str(task.get("candidate_pressure_gate", "all_but_one")),
-            escalate_on_committee_disagreement=bool(task.get("escalate_on_committee_disagreement", False)),
-            escalation_K=int(task.get("escalation_K", 0) or 0),
-            escalation_Delta=float(task.get("escalation_Delta", float("nan"))),
         )
         if warmup_bundles is None:
             _decode_one(
@@ -1570,9 +1307,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                 pressure_beta=float(task.get("pressure_beta", 8.0)),
                 pressure_gamma=float(task.get("pressure_gamma", 2.0)),
                 candidate_pressure_gate=str(task.get("candidate_pressure_gate", "all_but_one")),
-                escalate_on_committee_disagreement=bool(task.get("escalate_on_committee_disagreement", False)),
-                escalation_K=int(task.get("escalation_K", 0) or 0),
-                escalation_Delta=float(task.get("escalation_Delta", float("nan"))),
             )
 
     rows: list[dict[str, object]] = []
@@ -1600,7 +1334,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                         metric_mode=str(task.get("metric_mode", "logsumexp_float")),
                         int_metric_scale=int(task.get("int_metric_scale", 1024) or 1024),
                         engine=str(task["engine"]),
-                        escalate_on_committee_disagreement=bool(task.get("escalate_on_committee_disagreement", False)),
                     )
                 if batch_replay_payloads is not None:
                     batch_decode_s = float(time.perf_counter() - batch_started) / float(len(chunk_samples))
@@ -1623,9 +1356,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                         pressure_beta=float(task.get("pressure_beta", 8.0)),
                         pressure_gamma=float(task.get("pressure_gamma", 2.0)),
                         candidate_pressure_gate=str(task.get("candidate_pressure_gate", "all_but_one")),
-                        escalate_on_committee_disagreement=bool(task.get("escalate_on_committee_disagreement", False)),
-                        escalation_K=int(task.get("escalation_K", 0) or 0),
-                        escalation_Delta=float(task.get("escalation_Delta", float("nan"))),
                     )
                     if batch_bundles is None:
                         native_batch_disabled = True
@@ -1678,17 +1408,11 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                         pressure_beta=float(task.get("pressure_beta", 8.0)),
                         pressure_gamma=float(task.get("pressure_gamma", 2.0)),
                         candidate_pressure_gate=str(task.get("candidate_pressure_gate", "all_but_one")),
-                        escalate_on_committee_disagreement=bool(task.get("escalate_on_committee_disagreement", False)),
-                        escalation_K=int(task.get("escalation_K", 0) or 0),
-                        escalation_Delta=float(task.get("escalation_Delta", float("nan"))),
                     )
                     decode_s = float(time.perf_counter() - shot_started)
                 else:
                     decode_s = float(batch_decode_s_by_index.pop(int(local_index), 0.0))
                 selected = bundle.selected
-                primary_selected = _primary_or_selected(bundle)
-                primary_forward = bundle.primary_forward
-                primary_backward = bundle.primary_backward
                 fail_type = _fail_type(
                     status=str(selected.status),
                     logical_hat=selected.logical_hat,
@@ -1714,12 +1438,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                     "noisy_rounds": int(forward_family.noisy_rounds),
                     "K": int(task["K"]),
                     "Delta": float(task["Delta"]),
-                    "selected_K": int(bundle.selected_K or task["K"]),
-                    "selected_Delta": (
-                        float(bundle.selected_Delta)
-                        if math.isfinite(float(bundle.selected_Delta))
-                        else float(task["Delta"])
-                    ),
                     "score_alpha": float(task["score_alpha"]),
                     "metric_mode": str(task.get("metric_mode", "logsumexp_float")),
                     "int_metric_scale": int(task.get("int_metric_scale", 1024) or 1024),
@@ -1743,34 +1461,17 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                     "selected_direction_matches_committee_direction": (
                         True if str(task["decoder_mode"]) == "bidirectional_committee" else ""
                     ),
-                    "forward_decision": _result_decision(primary_forward),
-                    "backward_decision": _result_decision(primary_backward),
-                    "primary_selected_direction": str(bundle.primary_selected_direction or bundle.selected_direction),
-                    "primary_status": str(primary_selected.status),
-                    "primary_logical_hat": ""
-                    if primary_selected.logical_hat is None
-                    else int(primary_selected.logical_hat),
-                    "primary_forward_status": "" if primary_forward is None else str(primary_forward.status),
-                    "primary_forward_logical_hat": ""
-                    if primary_forward is None or primary_forward.logical_hat is None
-                    else int(primary_forward.logical_hat),
-                    "primary_backward_status": "" if primary_backward is None else str(primary_backward.status),
-                    "primary_backward_logical_hat": ""
-                    if primary_backward is None or primary_backward.logical_hat is None
-                    else int(primary_backward.logical_hat),
-                    "forward_log_evidence": _result_log_evidence(primary_forward),
-                    "backward_log_evidence": _result_log_evidence(primary_backward),
-                    "forward_terminal_top_log_mass_gap": _result_terminal_gap(primary_forward),
-                    "backward_terminal_top_log_mass_gap": _result_terminal_gap(primary_backward),
-                    "forward_transition_evals": _result_transition_evals(primary_forward),
-                    "backward_transition_evals": _result_transition_evals(primary_backward),
-                    "forward_max_post_prune_state_count": _result_max_post(primary_forward),
-                    "backward_max_post_prune_state_count": _result_max_post(primary_backward),
+                    "forward_decision": _result_decision(bundle.forward),
+                    "backward_decision": _result_decision(bundle.backward),
+                    "forward_log_evidence": _result_log_evidence(bundle.forward),
+                    "backward_log_evidence": _result_log_evidence(bundle.backward),
+                    "forward_terminal_top_log_mass_gap": _result_terminal_gap(bundle.forward),
+                    "backward_terminal_top_log_mass_gap": _result_terminal_gap(bundle.backward),
+                    "forward_transition_evals": _result_transition_evals(bundle.forward),
+                    "backward_transition_evals": _result_transition_evals(bundle.backward),
+                    "forward_max_post_prune_state_count": _result_max_post(bundle.forward),
+                    "backward_max_post_prune_state_count": _result_max_post(bundle.backward),
                     "committee_disagreed": bool(bundle.committee_disagreed),
-                    "escalated": bool(bundle.escalated),
-                    "escalation_reason": str(bundle.escalation_reason),
-                    "escalation_K": int(task.get("escalation_K", 0) or 0),
-                    "escalation_Delta": float(task.get("escalation_Delta", float("nan"))),
                     "status": str(selected.status),
                     "frame_ok": bool(fail_type == "success"),
                     "frame_fail_type": str(fail_type),
@@ -1785,10 +1486,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                     "failure_diagnosis": str(failure_diagnosis),
                     "decode_s": float(decode_s),
                     "transition_evals_total": int(bundle.transition_evals_total),
-                    "primary_transition_evals_total": int(
-                        bundle.primary_transition_evals_total or bundle.transition_evals_total
-                    ),
-                    "escalation_transition_evals_total": int(bundle.escalation_transition_evals_total),
                     "selected_transition_evals": int(selected.stats.transition_evals),
                     "max_pre_prune_state_count": int(selected.stats.max_pre_prune_state_count),
                     "max_post_prune_state_count": int(selected.stats.max_post_prune_state_count),
@@ -1812,8 +1509,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                     "noisy_rounds": int(forward_family.noisy_rounds),
                     "K": int(task["K"]),
                     "Delta": float(task["Delta"]),
-                    "selected_K": int(task["K"]),
-                    "selected_Delta": float(task["Delta"]),
                     "score_alpha": float(task["score_alpha"]),
                     "metric_mode": str(task.get("metric_mode", "logsumexp_float")),
                     "int_metric_scale": int(task.get("int_metric_scale", 1024) or 1024),
@@ -1833,13 +1528,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                     "selected_direction_matches_committee_direction": "",
                     "forward_decision": "",
                     "backward_decision": "",
-                    "primary_selected_direction": "",
-                    "primary_status": "exception",
-                    "primary_logical_hat": "",
-                    "primary_forward_status": "",
-                    "primary_forward_logical_hat": "",
-                    "primary_backward_status": "",
-                    "primary_backward_logical_hat": "",
                     "forward_log_evidence": float("nan"),
                     "backward_log_evidence": float("nan"),
                     "forward_terminal_top_log_mass_gap": float("nan"),
@@ -1849,10 +1537,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                     "forward_max_post_prune_state_count": 0,
                     "backward_max_post_prune_state_count": 0,
                     "committee_disagreed": False,
-                    "escalated": False,
-                    "escalation_reason": "",
-                    "escalation_K": int(task.get("escalation_K", 0) or 0),
-                    "escalation_Delta": float(task.get("escalation_Delta", float("nan"))),
                     "status": "exception",
                     "frame_ok": False,
                     "frame_fail_type": "exception_fail",
@@ -1867,8 +1551,6 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
                     "failure_diagnosis": "exception_failure",
                     "decode_s": float(time.perf_counter() - shot_started),
                     "transition_evals_total": 0,
-                    "primary_transition_evals_total": 0,
-                    "escalation_transition_evals_total": 0,
                     "selected_transition_evals": 0,
                     "max_pre_prune_state_count": 0,
                     "max_post_prune_state_count": 0,
@@ -1944,16 +1626,9 @@ def _summary_row(scope: str, rows: Sequence[Mapping[str, object]], *, sample_row
     decode_values = [float(row.get("decode_s", float("nan"))) for row in row_tuple]
     transition_values = [float(row.get("transition_evals_total", float("nan"))) for row in row_tuple]
     engines = sorted({str(row.get("selected_engine", "")) for row in row_tuple if str(row.get("selected_engine", ""))})
-    escalated = sum(1 for row in row_tuple if _boolish(row.get("escalated", False)))
     committee_disagreed = sum(1 for row in row_tuple if _boolish(row.get("committee_disagreed", False)))
     selected_forward = sum(1 for row in row_tuple if str(row.get("selected_direction", "")) == "forward")
     selected_backward = sum(1 for row in row_tuple if str(row.get("selected_direction", "")) == "backward")
-    primary_transition_values = [
-        float(row.get("primary_transition_evals_total", float("nan"))) for row in row_tuple
-    ]
-    escalation_transition_values = [
-        float(row.get("escalation_transition_evals_total", float("nan"))) for row in row_tuple
-    ]
     max_pre_values = [float(row.get("max_pre_prune_state_count", float("nan"))) for row in row_tuple]
     max_post_values = [float(row.get("max_post_prune_state_count", float("nan"))) for row in row_tuple]
     sum_pre_values = [float(row.get("sum_pre_prune_state_count", float("nan"))) for row in row_tuple]
@@ -2021,8 +1696,6 @@ def _summary_row(scope: str, rows: Sequence[Mapping[str, object]], *, sample_row
         "p_location": float(first.get("p_location", float("nan"))) if first else float("nan"),
         "K": int(first.get("K", 0) or 0),
         "Delta": float(first.get("Delta", float("nan"))) if first else float("nan"),
-        "escalation_K": int(first.get("escalation_K", 0) or 0),
-        "escalation_Delta": float(first.get("escalation_Delta", float("nan"))) if first else float("nan"),
         "score_alpha": float(first.get("score_alpha", float("nan"))) if first else float("nan"),
         "metric_mode": str(first.get("metric_mode", "logsumexp_float")) if first else "logsumexp_float",
         "int_metric_scale": int(first.get("int_metric_scale", 1024) or 1024) if first else 1024,
@@ -2040,20 +1713,8 @@ def _summary_row(scope: str, rows: Sequence[Mapping[str, object]], *, sample_row
         "selected_backward_fraction": float(selected_backward) / float(trials) if trials else float("nan"),
         "engine_requested": str(first.get("engine_requested", "")),
         "engines_seen": "|".join(engines),
-        "escalated": int(escalated),
-        "escalation_fraction": float(escalated) / float(trials) if trials else float("nan"),
         "committee_disagreed": int(committee_disagreed),
         "committee_disagreement_rate": float(committee_disagreed) / float(trials) if trials else float("nan"),
-        "primary_transition_evals_total_mean": (
-            float(np.mean(np.asarray(primary_transition_values, dtype=np.float64)))
-            if primary_transition_values
-            else float("nan")
-        ),
-        "escalation_transition_evals_total_mean": (
-            float(np.mean(np.asarray(escalation_transition_values, dtype=np.float64)))
-            if escalation_transition_values
-            else float("nan")
-        ),
         "sample_rows": str(Path(sample_rows).resolve()),
     }
 
@@ -2099,16 +1760,8 @@ def _combined_rows(per_shot_rows: Sequence[Mapping[str, object]]) -> list[dict[s
         else:
             fail_type = "success"
         failure_diagnosis = _combined_failure_diagnosis(x_row, z_row, fail_type=str(fail_type))
-        escalated = _boolish(x_row.get("escalated", False)) or _boolish(z_row.get("escalated", False))
         committee_disagreed = _boolish(x_row.get("committee_disagreed", False)) or _boolish(
             z_row.get("committee_disagreed", False)
-        )
-        escalation_reasons = sorted(
-            {
-                str(x_row.get("escalation_reason", "")).strip(),
-                str(z_row.get("escalation_reason", "")).strip(),
-            }
-            - {""}
         )
         out.append(
             {
@@ -2116,17 +1769,7 @@ def _combined_rows(per_shot_rows: Sequence[Mapping[str, object]]) -> list[dict[s
                 "scope": "combined",
                 "frame_ok": bool(fail_type == "success"),
                 "frame_fail_type": str(fail_type),
-                "selected_K": max(
-                    int(float(x_row.get("selected_K", x_row.get("K", 0)) or 0)),
-                    int(float(z_row.get("selected_K", z_row.get("K", 0)) or 0)),
-                ),
-                "selected_Delta": max(
-                    float(x_row.get("selected_Delta", x_row.get("Delta", 0.0)) or 0.0),
-                    float(z_row.get("selected_Delta", z_row.get("Delta", 0.0)) or 0.0),
-                ),
                 "committee_disagreed": bool(committee_disagreed),
-                "escalated": bool(escalated),
-                "escalation_reason": "|".join(escalation_reasons),
                 "truth_present_terminal": "|".join(
                     [str(x_row.get("truth_present_terminal", "")), str(z_row.get("truth_present_terminal", ""))]
                 ),
@@ -2143,14 +1786,6 @@ def _combined_rows(per_shot_rows: Sequence[Mapping[str, object]]) -> list[dict[s
                 + float(z_row.get("pressure_backward", 0.0) or 0.0),
                 "transition_evals_total": int(float(x_row.get("transition_evals_total", 0) or 0))
                 + int(float(z_row.get("transition_evals_total", 0) or 0)),
-                "primary_transition_evals_total": int(
-                    float(x_row.get("primary_transition_evals_total", 0) or 0)
-                )
-                + int(float(z_row.get("primary_transition_evals_total", 0) or 0)),
-                "escalation_transition_evals_total": int(
-                    float(x_row.get("escalation_transition_evals_total", 0) or 0)
-                )
-                + int(float(z_row.get("escalation_transition_evals_total", 0) or 0)),
                 "max_pre_prune_state_count": max(
                     int(x_row.get("max_pre_prune_state_count", 0) or 0),
                     int(z_row.get("max_pre_prune_state_count", 0) or 0),
@@ -2226,9 +1861,6 @@ def _build_tasks(args: argparse.Namespace, by_scope: Mapping[str, Sequence[Sampl
                     "engine": str(args.engine),
                     "native_batch_size": int(args.native_batch_size),
                     "warmup_native": bool(args.warmup_native),
-                    "escalate_on_committee_disagreement": bool(args.escalate_on_committee_disagreement),
-                    "escalation_K": int(args.escalation_K),
-                    "escalation_Delta": float(args.escalation_Delta),
                     "column_order": str(args.column_order),
                     "backward_column_order": str(args.backward_column_order),
                 }
@@ -2259,17 +1891,11 @@ def _write_report(summary_rows: Sequence[Mapping[str, object]], *, out_dir: Path
             f"direction mode `{first.get('direction_mode', first['decoder_mode'])}`, "
             f"pressure `{first.get('pressure_estimator', 'none')}`."
         ),
-        (
-            f"- Adaptive escalation: `{int(first.get('escalated', 0))}` side rows escalated "
-            f"(`{float(first.get('escalation_fraction', 0.0)):.6g}` fraction in this summary row); "
-            f"configured target `K={int(first.get('escalation_K', 0) or 0)}`, "
-            f"`Delta={float(first.get('escalation_Delta', float('nan'))):.6g}`."
-        ),
         f"- Noise: `backend={first['backend']}`, `p_location={float(first['p_location']):.6g}`.",
         "- FER policy: strict full logical success; syndrome failures and exceptions count as FER.",
         "",
-        "| scope | trials | fail_total | FER | FER/round | failures L/S/E | diagnosis syndrome/truth_missing/bad_ranking | escalated | fwd/bwd disagree | mean decode s | mean transitions | engines |",
-        "| --- | ---: | ---: | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |",
+        "| scope | trials | fail_total | FER | FER/round | failures L/S/E | diagnosis syndrome/truth_missing/bad_ranking | fwd/bwd disagree | mean decode s | mean transitions | engines |",
+        "| --- | ---: | ---: | ---: | ---: | --- | --- | ---: | ---: | ---: | --- |",
     ]
     for row in rows:
         lines.append(
@@ -2277,7 +1903,6 @@ def _write_report(summary_rows: Sequence[Mapping[str, object]], *, out_dir: Path
             f"`{float(row['fer']):.6g}` | `{float(row['fer_per_round']):.6g}` | "
             f"`{int(row['logical_fail'])}/{int(row['syndrome_fail'])}/{int(row['exception_fail'])}` | "
             f"`{int(row['syndrome_failure'])}/{int(row['truth_missing_terminal'])}/{int(row['bad_ranking'])}` | "
-            f"`{int(row.get('escalated', 0))}` | "
             f"`{float(row.get('committee_disagreement_rate', float('nan'))):.6g}` | "
             f"`{float(row['decode_s_mean']):.6g}` | `{float(row['transition_evals_total_mean']):.6g}` | "
             f"`{row['engines_seen']}` |"
@@ -2336,9 +1961,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--shards-per-side", type=int, default=5)
     parser.add_argument("--native-batch-size", type=int, default=32)
     parser.add_argument("--warmup-native", action="store_true")
-    parser.add_argument("--escalate-on-committee-disagreement", action="store_true")
-    parser.add_argument("--escalation-K", type=int, default=0)
-    parser.add_argument("--escalation-Delta", type=float, default=float("nan"))
     parser.add_argument("--progress-every-shards", type=int, default=1)
     parser.add_argument("--allow-existing", action="store_true")
     args = parser.parse_args(argv)
@@ -2353,20 +1975,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise ValueError("--metric-mode frontier_lite/maxlog_int requires --engine auto or native_binary")
     if not math.isfinite(float(args.pressure_beta)) or not math.isfinite(float(args.pressure_gamma)):
         raise ValueError("--pressure-beta and --pressure-gamma must be finite")
-    if bool(args.escalate_on_committee_disagreement):
-        if str(args.decoder_mode) != "bidirectional_committee":
-            raise ValueError("--escalate-on-committee-disagreement requires --decoder-mode bidirectional_committee")
-        if int(args.escalation_K) <= 0:
-            args.escalation_K = int(args.K) * 4
-        if not math.isfinite(float(args.escalation_Delta)):
-            args.escalation_Delta = float(args.Delta) + 4.0
-        if int(args.escalation_K) < int(args.K):
-            raise ValueError("--escalation-K must be >= primary --K")
-        if float(args.escalation_Delta) < float(args.Delta):
-            raise ValueError("--escalation-Delta must be >= primary --Delta")
-    else:
-        if int(args.escalation_K) <= 0:
-            args.escalation_K = 0
     out_dir = Path(args.out_dir).expanduser().resolve()
     if out_dir.exists() and any(out_dir.iterdir()) and not bool(args.allow_existing):
         raise FileExistsError(f"output directory exists and is non-empty; pass --allow-existing: {out_dir}")
@@ -2407,9 +2015,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         "shards_per_side": int(args.shards_per_side),
         "native_batch_size": int(args.native_batch_size),
         "warmup_native": bool(args.warmup_native),
-        "escalate_on_committee_disagreement": bool(args.escalate_on_committee_disagreement),
-        "escalation_K": int(args.escalation_K),
-        "escalation_Delta": float(args.escalation_Delta),
         "tasks": len(tasks),
         "result_root": str(out_dir),
     }
@@ -2424,12 +2029,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"shots_per_side={metadata['shots_per_side']} cpus={int(args.cpus)} tasks={len(tasks)}",
         flush=True,
     )
-    if bool(args.escalate_on_committee_disagreement):
-        print(
-            f"[setup] disagreement escalation enabled: primary K={int(args.K)} Delta={float(args.Delta):.6g}; "
-            f"committee disagreement -> K={int(args.escalation_K)} Delta={float(args.escalation_Delta):.6g}",
-            flush=True,
-        )
     print(
         f"[progress] shard partial CSVs and progress JSONs flush after native batches "
         f"of at most {int(args.native_batch_size)} shots",

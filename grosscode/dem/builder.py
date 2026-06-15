@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import scipy.sparse as sp
 
-from grosscode.codes.bivariate_bicycle import is_bivariate_bicycle_backend, load_bivariate_bicycle_code
 from grosscode.codes.generalized_bicycle import is_generalized_bicycle_backend, load_generalized_bicycle_code
 from grosscode.codes.gross144 import load_gross144_code
 from grosscode.codes.rotated_surface import is_rotated_surface_backend, load_rotated_surface_code
@@ -244,8 +243,6 @@ def load_dem_side_with_metadata_from_stim(
 
 
 def _load_code_for_backend(root_text: str | None, backend: str):
-    if is_bivariate_bicycle_backend(backend):
-        return load_bivariate_bicycle_code(backend=str(backend))
     if is_generalized_bicycle_backend(backend):
         return load_generalized_bicycle_code(backend=str(backend))
     if is_rotated_surface_backend(backend):
@@ -258,21 +255,18 @@ def _build_cached(
     root_text: str | None,
     backend: str,
     error_rate: float,
-    initial_data_error_rate: float | None,
 ) -> SplitSectorProblem:
     code = _load_code_for_backend(root_text, backend)
     spec_x = resolve_backend_circuit(
         backend=backend,
         sector="X",
         error_rate=error_rate,
-        initial_data_error_rate=initial_data_error_rate,
         asset_root=root_text,
     )
     spec_z = resolve_backend_circuit(
         backend=backend,
         sector="Z",
         error_rate=error_rate,
-        initial_data_error_rate=initial_data_error_rate,
         asset_root=root_text,
     )
     decompose_errors = not is_generalized_bicycle_backend(backend)
@@ -310,7 +304,6 @@ def build_split_sector_problem(
     *,
     backend: str = "bravyi_depth7",
     error_rate: float = 0.004,
-    initial_data_error_rate: float | None = None,
     asset_root: str | Path | None = None,
 ) -> SplitSectorProblem:
     root_text = None if asset_root is None else str(Path(asset_root))
@@ -318,5 +311,4 @@ def build_split_sector_problem(
         root_text,
         str(backend),
         float(error_rate),
-        None if initial_data_error_rate is None else float(initial_data_error_rate),
     )

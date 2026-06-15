@@ -16,8 +16,8 @@ This repo is scoped to running the frontier decoder on BB/Gross and surface-code
 detector-side matrices. It intentionally ships only:
 
 - frontier Python wrappers and the C++ native extension
-- BB/Gross, generalized/bivariate bicycle, rotated-surface, and planar
-  surface-code matrix/DEM builders
+- BB144/Gross, generalized-bicycle, rotated-surface, and planar surface-code
+  matrix/DEM builders
 - DEM inspection, replay, smoke, and BB144/Gross benchmark CLIs
 - small tests and reproducibility notes
 
@@ -192,6 +192,63 @@ Replay writes `summary_by_scope.csv`, `per_shot_rows.csv`,
 `combined` row in
 `summary_by_scope.csv` is the full logical frame error rate over paired
 `memory_X`/`memory_Z` shots.
+
+### How to tell the BB144/Gross reproduction worked
+
+Before decoding, this command should confirm that the bundled detector-side DEM
+is being used:
+
+```bash
+frontier-dem-info \
+  --backend bravyi_depth7 \
+  --p-location 0.001 \
+  --column-order deadline_reorder
+```
+
+Expected dimensions:
+
+```text
+scope,detector_matrix,logical_matrix,columns,edges,noisy_rounds,total_rounds,column_order
+memory_X,936x8784,12x8784,8784,30672,12,13,deadline_reorder
+memory_Z,936x8784,12x8784,8784,30672,12,13,deadline_reorder
+```
+
+For the 10k-shot command above:
+
+- `frontier-sample-rows` writes 20,000 side rows: 10,000 `memory_X` rows and
+  10,000 `memory_Z` rows, paired by shot id.
+- `frontier-replay` runs 40 shard tasks when `--shards-per-side 20` is used:
+  20 shards for `memory_X` and 20 shards for `memory_Z`.
+- `run_metadata.json` should contain `frontier_native_available: true`,
+  `engine: "native_binary"`, `K: 512`, `Delta: 12`,
+  `direction_mode: "fwd_bwd_committee"`, and `status: "complete"`.
+- `report.md` should state the matrix as
+  `D_X=D_Z=936x8784`, `O_X=O_Z=12x8784`, with 12 noisy rounds.
+- `summary_by_scope.csv` should contain rows for `memory_X`, `memory_Z`, and
+  `combined`. Use the `combined` row for the full logical frame error rate.
+- The useful audit columns are `fail_total`, `logical_fail`, `syndrome_fail`,
+  `exception_fail`, `fer`, `fer_per_round`, `transition_evals_total_mean`,
+  `engine_requested`, and `engines_seen`.
+
+At `p=0.001`, a 10k-shot sample is mainly a reproducibility and smoke-scale
+decoder check. It is too small to measure the low FER accurately; if the run has
+no failures, report that as "below the resolution of this 10k-shot sample", not
+as evidence that the FER is zero. Use larger samples, higher probabilities, or a
+fixed published sample-row corpus when the goal is a precise FER estimate.
+
+Wall-clock timing is machine-dependent. If reporting timing, also report the
+machine, Python version, worker count, whether `frontier_native_available` was
+true, and the `native_batch_size`. For machine-independent comparisons, prefer
+the transition-evaluation columns in `summary_by_scope.csv`.
+
+If the replay falls back from the native engine or reports that the native
+extension is unavailable, rerun:
+
+```bash
+python setup.py build_ext --inplace
+```
+
+from the activated virtual environment, then rerun the smoke test and replay.
 
 ## Matrices
 
