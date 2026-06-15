@@ -8,6 +8,7 @@ import csv
 import os
 import statistics
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -15,9 +16,6 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-_MPLCONFIGDIR = _REPO_ROOT / "results" / "mplconfig"
-_MPLCONFIGDIR.mkdir(parents=True, exist_ok=True)
-os.environ.setdefault("MPLCONFIGDIR", str(_MPLCONFIGDIR))
 
 from tools import frontier_decoder as frontier
 from tools.gross144_dem_x_progressive_report import _load_dem_family
@@ -70,6 +68,12 @@ def _parse_args() -> argparse.Namespace:
         help="Compatibility alias for --payload full.",
     )
     return parser.parse_args()
+
+
+def _configure_mplconfigdir() -> None:
+    default_dir = Path(tempfile.gettempdir()) / "frontier_mplconfig"
+    default_dir.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("MPLCONFIGDIR", str(default_dir))
 
 
 def _load_syndromes(sample_rows: Path, scopes: tuple[str, ...], rows_per_scope: int) -> dict[str, tuple[int, ...]]:
@@ -161,6 +165,7 @@ def _decode_payloads(
 
 def main() -> int:
     args = _parse_args()
+    _configure_mplconfigdir()
     scopes = tuple(args.scope) if args.scope else ("memory_X", "memory_Z")
     payload_mode = "full" if bool(args.full_payload) else str(args.payload)
     if int(args.rows_per_scope) <= 0:

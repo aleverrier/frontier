@@ -24,3 +24,12 @@
 \item Renamed public Python API types/functions to \texttt{Frontier*} / \texttt{decode\_frontier*}.
 \item Added README matrix-availability notes: static matrix files are not checked in; in-repo constructors cover surface-code checks and generated rotated-surface DEMs, while the accepted Gross split-sector DEM builder needs a public \texttt{qtanner-ssf} checkout via \texttt{GROSSCODE\_QTANNER\_ROOT} or \texttt{QTANNER\_ROOT}.
 \end{itemize}
+
+\subsection*{2026-06-15 BB144/Gross Reproducibility Docs}
+
+\begin{itemize}
+\item Added README instructions for reproducing BB144/Gross split-sector DEM results at a chosen \(p = \texttt{\detokenize{--p-location}}\).
+\item Documented both workflows: fresh side-level Monte Carlo via \texttt{\detokenize{tools.gross144_dem_x_progressive_report}}, and exact matched full-frame replay via \texttt{\detokenize{frontier-replay}} plus a saved \texttt{\detokenize{sample_rows.csv}}.
+\item Clarified that exact published full-frame rows require the same matched sample-row corpus; large sample corpora are not checked into this repo.
+\item Made \texttt{\detokenize{frontier-bb144-benchmark --help}} side-effect-free by deferring Matplotlib cache directory creation until after argument parsing.
+\end{itemize}
