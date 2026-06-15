@@ -6,7 +6,7 @@ from pathlib import Path
 from scipy.io import mmread
 
 from grosscode.codes.css import CSSCode, derive_css_code_from_checks
-from grosscode.utils.paths import resolve_qtanner_root
+from grosscode.utils.paths import resolve_gross_asset_root
 
 
 def _matrix_path(root: Path, which: str) -> Path:
@@ -28,7 +28,7 @@ def _load_cached(root_text: str) -> CSSCode:
         hx=hx,
         hz=hz,
         metadata={
-            "source": "public qtanner-ssf gross_code matrices",
+            "source": "public Gross benchmark matrices",
             "hx_path": str(hx_path),
             "hz_path": str(hz_path),
             "distance_hint": 12,
@@ -36,7 +36,6 @@ def _load_cached(root_text: str) -> CSSCode:
     )
 
 
-def load_gross144_code(qtanner_root: str | Path | None = None) -> CSSCode:
-    root = resolve_qtanner_root(qtanner_root)
+def load_gross144_code(asset_root: str | Path | None = None) -> CSSCode:
+    root = resolve_gross_asset_root(asset_root)
     return _load_cached(str(root))
-

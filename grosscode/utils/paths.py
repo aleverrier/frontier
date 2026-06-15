@@ -8,6 +8,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RESULTS_ROOT = REPO_ROOT / "results"
+BUNDLED_GROSS_ASSET_ROOT = REPO_ROOT / "grosscode" / "assets" / "gross144"
 
 
 def resolve_cache_root(root: str | Path | None = None, *, app_name: str = "frontier") -> Path:
@@ -29,19 +30,19 @@ def resolve_cache_root(root: str | Path | None = None, *, app_name: str = "front
     return path
 
 
-def resolve_qtanner_root(root: str | Path | None = None) -> Path:
-    configured_root = root or os.environ.get("GROSSCODE_QTANNER_ROOT") or os.environ.get("QTANNER_ROOT")
-    if configured_root is None:
-        raise FileNotFoundError(
-            "Gross-code matrix/circuit assets are not configured. Install the optional public "
-            "Gross benchmark assets or set GROSSCODE_QTANNER_ROOT/QTANNER_ROOT in your environment."
-        )
-    path = Path(configured_root).expanduser()
+def resolve_gross_asset_root(root: str | Path | None = None) -> Path:
+    configured_root = root or os.environ.get("GROSSCODE_ASSET_ROOT")
+    path = Path(configured_root).expanduser() if configured_root is not None else BUNDLED_GROSS_ASSET_ROOT
     if not path.exists():
+        if configured_root is None:
+            raise FileNotFoundError(
+                "Gross-code matrix/circuit assets are not available. The bundled asset directory "
+                f"is missing: {path}. Restore the bundled files or set GROSSCODE_ASSET_ROOT to a "
+                "custom asset root."
+            )
         raise FileNotFoundError(
             f"Gross-code matrix/circuit asset root not found: {path}. "
-            "Install the optional public Gross benchmark assets or set "
-            "GROSSCODE_QTANNER_ROOT/QTANNER_ROOT in your environment."
+            "Set GROSSCODE_ASSET_ROOT to a directory containing gross_code/ and stim_circuits/."
         )
     return path
 

@@ -371,18 +371,29 @@ def _parse_args() -> argparse.Namespace:
 def main() -> int:
     args = _parse_args()
     scopes = tuple(args.scope) if args.scope else ("memory_X", "memory_Z")
+    rows: list[tuple[str, LoadedProgressiveFamily]] = []
+    try:
+        for scope in scopes:
+            rows.append(
+                (
+                    str(scope),
+                    load_dem_family(
+                        backend=str(args.backend),
+                        p_location=float(args.p_location),
+                        scope=str(scope),
+                        column_order=str(args.column_order),
+                        stim_path=args.stim_path,
+                        external_benchmark_label=args.external_benchmark_label,
+                        external_noisy_rounds=args.external_noisy_rounds,
+                        external_perfect_rounds=int(args.external_perfect_rounds),
+                    ),
+                )
+            )
+    except FileNotFoundError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
     print("scope,detector_matrix,logical_matrix,columns,edges,noisy_rounds,total_rounds,column_order")
-    for scope in scopes:
-        family = load_dem_family(
-            backend=str(args.backend),
-            p_location=float(args.p_location),
-            scope=str(scope),
-            column_order=str(args.column_order),
-            stim_path=args.stim_path,
-            external_benchmark_label=args.external_benchmark_label,
-            external_noisy_rounds=args.external_noisy_rounds,
-            external_perfect_rounds=int(args.external_perfect_rounds),
-        )
+    for scope, family in rows:
         print(
             ",".join(
                 (

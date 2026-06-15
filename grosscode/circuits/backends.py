@@ -20,7 +20,7 @@ from grosscode.codes.rotated_surface import (
     get_rotated_surface_backend_spec,
     is_rotated_surface_backend,
 )
-from grosscode.utils.paths import resolve_qtanner_root
+from grosscode.utils.paths import resolve_gross_asset_root
 
 
 _PUBLIC_STIM_RE = re.compile(
@@ -52,17 +52,17 @@ class ResolvedBackendCircuit:
     schedule_notes: tuple[str, ...]
 
 
-def _stim_root(qtanner_root: str | Path | None = None) -> Path:
-    root = resolve_qtanner_root(qtanner_root)
-    stim_root = root / "third_party" / "BeamSearchDecoder" / "StimCircuit"
+def _stim_root(asset_root: str | Path | None = None) -> Path:
+    root = resolve_gross_asset_root(asset_root)
+    stim_root = root / "stim_circuits"
     if not stim_root.exists():
         raise FileNotFoundError(f"public Stim circuit directory missing: {stim_root}")
     return stim_root
 
 
-def list_available_public_circuit_rates(qtanner_root: str | Path | None = None) -> list[AvailableCircuitRate]:
+def list_available_public_circuit_rates(asset_root: str | Path | None = None) -> list[AvailableCircuitRate]:
     out: list[AvailableCircuitRate] = []
-    for path in sorted(_stim_root(qtanner_root).iterdir()):
+    for path in sorted(_stim_root(asset_root).iterdir()):
         match = _PUBLIC_STIM_RE.match(path.name)
         if match is None:
             continue
@@ -84,7 +84,7 @@ def resolve_backend_circuit(
     error_rate: float = 0.004,
     initial_data_error_rate: float | None = None,
     syndrome_rounds: int = 12,
-    qtanner_root: str | Path | None = None,
+    asset_root: str | Path | None = None,
 ) -> ResolvedBackendCircuit:
     sector_norm = sector.upper()
     if sector_norm not in {"X", "Z"}:
@@ -179,7 +179,7 @@ def resolve_backend_circuit(
 
     candidates = [
         item
-        for item in list_available_public_circuit_rates(qtanner_root)
+        for item in list_available_public_circuit_rates(asset_root)
         if item.sector == sector_norm and item.syndrome_rounds == int(syndrome_rounds)
     ]
     if not candidates:
@@ -197,7 +197,7 @@ def resolve_backend_circuit(
                 noisy_rounds=int(item.syndrome_rounds),
                 perfect_rounds=1,
                 schedule_notes=(
-                    "Mapped to the public gross memory_X/memory_Z Stim circuits shipped with qtanner-ssf.",
+                    "Mapped to the public Gross memory_X/memory_Z Stim circuits in the configured asset root.",
                     "Detector coordinates are absent in the public files, so detector rounds are inferred from an even split of rows across 12 noisy rounds plus 1 final perfect round.",
                 ),
             )

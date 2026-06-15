@@ -182,6 +182,30 @@ def _load_dem_matrices(
     return check_matrix, observables_matrix, priors
 
 
+def _rate_tag(rate: float) -> str:
+    return ("p" + f"{float(rate):.12g}").replace(".", "p").replace("-", "m")
+
+
+def _load_prebuilt_dem_matrices(spec: ResolvedBackendCircuit) -> tuple[sp.csr_matrix, sp.csr_matrix, np.ndarray] | None:
+    scope = f"memory_{spec.sector}"
+    asset_root = Path(spec.stim_path).parent.parent
+    prefix = asset_root / "dem" / f"{spec.backend}_{_rate_tag(float(spec.error_rate))}_{scope}"
+    detector_path = prefix.with_name(prefix.name + "_detector.npz")
+    logical_path = prefix.with_name(prefix.name + "_logical.npz")
+    priors_path = prefix.with_name(prefix.name + "_priors.npy")
+    if not (detector_path.exists() and logical_path.exists() and priors_path.exists()):
+        return None
+    check_matrix = binary_csr_mod2(sp.load_npz(detector_path).tocsr())
+    observables_matrix = binary_csr_mod2(sp.load_npz(logical_path).tocsr())
+    priors = np.asarray(np.load(priors_path), dtype=np.float64).reshape(-1)
+    if check_matrix.shape[1] != priors.size or observables_matrix.shape[1] != priors.size:
+        raise ValueError(
+            f"prebuilt DEM snapshot shape mismatch for {scope}: "
+            f"D={check_matrix.shape}, O={observables_matrix.shape}, priors={priors.shape}"
+        )
+    return check_matrix, observables_matrix, priors
+
+
 def load_dem_side_with_metadata_from_stim(
     *,
     stim_path: str | Path,
@@ -242,18 +266,28 @@ def _build_cached(
         sector="X",
         error_rate=error_rate,
         initial_data_error_rate=initial_data_error_rate,
-        qtanner_root=root_text,
+        asset_root=root_text,
     )
     spec_z = resolve_backend_circuit(
         backend=backend,
         sector="Z",
         error_rate=error_rate,
         initial_data_error_rate=initial_data_error_rate,
-        qtanner_root=root_text,
+        asset_root=root_text,
     )
     decompose_errors = not is_generalized_bicycle_backend(backend)
-    d_x, o_x, priors_x = _load_dem_matrices(spec_x.stim_path, decompose_errors=decompose_errors)
-    d_z, o_z, priors_z = _load_dem_matrices(spec_z.stim_path, decompose_errors=decompose_errors)
+    loaded_x = _load_prebuilt_dem_matrices(spec_x)
+    loaded_z = _load_prebuilt_dem_matrices(spec_z)
+    d_x, o_x, priors_x = (
+        loaded_x
+        if loaded_x is not None
+        else _load_dem_matrices(spec_x.stim_path, decompose_errors=decompose_errors)
+    )
+    d_z, o_z, priors_z = (
+        loaded_z
+        if loaded_z is not None
+        else _load_dem_matrices(spec_z.stim_path, decompose_errors=decompose_errors)
+    )
     metadata_x = _build_metadata(spec_x, d_x)
     metadata_z = _build_metadata(spec_z, d_z)
     return SplitSectorProblem(
@@ -277,9 +311,9 @@ def build_split_sector_problem(
     backend: str = "bravyi_depth7",
     error_rate: float = 0.004,
     initial_data_error_rate: float | None = None,
-    qtanner_root: str | Path | None = None,
+    asset_root: str | Path | None = None,
 ) -> SplitSectorProblem:
-    root_text = None if qtanner_root is None else str(Path(qtanner_root))
+    root_text = None if asset_root is None else str(Path(asset_root))
     return _build_cached(
         root_text,
         str(backend),

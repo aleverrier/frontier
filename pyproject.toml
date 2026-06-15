@@ -19,11 +19,21 @@ dependencies = [
 [project.scripts]
 frontier-smoke = "tools.frontier_decoder:main"
 frontier-dem-info = "tools.dem_loader:main"
+frontier-sample-rows = "tools.frontier_sample_rows:main"
 frontier-replay = "tools.frontier_sample_replay:main"
 frontier-bb144-benchmark = "tools.frontier_bb144_benchmark:main"
 
 [tool.setuptools.packages.find]
 include = ["grosscode*", "tools*"]
+
+[tool.setuptools.package-data]
+grosscode = [
+  "assets/gross144/dem/*.json",
+  "assets/gross144/dem/*.npy",
+  "assets/gross144/dem/*.npz",
+  "assets/gross144/gross_code/*.mtx",
+  "assets/gross144/stim_circuits/*.stim",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

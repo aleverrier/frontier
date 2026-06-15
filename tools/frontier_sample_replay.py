@@ -1908,6 +1908,13 @@ def _quantile(values: Sequence[float], q: float) -> float:
     return float(np.quantile(np.asarray(finite, dtype=np.float64), float(q)))
 
 
+def _finite_mean(values: Sequence[float]) -> float:
+    finite = [float(value) for value in values if math.isfinite(float(value))]
+    if not finite:
+        return float("nan")
+    return float(np.mean(np.asarray(finite, dtype=np.float64)))
+
+
 def _fer_per_round(fer: float, rounds: int) -> float:
     if int(rounds) <= 0:
         return float("nan")
@@ -2025,16 +2032,8 @@ def _summary_row(scope: str, rows: Sequence[Mapping[str, object]], *, sample_row
         "pressure_beta": float(first.get("pressure_beta", float("nan"))) if first else float("nan"),
         "pressure_gamma": float(first.get("pressure_gamma", float("nan"))) if first else float("nan"),
         "candidate_pressure_gate": str(first.get("candidate_pressure_gate", "")),
-        "pressure_forward_mean": (
-            float(np.nanmean(np.asarray(pressure_forward_values, dtype=np.float64)))
-            if pressure_forward_values
-            else float("nan")
-        ),
-        "pressure_backward_mean": (
-            float(np.nanmean(np.asarray(pressure_backward_values, dtype=np.float64)))
-            if pressure_backward_values
-            else float("nan")
-        ),
+        "pressure_forward_mean": _finite_mean(pressure_forward_values),
+        "pressure_backward_mean": _finite_mean(pressure_backward_values),
         "selected_forward": int(selected_forward),
         "selected_backward": int(selected_backward),
         "selected_forward_fraction": float(selected_forward) / float(trials) if trials else float("nan"),
