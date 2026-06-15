@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "frontier"
 version = "0.1.0"
-description = "C++-accelerated FrontierFast decoder with optional forward/backward committee."
+description = "C++-accelerated frontier decoder with optional forward/backward committee."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

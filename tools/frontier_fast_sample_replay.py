@@ -952,9 +952,9 @@ def _row_from_native_replay_payload(
     primary_transition_total = int(payload.get("primary_transition_evals_total", transition_total))
     escalation_transition_total = int(payload.get("escalation_transition_evals_total", 0))
     decoder_label = (
-        "FrontierFast auto fwd/bwd committee"
+        "frontier auto fwd/bwd committee"
         if str(task["decoder_mode"]) == "bidirectional_committee"
-        else "FrontierFast auto"
+        else "frontier auto"
     )
     return {
         "decoder": str(decoder_label),
@@ -1526,10 +1526,10 @@ def _task_sample_rows(raw_rows: Sequence[Mapping[str, object]]) -> list[SampleRo
 
 def _decoder_label(decoder_mode: str) -> str:
     if str(decoder_mode) == "bidirectional_committee":
-        return "FrontierFast auto fwd/bwd committee"
+        return "frontier auto fwd/bwd committee"
     if str(decoder_mode) == "backward":
-        return "FrontierFast auto backward"
-    return "FrontierFast auto"
+        return "frontier auto backward"
+    return "frontier auto"
 
 
 def _result_decision(result: fast.FrontierFastResult | None) -> str:
@@ -1991,7 +1991,7 @@ def _summary_row(scope: str, rows: Sequence[Mapping[str, object]], *, sample_row
     ]
     fer = float(fail_total) / float(trials) if trials else float("nan")
     return {
-        "decoder": str(first.get("decoder", "FrontierFast auto")) if first else "FrontierFast auto",
+        "decoder": str(first.get("decoder", "frontier auto")) if first else "frontier auto",
         "code": str(first.get("code", "")) if first else "",
         "scope": str(scope),
         "trials": int(trials),
@@ -2276,7 +2276,7 @@ def _write_report(summary_rows: Sequence[Mapping[str, object]], *, out_dir: Path
         return
     first = rows[0]
     lines = [
-        "# FrontierFast Sample Replay",
+        "# Frontier Sample Replay",
         "",
         (
             f"- Matrix: `{first['code']}` detector-side DEM, "
@@ -2285,7 +2285,7 @@ def _write_report(summary_rows: Sequence[Mapping[str, object]], *, out_dir: Path
             f"`{int(first['noisy_rounds'])}` noisy rounds."
         ),
         (
-            f"- Decoder: FrontierFast `_engine={first['engine_requested']}`, `K={int(first['K'])}`, "
+            f"- Decoder: frontier `_engine={first['engine_requested']}`, `K={int(first['K'])}`, "
             f"`Delta={float(first['Delta']):.6g}`, `score_alpha={float(first['score_alpha']):.6g}`, "
             f"`metric_mode={first.get('metric_mode', 'logsumexp_float')}`, "
             f"`int_metric_scale={int(first.get('int_metric_scale', 1024) or 1024)}`, "
@@ -2320,7 +2320,7 @@ def _write_report(summary_rows: Sequence[Mapping[str, object]], *, out_dir: Path
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Replay FrontierFast on matched DEM sample rows.")
+    parser = argparse.ArgumentParser(description="Replay frontier on matched DEM sample rows.")
     parser.add_argument("--sample-rows", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--code", type=str, required=True)
@@ -2448,7 +2448,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     }
     _json_write(out_dir / "run_metadata.json", metadata)
     print(
-        f"[setup] FrontierFast replay code={args.code} backend={args.backend} p={float(args.p_location):.6g} "
+        f"[setup] frontier replay code={args.code} backend={args.backend} p={float(args.p_location):.6g} "
         f"K={int(args.K)} Delta={float(args.Delta):.6g} direction_mode={args.direction_mode} "
         f"decoder_mode={args.decoder_mode} engine={args.engine} "
         f"metric_mode={args.metric_mode} int_metric_scale={int(args.int_metric_scale)} "

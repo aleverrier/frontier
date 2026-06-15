@@ -16,7 +16,7 @@ def is_available() -> bool:
 
 @dataclass(slots=True)
 class NativeBinaryFrontierModel:
-    """Small Python handle for the native C++ FrontierFast binary model."""
+    """Small Python handle for the native C++ frontier binary model."""
 
     spec: Mapping[str, object]
     _capsule: Any = field(init=False, repr=False)
@@ -24,7 +24,7 @@ class NativeBinaryFrontierModel:
 
     def __post_init__(self) -> None:
         if _native is None:
-            raise RuntimeError("native FrontierFast extension is not built")
+            raise RuntimeError("native frontier extension is not built")
         self._capsule = _native.make_model(dict(self.spec))
         self._info = dict(_native.model_info(self._capsule))
 
@@ -165,7 +165,7 @@ class NativeBinaryFrontierModel:
     ) -> list[dict[str, object]]:
         decode_many_select_replay = getattr(_native, "decode_many_select_replay", None)
         if decode_many_select_replay is None:
-            raise RuntimeError("native FrontierFast extension does not expose decode_many_select_replay")
+            raise RuntimeError("native frontier extension does not expose decode_many_select_replay")
         return decode_many_select_replay(
             self._capsule,
             backward_model._capsule,
@@ -180,7 +180,7 @@ class NativeBinaryFrontierModel:
 
 @dataclass(slots=True)
 class NativeChoiceFrontierModel:
-    """Small Python handle for the native C++ FrontierFast multi-choice model."""
+    """Small Python handle for the native C++ frontier multi-choice model."""
 
     spec: Mapping[str, object]
     _capsule: Any = field(init=False, repr=False)
@@ -188,9 +188,9 @@ class NativeChoiceFrontierModel:
 
     def __post_init__(self) -> None:
         if _native is None:
-            raise RuntimeError("native FrontierFast extension is not built")
+            raise RuntimeError("native frontier extension is not built")
         if not hasattr(_native, "make_choice_model"):
-            raise RuntimeError("native FrontierFast extension does not expose the choice model API")
+            raise RuntimeError("native frontier extension does not expose the choice model API")
         self._capsule = _native.make_choice_model(dict(self.spec))
         self._info = dict(_native.choice_model_info(self._capsule))
 

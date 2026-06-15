@@ -47,7 +47,7 @@ def _model() -> fast.FrontierFastModel:
 
 def test_native_committee_matches_binary_adapter() -> None:
     if not fast.native_binary_available():
-        pytest.skip("native FrontierFast extension is not built")
+        pytest.skip("native frontier extension is not built")
 
     model = _model()
     binary = fast.decode_frontier_fast_committee(model, 0, K=16, Delta=100.0, _engine="binary")
@@ -71,7 +71,7 @@ def test_export_direction_modes_are_limited_to_selected_decoder() -> None:
 
 def test_native_wrapper_does_not_expose_two_stage_methods() -> None:
     if not fast.native_binary_available():
-        pytest.skip("native FrontierFast extension is not built")
+        pytest.skip("native frontier extension is not built")
 
     native_model = fast._get_native_binary_model(_model())
     assert not hasattr(native_model, "decode_overlap1_first_stage")

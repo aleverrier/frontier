@@ -144,7 +144,8 @@ bool batch_workspace_reuse_disabled() {
 
 std::size_t native_batch_thread_count(std::size_t job_count) {
     if (job_count <= 1) return 1;
-    const char* raw = std::getenv("FRONTIERFAST_NATIVE_BATCH_THREADS");
+    const char* raw = std::getenv("FRONTIER_NATIVE_BATCH_THREADS");
+    if (raw == nullptr) raw = std::getenv("FRONTIERFAST_NATIVE_BATCH_THREADS");
     if (raw == nullptr) return 1;
     const std::string value(raw);
     if (value.empty() || value == "1" || value == "off" || value == "false" || value == "no") {
@@ -1078,7 +1079,7 @@ void choice_capsule_destructor(PyObject* capsule) {
 NativeModel* model_from_capsule(PyObject* capsule) {
     void* ptr = PyCapsule_GetPointer(capsule, "frontier_fast_native_model");
     if (ptr == nullptr) {
-        throw std::runtime_error("invalid native FrontierFast model capsule");
+        throw std::runtime_error("invalid native frontier model capsule");
     }
     return static_cast<NativeModel*>(ptr);
 }
@@ -1086,7 +1087,7 @@ NativeModel* model_from_capsule(PyObject* capsule) {
 ChoiceNativeModel* choice_model_from_capsule(PyObject* capsule) {
     void* ptr = PyCapsule_GetPointer(capsule, "frontier_fast_native_choice_model");
     if (ptr == nullptr) {
-        throw std::runtime_error("invalid native FrontierFast choice model capsule");
+        throw std::runtime_error("invalid native frontier choice model capsule");
     }
     return static_cast<ChoiceNativeModel*>(ptr);
 }
@@ -7394,12 +7395,12 @@ PyObject* py_choice_model_info(PyObject*, PyObject* args) {
 }
 
 PyMethodDef methods[] = {
-    {"make_model", py_make_model, METH_VARARGS, "Create a native binary FrontierFast model capsule."},
-    {"make_choice_model", py_make_choice_model, METH_VARARGS, "Create a native multi-choice FrontierFast model capsule."},
-    {"decode", py_decode, METH_VARARGS, "Decode a syndrome using a native binary FrontierFast model."},
-    {"decode_choice", py_decode_choice, METH_VARARGS, "Decode a syndrome using a native multi-choice FrontierFast model."},
-    {"decode_many", py_decode_many, METH_VARARGS, "Decode a batch of syndromes using a native binary FrontierFast model."},
-    {"decode_many_choice", py_decode_many_choice, METH_VARARGS, "Decode a batch of syndromes using a native multi-choice FrontierFast model."},
+    {"make_model", py_make_model, METH_VARARGS, "Create a native binary frontier model capsule."},
+    {"make_choice_model", py_make_choice_model, METH_VARARGS, "Create a native multi-choice frontier model capsule."},
+    {"decode", py_decode, METH_VARARGS, "Decode a syndrome using a native binary frontier model."},
+    {"decode_choice", py_decode_choice, METH_VARARGS, "Decode a syndrome using a native multi-choice frontier model."},
+    {"decode_many", py_decode_many, METH_VARARGS, "Decode a batch of syndromes using a native binary frontier model."},
+    {"decode_many_choice", py_decode_many_choice, METH_VARARGS, "Decode a batch of syndromes using a native multi-choice frontier model."},
     {"decode_many_select", py_decode_many_select, METH_VARARGS, "Decode forward/backward batches and return selected committee payloads."},
     {"decode_many_select_compact", py_decode_many_select_compact, METH_VARARGS, "Decode forward/backward batches and return compact selected committee payloads."},
     {"decode_many_select_replay", py_decode_many_select_replay, METH_VARARGS, "Decode forward/backward batches and return flat selected replay payloads."},
@@ -7411,7 +7412,7 @@ PyMethodDef methods[] = {
 PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
     "_frontier_fast_native",
-    "Native binary FrontierFast V0 engine.",
+    "Native binary frontier engine.",
     -1,
     methods,
 };

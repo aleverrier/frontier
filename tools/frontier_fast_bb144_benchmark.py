@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Focused FrontierFast timing probe for the BB144/Gross split-sector DEM."""
+"""Focused frontier timing probe for the BB144/Gross split-sector DEM."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ DEFAULT_SAMPLE_ROWS = Path(
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Time native FrontierFast selected bidirectional-committee decode on "
+            "Time native frontier selected bidirectional-committee decode on "
             "the accepted BB144/Gross split-sector DEM benchmark."
         )
     )

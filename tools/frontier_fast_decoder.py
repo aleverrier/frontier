@@ -644,14 +644,14 @@ def _is_native_choice_compatible(
 
 def _get_native_binary_model(model: FrontierFastModel) -> object:
     if not native_binary_available():
-        raise RuntimeError("native FrontierFast binary extension is not built")
+        raise RuntimeError("native frontier binary extension is not built")
     key = _native_cache_key(model)
     cached = _NATIVE_MODEL_CACHE.get(key)
     if cached is not None:
         return cached
     spec = _native_binary_model_spec(model)
     if spec is None:
-        raise ValueError("native FrontierFast binary engine requested for an unsupported model")
+        raise ValueError("native frontier binary engine requested for an unsupported model")
     native_model = _frontier_fast_native.NativeBinaryFrontierModel(spec)
     if len(_NATIVE_MODEL_CACHE) >= 32:
         _NATIVE_MODEL_CACHE.clear()
@@ -661,14 +661,14 @@ def _get_native_binary_model(model: FrontierFastModel) -> object:
 
 def _get_native_choice_model(model: FrontierFastModel) -> object:
     if not native_choice_available():
-        raise RuntimeError("native FrontierFast choice extension is not built")
+        raise RuntimeError("native frontier choice extension is not built")
     key = _native_cache_key(model)
     cached = _NATIVE_CHOICE_MODEL_CACHE.get(key)
     if cached is not None:
         return cached
     spec = _native_choice_model_spec(model)
     if spec is None:
-        raise ValueError("native FrontierFast choice engine requested for an unsupported model")
+        raise ValueError("native frontier choice engine requested for an unsupported model")
     native_model = _frontier_fast_native.NativeChoiceFrontierModel(spec)
     if len(_NATIVE_CHOICE_MODEL_CACHE) >= 32:
         _NATIVE_CHOICE_MODEL_CACHE.clear()
@@ -742,7 +742,7 @@ def _decode_frontier_fast_native_binary(
     syndrome_int = _syndrome_to_int(syndrome)
     model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_int))
     if not bool(_assume_compatible) and not _is_native_binary_compatible(model, syndrome=int(syndrome_int)):
-        raise ValueError("native FrontierFast binary engine requested for an unsupported model")
+        raise ValueError("native frontier binary engine requested for an unsupported model")
     native_model = _get_native_binary_model(model)
     n_limbs = _detector_limb_count(int(model.num_detectors))
     payload = native_model.decode(
@@ -775,7 +775,7 @@ def _decode_frontier_fast_native_choice(
     syndrome_int = _syndrome_to_int(syndrome)
     model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_int))
     if not bool(_assume_compatible) and not _is_native_choice_compatible(model, syndrome=int(syndrome_int)):
-        raise ValueError("native FrontierFast choice engine requested for an unsupported model")
+        raise ValueError("native frontier choice engine requested for an unsupported model")
     native_model = _get_native_choice_model(model)
     n_limbs = _detector_limb_count(int(model.num_detectors))
     payload = native_model.decode(
@@ -812,7 +812,7 @@ def _decode_frontier_fast_native_binary_many(
         return tuple()
     model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_ints[0]))
     if not bool(_assume_compatible) and not _is_native_binary_compatible(model, syndrome=int(syndrome_ints[0])):
-        raise ValueError("native FrontierFast binary engine requested for an unsupported model")
+        raise ValueError("native frontier binary engine requested for an unsupported model")
     native_model = _get_native_binary_model(model)
     n_limbs = _detector_limb_count(int(model.num_detectors))
     payloads = native_model.decode_many(
@@ -853,7 +853,7 @@ def _decode_frontier_fast_native_binary_many_payloads(
         return tuple()
     model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_ints[0]))
     if not bool(_assume_compatible) and not _is_native_binary_compatible(model, syndrome=int(syndrome_ints[0])):
-        raise ValueError("native FrontierFast binary engine requested for an unsupported model")
+        raise ValueError("native frontier binary engine requested for an unsupported model")
     native_model = _get_native_binary_model(model)
     n_limbs = _detector_limb_count(int(model.num_detectors))
     decode_many_payloads = getattr(native_model, "decode_many_payloads", native_model.decode_many)
@@ -888,7 +888,7 @@ def _decode_frontier_fast_native_choice_many_payloads(
         return tuple()
     model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_ints[0]))
     if not bool(_assume_compatible) and not _is_native_choice_compatible(model, syndrome=int(syndrome_ints[0])):
-        raise ValueError("native FrontierFast choice engine requested for an unsupported model")
+        raise ValueError("native frontier choice engine requested for an unsupported model")
     native_model = _get_native_choice_model(model)
     n_limbs = _detector_limb_count(int(model.num_detectors))
     payloads = native_model.decode_many(
@@ -950,14 +950,14 @@ def _decode_frontier_fast_native_binary_committee_many_payloads(
         return tuple()
     if not bool(_assume_compatible):
         if not _is_native_binary_compatible(forward_model, syndrome=int(syndrome_ints[0])):
-            raise ValueError("native FrontierFast binary engine requested for an unsupported forward model")
+            raise ValueError("native frontier binary engine requested for an unsupported forward model")
         if not _is_native_binary_compatible(backward_model, syndrome=int(syndrome_ints[0])):
-            raise ValueError("native FrontierFast binary engine requested for an unsupported backward model")
+            raise ValueError("native frontier binary engine requested for an unsupported backward model")
     native_forward = _get_native_binary_model(forward_model)
     native_backward = _get_native_binary_model(backward_model)
     decode_many_select = getattr(native_forward, "decode_many_select", None)
     if decode_many_select is None:
-        raise RuntimeError("native FrontierFast extension does not expose decode_many_select")
+        raise RuntimeError("native frontier extension does not expose decode_many_select")
     if bool(compact_payload):
         decode_many_select = getattr(native_forward, "decode_many_select_compact", decode_many_select)
     n_limbs_forward = _detector_limb_count(int(forward_model.num_detectors))
@@ -1000,14 +1000,14 @@ def _decode_frontier_fast_native_binary_committee_many_replay_payloads(
         return tuple()
     if not bool(_assume_compatible):
         if not _is_native_binary_compatible(forward_model, syndrome=int(syndrome_ints[0])):
-            raise ValueError("native FrontierFast binary engine requested for an unsupported forward model")
+            raise ValueError("native frontier binary engine requested for an unsupported forward model")
         if not _is_native_binary_compatible(backward_model, syndrome=int(syndrome_ints[0])):
-            raise ValueError("native FrontierFast binary engine requested for an unsupported backward model")
+            raise ValueError("native frontier binary engine requested for an unsupported backward model")
     native_forward = _get_native_binary_model(forward_model)
     native_backward = _get_native_binary_model(backward_model)
     decode_many_select_replay = getattr(native_forward, "decode_many_select_replay", None)
     if decode_many_select_replay is None:
-        raise RuntimeError("native FrontierFast extension does not expose decode_many_select_replay")
+        raise RuntimeError("native frontier extension does not expose decode_many_select_replay")
     n_limbs_forward = _detector_limb_count(int(forward_model.num_detectors))
     n_limbs_backward = _detector_limb_count(int(backward_model.num_detectors))
     payloads = decode_many_select_replay(
@@ -1106,7 +1106,7 @@ def _decode_frontier_fast_binary_adapter(
     syndrome_int = _syndrome_to_int(syndrome)
     model = _coerce_model(problem_or_model, syndrome_int=int(syndrome_int))
     if not bool(_assume_compatible) and not _is_binary_fastpath_compatible(model, syndrome=int(syndrome_int)):
-        raise ValueError("binary FrontierFast engine requested for an unsupported model")
+        raise ValueError("binary frontier engine requested for an unsupported model")
 
     env_overrides = {
         "FRONTIERK_BINARY_TRANSITION_FAST_PATH": "1",
@@ -1159,7 +1159,7 @@ def _decode_frontier_fast_python_reference(
     score_alpha: float = _SCORE_ALPHA,
     direction: str | None = None,
 ) -> FrontierFastResult:
-    """Decode with the pure Python FrontierFast V1 reference implementation.
+    """Decode with the pure Python frontier reference implementation.
 
     V1 uses packed integer state keys, merges by posterior log-mass, and prunes
     by `score >= best_score - Delta` followed by a cap at `K`.
@@ -1360,7 +1360,7 @@ def decode_frontier_fast(
     int_metric_scale: int = 1024,
     _engine: str = "auto",
 ) -> FrontierFastResult:
-    """Decode with FrontierFast V1.1.
+    """Decode with frontier.
 
     `_engine` is a private test hook: `auto` dispatches strict binary models to
     the native binary engine when available, otherwise the optimized binary
@@ -1396,9 +1396,9 @@ def decode_frontier_fast(
     native_compatible = _is_native_binary_compatible(model, syndrome=int(syndrome_int))
     if engine == "native_binary":
         if not native_binary_available():
-            raise RuntimeError("native FrontierFast binary extension is not built")
+            raise RuntimeError("native frontier binary extension is not built")
         if not bool(native_compatible):
-            raise ValueError("native FrontierFast binary engine requested for an unsupported model")
+            raise ValueError("native frontier binary engine requested for an unsupported model")
         return _decode_frontier_fast_native_binary(
             model,
             int(syndrome_int),
@@ -1416,9 +1416,9 @@ def decode_frontier_fast(
     )
     if engine == "native_choice":
         if not native_choice_available():
-            raise RuntimeError("native FrontierFast choice extension is not built")
+            raise RuntimeError("native frontier choice extension is not built")
         if not bool(choice_compatible):
-            raise ValueError("native FrontierFast choice engine requested for an unsupported model")
+            raise ValueError("native frontier choice engine requested for an unsupported model")
         return _decode_frontier_fast_native_choice(
             model,
             int(syndrome_int),
@@ -1443,7 +1443,7 @@ def decode_frontier_fast(
     compatible = _is_binary_fastpath_compatible(model, syndrome=int(syndrome_int))
     if engine == "binary":
         if not bool(compatible):
-            raise ValueError("binary FrontierFast engine requested for an unsupported model")
+            raise ValueError("binary frontier engine requested for an unsupported model")
         return _decode_frontier_fast_binary_adapter(
             model,
             int(syndrome_int),
@@ -1615,15 +1615,15 @@ def _smoke_columns() -> tuple[progressive.FactorTransition, ...]:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Tiny FrontierFast V1 smoke benchmark")
+    parser = argparse.ArgumentParser(description="Tiny frontier smoke benchmark")
     parser.add_argument("--K", "--beam-cap", dest="K", type=int, default=8)
-    parser.add_argument("--delta", type=float, default=8.0)
+    parser.add_argument("--Delta", "--delta", dest="Delta", type=float, default=8.0)
     parser.add_argument("--shots", type=int, default=20)
     args = parser.parse_args(argv)
     results: list[FrontierFastResult] = []
     for shot in range(int(args.shots)):
         syndrome = int(shot & 1)
-        results.append(decode_frontier_fast(_smoke_columns(), syndrome, K=int(args.K), Delta=float(args.delta)))
+        results.append(decode_frontier_fast(_smoke_columns(), syndrome, K=int(args.K), Delta=float(args.Delta)))
     ok_results = [result for result in results if result.status == "ok"]
     mean_transition_evals = (
         float(sum(result.stats.transition_evals for result in results)) / float(max(1, len(results)))

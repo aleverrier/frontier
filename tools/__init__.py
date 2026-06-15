@@ -1,1 +1,1 @@
-"""Command-line and support modules for the FrontierFast decoder export."""
+"""Command-line and support modules for the frontier decoder export."""

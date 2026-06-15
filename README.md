@@ -1,11 +1,11 @@
 # frontier
 
-Fast FrontierFast decoder export.
+Frontier decoder export.
 
-This repository contains the working C++-accelerated FrontierFast decoder path
+This repository contains the working C++-accelerated frontier decoder path
 selected from the `better-beam` research tree:
 
-- native C++ binary FrontierFast engine (`_frontier_fast_native`)
+- native C++ binary frontier engine (`_frontier_fast_native`)
 - forward-only, backward-only, and forward/backward committee decoding
 - `deadline_reorder` for the forward pass
 - `backward_deadline_reorder` for the backward pass
@@ -28,7 +28,7 @@ python setup.py build_ext --inplace
 
 ```bash
 python -m pytest -q
-frontier-smoke --K 16 --delta 100 --shots 3
+frontier-smoke --K 16 --Delta 100 --shots 3
 ```
 
 ## DEM Replay
@@ -55,7 +55,7 @@ frontier-replay \
 ```
 
 For CPU-saturated runs on macOS, launch from Terminal and set
-`FRONTIERFAST_NATIVE_BATCH_THREADS` to the number of native worker threads you
+`FRONTIER_NATIVE_BATCH_THREADS` to the number of native worker threads you
 want the extension to use.
 
 ## Benchmark
