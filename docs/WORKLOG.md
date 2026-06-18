@@ -1,5 +1,25 @@
 # Frontier Worklog
 
+## 2026-06-18 Build Metadata Classifier Repair
+
+- Removed the stale `License :: OSI Approved :: Apache Software License`
+  classifier from `pyproject.toml`. The project already declares
+  `license = "Apache-2.0"` and `license-files = ["LICENSE", "NOTICE"]`, and
+  current `setuptools` rejects legacy license classifiers when validating the
+  PEP 639 license-expression form.
+- This fixes the fresh-clone build blocker observed by
+  `python setup.py build_ext --inplace`, which previously failed before C++
+  compilation with `setuptools.errors.InvalidConfigError: License classifiers
+  have been superseded by license expressions`.
+- Validation with `/Users/anthony/research/better-beam/tools/py` completed:
+  native build, `pytest -q` (`27 passed`; cache-write warning only),
+  `tools.frontier_decoder --K 16 --Delta 100 --shots 3`, both DEM loader checks
+  for `rotated_surface_d3` and `bravyi_depth7` at `p_location=0.001`, both
+  Python examples, paper plot reproduction with `--all --strict`, and
+  `git diff --check`.
+- The Gross/BB144 DEM info check reported the expected accepted split-sector
+  dimensions: `D_X=D_Z=936x8784`, `O_X=O_Z=12x8784`, with 12 noisy rounds.
+
 ## 2026-06-18 Paper Plot Renderer Completion
 
 - Added shared plot helpers and committed Matplotlib renderers for all current

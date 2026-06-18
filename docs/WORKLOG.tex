@@ -1,5 +1,14 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-18 Build Metadata Classifier Repair}
+
+\begin{itemize}
+\item Removed the stale \texttt{\detokenize{License :: OSI Approved :: Apache Software License}} classifier from \texttt{\detokenize{pyproject.toml}}. The project already declares \texttt{\detokenize{license = "Apache-2.0"}} and \texttt{\detokenize{license-files = ["LICENSE", "NOTICE"]}}, and current \texttt{\detokenize{setuptools}} rejects legacy license classifiers when validating the PEP 639 license-expression form.
+\item This fixes the fresh-clone build blocker observed by \texttt{\detokenize{python setup.py build_ext --inplace}}, which previously failed before C++ compilation with \texttt{\detokenize{setuptools.errors.InvalidConfigError: License classifiers have been superseded by license expressions}}.
+\item Validation with \texttt{\detokenize{/Users/anthony/research/better-beam/tools/py}} completed: native build, \texttt{\detokenize{pytest -q}} with \texttt{27 passed} and a cache-write warning only, \texttt{\detokenize{tools.frontier_decoder --K 16 --Delta 100 --shots 3}}, both DEM loader checks for \texttt{\detokenize{rotated_surface_d3}} and \texttt{\detokenize{bravyi_depth7}} at \texttt{\detokenize{p_location=0.001}}, both Python examples, paper plot reproduction with \texttt{\detokenize{--all --strict}}, and \texttt{\detokenize{git diff --check}}.
+\item The Gross/BB144 DEM info check reported the expected accepted split-sector dimensions: \texttt{\detokenize{D_X=D_Z=936x8784}}, \texttt{\detokenize{O_X=O_Z=12x8784}}, with 12 noisy rounds.
+\end{itemize}
+
 \subsection*{2026-06-18 Paper Plot Renderer Completion}
 
 \begin{itemize}
