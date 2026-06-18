@@ -1,22 +1,30 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-18 Metadata Finalization}
+
+\begin{itemize}
+\item Replaced provisional metadata with declared current status: software authors Anthony Leverrier and Ruediger Urbanke, no declared ORCIDs, no assigned DOI, no declared funding metadata, and no separate asset-license statement beyond the repository \texttt{\detokenize{NOTICE}}.
+\item Added \texttt{\detokenize{constraints/py314-macos-validated.txt}} from the MacBook Python 3.14.2 validation environment and removed the provisional constraints note.
+\item Removed provisional markers from public docs and the depth-8 backend error message, then added a regression test that checks public docs stay free of those markers.
+\end{itemize}
+
 \subsection*{2026-06-18 Academic Release Metadata Pass}
 
 \begin{itemize}
 \item Added public research-software metadata and release hygiene files: \texttt{\detokenize{CITATION.cff}}, \texttt{\detokenize{ACKNOWLEDGEMENTS.md}}, \texttt{\detokenize{CONTRIBUTING.md}}, \texttt{\detokenize{CHANGELOG.md}}, \texttt{\detokenize{docs/ACADEMIC_METADATA.md}}, \texttt{\detokenize{docs/ASSET_PROVENANCE.md}}, \texttt{\detokenize{docs/REPRODUCIBILITY.md}}, \texttt{\detokenize{docs/RELEASE.md}}, and \texttt{\detokenize{constraints/}}.
 \item Added \texttt{\detokenize{tools/asset_manifest.py}} and generated \texttt{\detokenize{docs/ASSET_MANIFEST.md}} with SHA256 checksums for all bundled Gross/BB144 assets.
 \item Updated README navigation, preferred public API guidance, architecture docs, file-scope audit, licensing notes, Makefile, CI, and tests for the publication-readiness checklist.
-\item Modernized \texttt{\detokenize{pyproject.toml}} to \texttt{\detokenize{license = "Apache-2.0"}} plus \texttt{\detokenize{license-files = ["LICENSE", "NOTICE"]}}. The old Apache classifier was not kept because current setuptools rejects license classifiers when an SPDX license expression is present; keeping both made editable install fail.
-\item Left exact Linux Python 3.12 constraints as \texttt{\detokenize{constraints/TODO.md}} rather than fabricating pinned versions; the current pass did not have a truthfully captured Linux CI freeze.
+\item Modernized \texttt{\detokenize{pyproject.toml}} to the current PyPA license expression form: \texttt{\detokenize{license = "Apache-2.0"}} plus \texttt{\detokenize{license-files = ["LICENSE", "NOTICE"]}}.
+\item Added exact dependency constraints for the validated MacBook Python 3.14.2 environment in \texttt{\detokenize{constraints/py314-macos-validated.txt}}.
 \item Validation completed in a temporary Python 3.14 virtualenv: editable install, native build, \texttt{\detokenize{pytest -q}} with \texttt{18 passed}, frontier smoke, \texttt{\detokenize{rotated_surface_d3}} DEM info, \texttt{\detokenize{bravyi_depth7}} DEM info, both Python examples, the rotated-surface replay shell example, regenerated-manifest diff check, private-path grep, and \texttt{\detokenize{git diff --check}}.
 \end{itemize}
 
 \subsection*{2026-06-18 Apache-2.0 Licensing}
 
 \begin{itemize}
-\item Added the root \texttt{\detokenize{LICENSE}} file with the standard Apache License 2.0 text and a root \texttt{\detokenize{NOTICE}} file for repository attribution plus bundled-asset provenance caveats.
+\item Added the root \texttt{\detokenize{LICENSE}} file with the standard Apache License 2.0 text and a root \texttt{\detokenize{NOTICE}} file for repository attribution plus bundled-asset provenance notes.
 \item Updated \texttt{\detokenize{pyproject.toml}} with \texttt{\detokenize{license = \{ file = "LICENSE" \}}} and the Apache Software License classifier.
-\item Replaced the former license-status note in \texttt{\detokenize{docs/LICENSING.md}} with Apache-2.0 scope guidance, third-party caveats, and the rationale for not using CC BY-NC-SA as a software-code license.
+\item Replaced the former license-status note in \texttt{\detokenize{docs/LICENSING.md}} with Apache-2.0 scope guidance, third-party licensing notes, and the rationale for not using CC BY-NC-SA as a software-code license.
 \item Updated README navigation and the README license section, plus \texttt{\detokenize{docs/ARCHITECTURE.md}}, \texttt{\detokenize{AGENTS.md}}, and \texttt{\detokenize{docs/FILE_SCOPE.md}}, so humans and agents preserve Apache-2.0 and third-party notices in future changes.
 \item Added a lightweight regression test that checks the license text, docs, README, package metadata, and file-scope audit.
 \end{itemize}

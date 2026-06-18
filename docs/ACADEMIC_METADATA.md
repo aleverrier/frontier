@@ -1,38 +1,40 @@
 # Academic Metadata
 
-This file records metadata that still needs maintainer confirmation. Unknown
-items below are not repository facts yet.
+This file records the public academic metadata currently declared by this
+repository. It avoids inferred DOI, ORCID, funding, and asset-origin claims.
 
-## Citation Metadata Still To Confirm
+## Citation Metadata
 
-- Full software author list and author order.
-- ORCIDs.
-- Institution or lab.
-- Software DOI.
-- Related paper/preprint DOI or arXiv ID.
-- Preferred citation policy for software versus paper citation.
+- Software title: `frontier: C++-accelerated frontier decoder export`.
+- Software authors declared in `CITATION.cff`: Anthony Leverrier and Ruediger
+  Urbanke.
+- Software version: `0.1.0`.
+- Release date: `2026-06-18`.
+- Repository: `https://github.com/aleverrier/frontier`.
+- License: Apache-2.0.
+- ORCIDs: none declared.
+- Institution or lab: none declared.
+- Software DOI: none assigned in this repository.
+- Related paper/preprint DOI or arXiv ID: none assigned in this repository.
+- Citation policy: cite the software using `CITATION.cff`; cite the paper
+  separately when a public paper identifier is available.
 
-## Funding Metadata Still To Confirm
+## Funding Metadata
 
-- Funding agency.
-- Grant or project name.
-- Grant number.
-- Institutional acknowledgements.
+No funding agency, grant/project name, grant number, or institutional
+acknowledgement is declared by this repository.
 
-## Asset Provenance Still To Confirm
+## Asset Provenance Status
 
-- Provenance of bundled Gross/BB144 CSS matrices.
-- Provenance of bundled Stim circuits.
-- Provenance and generation chain for prebuilt DEM snapshots.
-- License status for each bundled research-asset group.
+Bundled Gross/BB144 CSS matrices, Stim circuits, and prebuilt DEM snapshots are
+documented in `docs/ASSET_PROVENANCE.md` and checksummed in
+`docs/ASSET_MANIFEST.md`. The repository records them as bundled research
+assets for the documented workflows; no separate upstream DOI or standalone
+asset license statement is declared in this repository.
 
-## Release Checklist Before Publication
+## Release Metadata Policy
 
-- Tag the release.
-- Archive the release on Zenodo or an institutional repository.
-- Update the DOI in `CITATION.cff` once available.
-- Update `CHANGELOG.md`.
-- Record exact environment constraints.
-- Regenerate or verify `docs/ASSET_MANIFEST.md`.
-- Confirm citation, acknowledgement, and asset-provenance placeholders are no
-  longer needed for the release.
+For citable releases, keep `CITATION.cff`, `CHANGELOG.md`,
+`docs/ASSET_MANIFEST.md`, and the relevant constraints file synchronized with
+the tagged source state. Do not add DOI, ORCID, funding, or asset-license
+claims unless those facts are available.

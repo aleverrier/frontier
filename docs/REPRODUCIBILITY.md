@@ -26,10 +26,13 @@ bash examples/replay_rotated_surface_d3.sh
 When exact constraints are available, install with:
 
 ```bash
-python -m pip install -e . -c constraints/py312-linux-ci.txt
+python -m pip install -e . -c constraints/py314-macos-validated.txt
 ```
 
-If `constraints/py312-linux-ci.txt` is absent, see `constraints/TODO.md`.
+The committed constraints file was captured from the MacBook Python 3.14.2
+validation environment. For cluster or Linux reproduction, use the same capture
+pattern described in `constraints/README.md` from the validated target
+environment.
 
 The `bravyi_depth7`, `p=0.001` Gross/BB144 DEM smoke path should report
 detector matrices `936x8784` and logical matrices `12x8784` for both

@@ -85,7 +85,7 @@ def resolve_backend_circuit(
     if backend == "depth8_candidate":
         raise ScheduleResolutionError(
             "backend='depth8_candidate' is not publicly reconstructible in this repo yet. "
-            "The interface exists, but schedule details remain TODO by policy."
+            "The interface exists, but schedule details are not included in this public export."
         )
     if is_rotated_surface_backend(backend):
         spec = get_rotated_surface_backend_spec(backend)

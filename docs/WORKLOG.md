@@ -1,5 +1,17 @@
 # Frontier Worklog
 
+## 2026-06-18 Metadata Finalization
+
+- Replaced provisional metadata with declared current status: software authors
+  Anthony Leverrier and Ruediger Urbanke, no declared ORCIDs, no assigned DOI,
+  no declared funding metadata, and no separate asset-license statement beyond
+  the repository `NOTICE`.
+- Added `constraints/py314-macos-validated.txt` from the MacBook Python 3.14.2
+  validation environment and removed the provisional constraints note.
+- Removed provisional markers from public docs and the depth-8 backend error
+  message, then added a regression test that checks public docs stay free of
+  those markers.
+
 ## 2026-06-18 Academic Release Metadata Pass
 
 - Added public research-software metadata and release hygiene files:
@@ -11,13 +23,10 @@
 - Updated README navigation, preferred public API guidance, architecture docs,
   file-scope audit, licensing notes, Makefile, CI, and tests for the
   publication-readiness checklist.
-- Modernized `pyproject.toml` to `license = "Apache-2.0"` plus
-  `license-files = ["LICENSE", "NOTICE"]`. The old Apache classifier was not
-  kept because current setuptools rejects license classifiers when an SPDX
-  license expression is present; keeping both made editable install fail.
-- Left exact Linux Python 3.12 constraints as `constraints/TODO.md` rather than
-  fabricating pinned versions; the current pass did not have a truthfully
-  captured Linux CI freeze.
+- Modernized `pyproject.toml` to the current PyPA license expression form:
+  `license = "Apache-2.0"` plus `license-files = ["LICENSE", "NOTICE"]`.
+- Added exact dependency constraints for the validated MacBook Python 3.14.2
+  environment in `constraints/py314-macos-validated.txt`.
 - Validation completed in a temporary Python 3.14 virtualenv:
   - `python -m pip install -U pip setuptools wheel`
   - `python -m pip install -e .`
@@ -37,11 +46,11 @@
 
 - Added the root `LICENSE` file with the standard Apache License 2.0 text and
   a root `NOTICE` file for repository attribution plus bundled-asset provenance
-  caveats.
+  notes.
 - Updated `pyproject.toml` with `license = { file = "LICENSE" }` and the
   Apache Software License classifier.
 - Replaced the former license-status note in `docs/LICENSING.md` with Apache-2.0
-  scope guidance, third-party caveats, and the rationale for not using
+  scope guidance, third-party licensing notes, and the rationale for not using
   CC BY-NC-SA as a software-code license.
 - Updated README navigation and the README `License` section, plus
   `docs/ARCHITECTURE.md`, `AGENTS.md`, and `docs/FILE_SCOPE.md`, so humans and

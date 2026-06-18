@@ -12,8 +12,8 @@
 - BB144/Gross and surface-code DEM workflows.
 - Public CLI commands.
 - Apache-2.0 licensing.
-- Known limitations:
+- Notes:
   - large sample corpora and publication-scale result artifacts are not bundled;
-  - exact author, DOI, funding, and asset-provenance metadata still require
-    maintainer confirmation before an archival release;
+  - DOI, funding, and asset-provenance metadata status is recorded in
+    `docs/ACADEMIC_METADATA.md`;
   - Windows/MSVC is not advertised as supported.

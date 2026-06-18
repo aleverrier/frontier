@@ -230,7 +230,7 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "NOTICE",
         "AGENTS.md",
         "constraints/README.md",
-        "constraints/TODO.md",
+        "constraints/py314-macos-validated.txt",
         "docs/ACADEMIC_METADATA.md",
         "docs/ASSET_PROVENANCE.md",
         "docs/ASSET_MANIFEST.md",
@@ -282,7 +282,6 @@ def test_academic_metadata_docs_are_present_and_linked() -> None:
 
     assert "cff-version: 1.2.0" in citation
     assert 'license: "Apache-2.0"' in citation
-    assert "TODO-DOI" not in citation
     assert "CITATION.cff" in readme
     assert "docs/REPRODUCIBILITY.md" in readme
     assert "grosscode/assets/gross144" in provenance
@@ -295,3 +294,21 @@ def test_public_model_construction_uses_public_progressive_helper() -> None:
     private_helper = "progressive." + "_columns_from_factor_transitions"
     assert "progressive.columns_from_factor_transitions" in test_source
     assert private_helper not in test_source
+
+
+def test_public_docs_contain_no_provisional_markers() -> None:
+    marker = "TO" + "DO"
+    scanned_paths = [
+        REPO_ROOT / "ACKNOWLEDGEMENTS.md",
+        REPO_ROOT / "CITATION.cff",
+        REPO_ROOT / "CONTRIBUTING.md",
+        REPO_ROOT / "README.md",
+        REPO_ROOT / "constraints" / "README.md",
+        REPO_ROOT / "docs" / "ACADEMIC_METADATA.md",
+        REPO_ROOT / "docs" / "ASSET_PROVENANCE.md",
+        REPO_ROOT / "docs" / "FILE_SCOPE.md",
+        REPO_ROOT / "docs" / "REPRODUCIBILITY.md",
+        REPO_ROOT / "grosscode" / "circuits" / "backends.py",
+    ]
+    for path in scanned_paths:
+        assert marker not in path.read_text(encoding="utf-8"), path

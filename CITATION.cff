@@ -1,16 +1,13 @@
-# TODO: maintainer: confirm complete software author list, author order, and
-# ORCIDs before an archival release.
 cff-version: 1.2.0
 message: "If you use this software, please cite it using the metadata in this file."
 title: "frontier: C++-accelerated frontier decoder export"
 type: software
 authors:
-  - name: "Frontier contributors"
+  - family-names: "Leverrier"
+    given-names: "Anthony"
+  - family-names: "Urbanke"
+    given-names: "Ruediger"
 version: "0.1.0"
 date-released: "2026-06-18"
 repository-code: "https://github.com/aleverrier/frontier"
 license: "Apache-2.0"
-# TODO: maintainer: add identifiers.doi after a Zenodo or institutional archive
-# DOI exists.
-# TODO: maintainer: add preferred-citation once the paper/software citation
-# target is chosen.

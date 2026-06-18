@@ -8,8 +8,8 @@ Use this checklist for citable public releases.
 - Update the version in `pyproject.toml`.
 - Update `CHANGELOG.md`.
 - Ensure `CITATION.cff` version and date are current.
-- Confirm `ACKNOWLEDGEMENTS.md` and `docs/ACADEMIC_METADATA.md` do not contain
-  release-blocking placeholders.
+- Review `ACKNOWLEDGEMENTS.md` and `docs/ACADEMIC_METADATA.md` for release
+  consistency.
 - Confirm asset provenance and license status in `docs/ASSET_PROVENANCE.md`.
 - Generate or update checksums with:
 

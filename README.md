@@ -32,13 +32,13 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
 - `docs/COMMANDS.md`: console-script command index.
 - `docs/ENVIRONMENT.md`: supported environment variables and native debug toggles.
 - `docs/REPRODUCIBILITY.md`: smoke and publication-grade reproducibility guide.
-- `docs/ASSET_PROVENANCE.md`: bundled-asset provenance status and caveats.
+- `docs/ASSET_PROVENANCE.md`: bundled-asset provenance status.
 - `docs/RELEASE.md`: release and archival checklist.
-- `docs/ACADEMIC_METADATA.md`: metadata TODOs before archival release.
+- `docs/ACADEMIC_METADATA.md`: declared academic metadata status.
 - `docs/WORKLOG.md`: agent-readable maintenance log.
 - `examples/README.md`: tiny runnable examples.
-- `CITATION.cff`: citation metadata placeholder for citable releases.
-- `ACKNOWLEDGEMENTS.md`: funding/institutional acknowledgement placeholders.
+- `CITATION.cff`: citation metadata for citable releases.
+- `ACKNOWLEDGEMENTS.md`: funding, institutional, and upstream-software acknowledgements.
 - `CONTRIBUTING.md`: human-facing contribution guide.
 - `CHANGELOG.md`: release-level change log.
 - `LICENSE`: Apache License 2.0; see `docs/LICENSING.md` for notes on scope
@@ -73,7 +73,7 @@ For exact reproducibility constraints, see `constraints/README.md`. Once a
 known-good constraints file exists, install with:
 
 ```bash
-python -m pip install -e . -c constraints/py312-linux-ci.txt
+python -m pip install -e . -c constraints/py314-macos-validated.txt
 ```
 
 ## Smoke Test
@@ -355,6 +355,5 @@ print(problem.D_X.shape, problem.D_Z.shape)
 This repository is licensed under the Apache License 2.0. See `LICENSE` and
 `docs/LICENSING.md`. Third-party dependencies and any explicitly marked
 third-party files/assets remain under their own licenses. Citation, release,
-funding, and provenance metadata still needing maintainer confirmation is
-tracked in `CITATION.cff`, `ACKNOWLEDGEMENTS.md`, and
-`docs/ACADEMIC_METADATA.md`.
+funding, and provenance metadata status is tracked in `CITATION.cff`,
+`ACKNOWLEDGEMENTS.md`, and `docs/ACADEMIC_METADATA.md`.

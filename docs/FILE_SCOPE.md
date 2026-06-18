@@ -8,18 +8,18 @@ serving that surface were removed.
 | --- | --- |
 | `README.md` | Public install, smoke-test, replay, benchmark, matrix, and reproduction instructions. |
 | `AGENTS.md` | Operational setup, validation, and style checklist for coding agents. |
-| `CITATION.cff` | Citation metadata scaffold for citable software releases, with TODOs for unknown DOI/author facts. |
-| `ACKNOWLEDGEMENTS.md` | Funding, institutional, and upstream-software acknowledgement placeholders. |
+| `CITATION.cff` | Citation metadata for citable software releases. |
+| `ACKNOWLEDGEMENTS.md` | Funding, institutional, and upstream-software acknowledgement status. |
 | `CONTRIBUTING.md` | Human-facing contribution, validation, compatibility, reproducibility, and asset-change rules. |
 | `CHANGELOG.md` | Release-level change log; distinct from the internal worklog files. |
 | `LICENSE` | Apache License 2.0 text for repository code and documentation unless a file states otherwise. |
 | `NOTICE` | Repository attribution and bundled-asset provenance note without relicensing third-party material. |
 | `constraints/README.md` | Explains reproducibility constraints versus package requirements. |
-| `constraints/TODO.md` | Records that exact Linux Python 3.12 constraints still need truthful capture. |
+| `constraints/py314-macos-validated.txt` | Exact dependency constraints captured from the MacBook Python 3.14.2 validation environment. |
 | `docs/WORKLOG.md` | Agent-readable change log for repo maintenance. |
 | `docs/WORKLOG.tex` | Human-readable TeX change log matching `docs/WORKLOG.md`. |
-| `docs/ACADEMIC_METADATA.md` | Checklist of citation, funding, DOI, and provenance metadata still needing maintainer confirmation. |
-| `docs/ASSET_PROVENANCE.md` | Bundled Gross/BB144 asset provenance table with TODOs where origin/license facts are unknown. |
+| `docs/ACADEMIC_METADATA.md` | Declared citation, funding, DOI, and provenance metadata status. |
+| `docs/ASSET_PROVENANCE.md` | Bundled Gross/BB144 asset provenance table and declared asset-license status. |
 | `docs/ASSET_MANIFEST.md` | Generated SHA256 checksum manifest for bundled Gross/BB144 assets. |
 | `docs/REPRODUCIBILITY.md` | Smoke and publication-grade reproducibility requirements. |
 | `docs/RELEASE.md` | Release, tag, archive, DOI, and validation checklist for citable releases. |
@@ -27,7 +27,7 @@ serving that surface were removed.
 | `docs/ARCHITECTURE.md` | Human/agent orientation guide for workflows, module ownership, public APIs, native dispatch, and safe changes. |
 | `docs/COMMANDS.md` | Console-script command index with minimal commands, outputs, and common failure modes. |
 | `docs/ENVIRONMENT.md` | Public environment-variable documentation plus internal native debug toggles. |
-| `docs/LICENSING.md` | Apache-2.0 scope, third-party licensing caveats, and vendoring-notice guidance. |
+| `docs/LICENSING.md` | Apache-2.0 scope, third-party licensing notes, and vendoring-notice guidance. |
 | `Makefile` | Standard local shortcuts for native build, tests, smoke, DEM info, and cleanup. |
 | `.github/workflows/ci.yml` | Lightweight GitHub Actions validation for install, native build, tests, smoke, and DEM info. |
 | `pyproject.toml` | Package metadata, dependencies, console scripts, and pytest config. |
