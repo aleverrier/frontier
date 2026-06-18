@@ -8,10 +8,21 @@ serving that surface were removed.
 | --- | --- |
 | `README.md` | Public install, smoke-test, replay, benchmark, matrix, and reproduction instructions. |
 | `AGENTS.md` | Operational setup, validation, and style checklist for coding agents. |
+| `CITATION.cff` | Citation metadata scaffold for citable software releases, with TODOs for unknown DOI/author facts. |
+| `ACKNOWLEDGEMENTS.md` | Funding, institutional, and upstream-software acknowledgement placeholders. |
+| `CONTRIBUTING.md` | Human-facing contribution, validation, compatibility, reproducibility, and asset-change rules. |
+| `CHANGELOG.md` | Release-level change log; distinct from the internal worklog files. |
 | `LICENSE` | Apache License 2.0 text for repository code and documentation unless a file states otherwise. |
 | `NOTICE` | Repository attribution and bundled-asset provenance note without relicensing third-party material. |
+| `constraints/README.md` | Explains reproducibility constraints versus package requirements. |
+| `constraints/TODO.md` | Records that exact Linux Python 3.12 constraints still need truthful capture. |
 | `docs/WORKLOG.md` | Agent-readable change log for repo maintenance. |
 | `docs/WORKLOG.tex` | Human-readable TeX change log matching `docs/WORKLOG.md`. |
+| `docs/ACADEMIC_METADATA.md` | Checklist of citation, funding, DOI, and provenance metadata still needing maintainer confirmation. |
+| `docs/ASSET_PROVENANCE.md` | Bundled Gross/BB144 asset provenance table with TODOs where origin/license facts are unknown. |
+| `docs/ASSET_MANIFEST.md` | Generated SHA256 checksum manifest for bundled Gross/BB144 assets. |
+| `docs/REPRODUCIBILITY.md` | Smoke and publication-grade reproducibility requirements. |
+| `docs/RELEASE.md` | Release, tag, archive, DOI, and validation checklist for citable releases. |
 | `docs/FILE_SCOPE.md` | This audit of the retained file set. |
 | `docs/ARCHITECTURE.md` | Human/agent orientation guide for workflows, module ownership, public APIs, native dispatch, and safe changes. |
 | `docs/COMMANDS.md` | Console-script command index with minimal commands, outputs, and common failure modes. |
@@ -35,6 +46,7 @@ serving that surface were removed.
 | `tools/frontier_sample_replay.py` | Matched sample replay CLI for BB144/Gross and related DEM rows. |
 | `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe over explicit sample rows. |
 | `tools/frontier_progressive.py` | Minimal frontier column/layout/order helpers used by the public wrapper and DEM loader. |
+| `tools/asset_manifest.py` | Deterministic checksum manifest generator for bundled Gross/BB144 assets. |
 | `examples/README.md` | Short guide to runnable examples. |
 | `examples/minimal_decode.py` | Tiny public-API decode example matching the smoke model. |
 | `examples/inspect_dem.py` | Minimal DEM loader example for `rotated_surface_d3`. |

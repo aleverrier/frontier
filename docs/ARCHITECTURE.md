@@ -43,7 +43,7 @@ BB144/Gross reproduction commands.
 | `grosscode/utils/*` | Repo path, cache path, asset-root, and GF(2) helper utilities. |
 | `tests/test_frontier_export.py` | Lightweight regression tests for public imports, CLI modules, docs, sample rows, native wrapper behavior, and replay summaries. |
 
-`tools/` currently contains both console-script modules and legacy
+`tools/` currently contains both console-script modules and compatibility
 implementation modules. New public imports should prefer the `frontier` package
 when possible, while old `tools.*` imports remain supported.
 
@@ -57,28 +57,38 @@ User-facing command APIs are the console scripts from `pyproject.toml`:
 - `frontier-replay`
 - `frontier-bb144-benchmark`
 
-The intended Python API is:
+### Preferred Public API
 
-- `tools.frontier_decoder.FrontierModel`
-- `tools.frontier_decoder.FrontierResult`
-- `tools.frontier_decoder.FrontierStats`
-- `tools.frontier_decoder.FrontierCommitteeMember`
-- `tools.frontier_decoder.decode_frontier`
-- `tools.frontier_decoder.decode_frontier_committee`
+- `frontier.FrontierModel`
+- `frontier.FrontierResult`
+- `frontier.FrontierStats`
+- `frontier.FrontierCommitteeMember`
+- `frontier.decode_frontier`
+- `frontier.decode_frontier_committee`
+- `frontier.dem.load_dem_family`
+- `frontier.dem.build_backward_deadline_ordered_family`
 - `frontier.progressive.FactorTransition`
 - `frontier.progressive.OutcomeTransition`
 - `frontier.progressive.columns_from_factor_transitions`
 - `frontier.progressive.build_frontier_layout`
-- `frontier.progressive.optimize_column_order`
-- `grosscode.dem.builder.build_split_sector_problem`
-- `grosscode.codes.surface.standard_surface_checks`
-- `grosscode.codes.rotated_surface.load_rotated_surface_code`
-- the re-exported equivalents under `frontier` and `frontier.decoder`
-- DEM loader re-exports under `frontier.dem`
 
-Underscore-prefixed functions are internal implementation hooks and may change.
-Tests may exercise selected underscore helpers when they pin behavior at a
-boundary, but external users should not build workflows on those names.
+New examples should use `frontier.*` unless they intentionally demonstrate a
+lower-level matrix builder such as `grosscode.dem.builder.build_split_sector_problem`,
+`grosscode.codes.surface.standard_surface_checks`, or
+`grosscode.codes.rotated_surface.load_rotated_surface_code`.
+
+### Compatibility/Internal Implementation Modules
+
+- `tools.frontier_decoder`
+- `tools.dem_loader`
+- `tools.frontier_progressive`
+- other `tools.*`
+
+`tools.*` remains supported for console scripts and backward compatibility, but
+it is not the preferred import surface for new examples. Underscore-prefixed
+functions are internal implementation hooks and may change. Tests may exercise
+selected underscore helpers when they pin behavior at a boundary, but external
+users should not build workflows on those names.
 
 ## Native Engine Dispatch
 
@@ -120,8 +130,7 @@ and record the provenance in `NOTICE` or a third-party notice file.
 ## Platform and Compiler Support
 
 - CI validates Ubuntu with Python 3.11 and 3.12.
-- Local development has also validated the native extension on macOS with a
-  Clang-compatible toolchain.
+- CI includes a minimal macOS Python 3.12 smoke job.
 - The native extension expects a C++17 compiler compatible with the current
   source and `setup.py` flags.
 - Windows/MSVC is not currently advertised as supported. Treat it as a porting

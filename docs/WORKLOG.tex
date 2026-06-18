@@ -1,5 +1,16 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-18 Academic Release Metadata Pass}
+
+\begin{itemize}
+\item Added public research-software metadata and release hygiene files: \texttt{\detokenize{CITATION.cff}}, \texttt{\detokenize{ACKNOWLEDGEMENTS.md}}, \texttt{\detokenize{CONTRIBUTING.md}}, \texttt{\detokenize{CHANGELOG.md}}, \texttt{\detokenize{docs/ACADEMIC_METADATA.md}}, \texttt{\detokenize{docs/ASSET_PROVENANCE.md}}, \texttt{\detokenize{docs/REPRODUCIBILITY.md}}, \texttt{\detokenize{docs/RELEASE.md}}, and \texttt{\detokenize{constraints/}}.
+\item Added \texttt{\detokenize{tools/asset_manifest.py}} and generated \texttt{\detokenize{docs/ASSET_MANIFEST.md}} with SHA256 checksums for all bundled Gross/BB144 assets.
+\item Updated README navigation, preferred public API guidance, architecture docs, file-scope audit, licensing notes, Makefile, CI, and tests for the publication-readiness checklist.
+\item Modernized \texttt{\detokenize{pyproject.toml}} to \texttt{\detokenize{license = "Apache-2.0"}} plus \texttt{\detokenize{license-files = ["LICENSE", "NOTICE"]}}. The old Apache classifier was not kept because current setuptools rejects license classifiers when an SPDX license expression is present; keeping both made editable install fail.
+\item Left exact Linux Python 3.12 constraints as \texttt{\detokenize{constraints/TODO.md}} rather than fabricating pinned versions; the current pass did not have a truthfully captured Linux CI freeze.
+\item Validation completed in a temporary Python 3.14 virtualenv: editable install, native build, \texttt{\detokenize{pytest -q}} with \texttt{18 passed}, frontier smoke, \texttt{\detokenize{rotated_surface_d3}} DEM info, \texttt{\detokenize{bravyi_depth7}} DEM info, both Python examples, the rotated-surface replay shell example, regenerated-manifest diff check, private-path grep, and \texttt{\detokenize{git diff --check}}.
+\end{itemize}
+
 \subsection*{2026-06-18 Apache-2.0 Licensing}
 
 \begin{itemize}

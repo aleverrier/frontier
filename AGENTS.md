@@ -2,6 +2,9 @@
 
 Operational notes for humans and coding agents working in this repository.
 
+Human-facing contribution expectations live in `CONTRIBUTING.md`; release and
+archival steps live in `docs/RELEASE.md`.
+
 ## Setup
 
 ```bash
@@ -37,6 +40,9 @@ promise Windows/MSVC support unless it has been explicitly ported and tested.
 - Preserve Apache-2.0 headers/notices and any third-party notices.
 - Do not add files with incompatible or unclear licensing.
 - Record vendored third-party code/assets in `NOTICE` or `docs/LICENSING.md`.
+- Update `CITATION.cff`, `ACKNOWLEDGEMENTS.md`, and
+  `docs/ACADEMIC_METADATA.md` when citation, funding, DOI, or author facts
+  change.
 - If a file has a different license, keep that license notice with the file.
 - Prefer small modules with explicit responsibilities.
 - Use type annotations for new Python functions.
@@ -45,6 +51,7 @@ promise Windows/MSVC support unless it has been explicitly ported and tested.
 
 - Rebuild the native extension if decoder or binding code changed.
 - Run the validation commands above.
-- Update `README.md`, `docs/FILE_SCOPE.md`, `docs/WORKLOG.md`, and `docs/WORKLOG.tex` when behavior, scope, or files change.
+- Update `README.md`, `docs/FILE_SCOPE.md`, `docs/WORKLOG.md`, and
+  `docs/WORKLOG.tex` when behavior, scope, or files change.
 - Confirm generated caches, build products, and large results are not staged.
 - Preserve the `_frontier_native` extension name and the existing reproduction workflows.

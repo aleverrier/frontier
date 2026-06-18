@@ -28,3 +28,15 @@ reuse friction than copyleft or NonCommercial Creative Commons licenses.
 
 When adding vendored third-party code or assets, preserve upstream notices and
 record the provenance in `NOTICE` or in this document.
+
+## SPDX Headers
+
+New repository-owned source files should include an Apache-2.0 SPDX header, for
+example:
+
+```python
+# SPDX-License-Identifier: Apache-2.0
+```
+
+Do not add repository SPDX headers to third-party files or research assets with
+unclear provenance unless their license status has been confirmed.

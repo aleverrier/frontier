@@ -1,4 +1,4 @@
-.PHONY: build-native test smoke dem-info clean
+.PHONY: build-native test smoke dem-info lint typecheck clean
 
 build-native:
 	python setup.py build_ext --inplace
@@ -11,6 +11,12 @@ smoke:
 
 dem-info:
 	python -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder
+
+lint:
+	python -m ruff check .
+
+typecheck:
+	python -m mypy frontier grosscode tools
 
 clean:
 	find . -name '__pycache__' -type d -prune -exec rm -rf {} +

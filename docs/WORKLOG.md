@@ -1,5 +1,38 @@
 # Frontier Worklog
 
+## 2026-06-18 Academic Release Metadata Pass
+
+- Added public research-software metadata and release hygiene files:
+  `CITATION.cff`, `ACKNOWLEDGEMENTS.md`, `CONTRIBUTING.md`, `CHANGELOG.md`,
+  `docs/ACADEMIC_METADATA.md`, `docs/ASSET_PROVENANCE.md`,
+  `docs/REPRODUCIBILITY.md`, `docs/RELEASE.md`, and `constraints/`.
+- Added `tools/asset_manifest.py` and generated `docs/ASSET_MANIFEST.md` with
+  SHA256 checksums for all bundled Gross/BB144 assets.
+- Updated README navigation, preferred public API guidance, architecture docs,
+  file-scope audit, licensing notes, Makefile, CI, and tests for the
+  publication-readiness checklist.
+- Modernized `pyproject.toml` to `license = "Apache-2.0"` plus
+  `license-files = ["LICENSE", "NOTICE"]`. The old Apache classifier was not
+  kept because current setuptools rejects license classifiers when an SPDX
+  license expression is present; keeping both made editable install fail.
+- Left exact Linux Python 3.12 constraints as `constraints/TODO.md` rather than
+  fabricating pinned versions; the current pass did not have a truthfully
+  captured Linux CI freeze.
+- Validation completed in a temporary Python 3.14 virtualenv:
+  - `python -m pip install -U pip setuptools wheel`
+  - `python -m pip install -e .`
+  - `python setup.py build_ext --inplace`
+  - `python -m pytest -q` (`18 passed`)
+  - `python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
+  - `python -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder`
+  - `python -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder`
+  - `python examples/minimal_decode.py`
+  - `python examples/inspect_dem.py`
+  - `PYTHON_BIN=$PYTHON_BIN bash examples/replay_rotated_surface_d3.sh`
+  - regenerated-manifest diff check against `python -m tools.asset_manifest`
+  - private-path grep over README/docs/AGENTS/CONTRIBUTING/CHANGELOG/CITATION/pyproject/tests
+  - `git diff --check`
+
 ## 2026-06-18 Apache-2.0 Licensing
 
 - Added the root `LICENSE` file with the standard Apache License 2.0 text and

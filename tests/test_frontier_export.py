@@ -2,15 +2,17 @@ from __future__ import annotations
 
 import csv
 import importlib
+import tomllib
 from pathlib import Path
 
 import pytest
 
+import frontier
+from frontier import progressive
 from tools import dem_loader
-from tools import frontier_decoder as frontier
+from tools import frontier_decoder as frontier_impl
 from tools import frontier_sample_rows
 from tools import frontier_sample_replay as replay
-from tools import frontier_progressive as progressive
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -38,7 +40,7 @@ def _factor(
 
 def _model() -> frontier.FrontierModel:
     columns = tuple(
-        progressive._columns_from_factor_transitions(
+        progressive.columns_from_factor_transitions(
             (
                 _factor(0, 0.55, 1, 1),
                 _factor(1, 0.70, 1, 0),
@@ -81,7 +83,7 @@ def test_native_wrapper_exposes_only_public_decode_methods() -> None:
     if not frontier.native_binary_available():
         pytest.skip("native frontier extension is not built")
 
-    native_model = frontier._get_native_binary_model(_model())
+    native_model = frontier_impl._get_native_binary_model(_model())
     assert hasattr(native_model, "decode")
     assert hasattr(native_model, "decode_many")
     assert hasattr(native_model, "decode_many_select_replay")
@@ -160,7 +162,8 @@ def test_frontier_package_reexports_public_decoder_api() -> None:
     assert frontier_pkg.decode_frontier is frontier.decode_frontier
     assert dem_pkg.load_dem_family is dem_loader.load_dem_family
     assert progressive_pkg.FactorTransition is progressive.FactorTransition
-    assert progressive_pkg.columns_from_factor_transitions is not progressive._columns_from_factor_transitions
+    progressive_impl = importlib.import_module("tools.frontier_progressive")
+    assert progressive_pkg.columns_from_factor_transitions is not progressive_impl._columns_from_factor_transitions
 
     from frontier import FrontierModel, decode_frontier
     from frontier.dem import load_dem_family
@@ -220,8 +223,19 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
     text = (REPO_ROOT / "docs" / "FILE_SCOPE.md").read_text(encoding="utf-8")
     for path in (
         "LICENSE",
+        "CITATION.cff",
+        "ACKNOWLEDGEMENTS.md",
+        "CONTRIBUTING.md",
+        "CHANGELOG.md",
         "NOTICE",
         "AGENTS.md",
+        "constraints/README.md",
+        "constraints/TODO.md",
+        "docs/ACADEMIC_METADATA.md",
+        "docs/ASSET_PROVENANCE.md",
+        "docs/ASSET_MANIFEST.md",
+        "docs/REPRODUCIBILITY.md",
+        "docs/RELEASE.md",
         "docs/ARCHITECTURE.md",
         "docs/COMMANDS.md",
         "docs/ENVIRONMENT.md",
@@ -238,6 +252,7 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "examples/inspect_dem.py",
         "examples/replay_rotated_surface_d3.sh",
         "tests/test_examples_and_cli.py",
+        "tools/asset_manifest.py",
     ):
         assert path in text
 
@@ -247,12 +262,36 @@ def test_license_metadata_docs_are_present() -> None:
     licensing_doc = (REPO_ROOT / "docs" / "LICENSING.md").read_text(encoding="utf-8")
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     pyproject = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    pyproject_data = tomllib.loads(pyproject)
     file_scope = (REPO_ROOT / "docs" / "FILE_SCOPE.md").read_text(encoding="utf-8")
 
     assert "Apache License" in license_text
     assert "Version 2.0" in license_text
     assert "Apache License 2.0" in licensing_doc
     assert "Apache License 2.0" in readme
-    assert 'license = { file = "LICENSE" }' in pyproject
-    assert "License :: OSI Approved :: Apache Software License" in pyproject
+    assert pyproject_data["project"]["license"] == "Apache-2.0"
+    assert pyproject_data["project"]["license-files"] == ["LICENSE", "NOTICE"]
+    assert "License :: OSI Approved :: Apache Software License" not in pyproject
     assert "LICENSE" in file_scope
+
+
+def test_academic_metadata_docs_are_present_and_linked() -> None:
+    citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    provenance = (REPO_ROOT / "docs" / "ASSET_PROVENANCE.md").read_text(encoding="utf-8")
+
+    assert "cff-version: 1.2.0" in citation
+    assert 'license: "Apache-2.0"' in citation
+    assert "TODO-DOI" not in citation
+    assert "CITATION.cff" in readme
+    assert "docs/REPRODUCIBILITY.md" in readme
+    assert "grosscode/assets/gross144" in provenance
+    assert (REPO_ROOT / "CONTRIBUTING.md").exists()
+    assert (REPO_ROOT / "CHANGELOG.md").exists()
+
+
+def test_public_model_construction_uses_public_progressive_helper() -> None:
+    test_source = (REPO_ROOT / "tests" / "test_frontier_export.py").read_text(encoding="utf-8")
+    private_helper = "progressive." + "_columns_from_factor_transitions"
+    assert "progressive.columns_from_factor_transitions" in test_source
+    assert private_helper not in test_source
