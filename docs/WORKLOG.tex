@@ -1,5 +1,17 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-18 BB144 p=0.002 Quick DEM Replay}
+
+\begin{itemize}
+\item Cloned \texttt{\detokenize{git@github.com:aleverrier/frontier.git}} into \texttt{\detokenize{/Users/anthony/research/tests/frontier}} for a fresh local reproducibility check.
+\item Created a Python 3.14.2 virtualenv from \texttt{\detokenize{constraints/py314-macos-validated.txt}}, installed the editable package, and rebuilt \texttt{\detokenize{_frontier_native}}.
+\item Validation before the run: \texttt{\detokenize{.venv/bin/python -m tools.dem_loader --backend bravyi_depth7 --p-location 0.002 --column-order deadline_reorder}} reported \texttt{\detokenize{memory_X}} and \texttt{\detokenize{memory_Z}} detector matrices \texttt{\detokenize{936x8784}}, logical matrices \texttt{\detokenize{12x8784}}, 12 noisy rounds, and \texttt{\detokenize{deadline_reorder}}. The smoke command \texttt{\detokenize{.venv/bin/python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3}} passed with 3/3 successful shots.
+\item Generated 1000 matched BB144/Gross DEM sample shots per memory sector at \texttt{\detokenize{p_location=0.002}} with seed \texttt{\detokenize{20260618}}. Local ignored artifact: \texttt{\detokenize{results/bb144_p0p002_1000_sample_rows.csv}}.
+\item Replayed the sample with native Frontier, \texttt{\detokenize{K=1024}}, \texttt{\detokenize{Delta=10}}, \texttt{\detokenize{score_alpha=0.8}}, \texttt{\detokenize{fwd_bwd_committee}}, \texttt{\detokenize{cpus=1}}, \texttt{\detokenize{shards_per_side=10}}, and \texttt{\detokenize{native_batch_size=64}}. Local ignored result root: \texttt{\detokenize{results/bb144_p0p002_frontier_replay_k1024_Delta10_alpha0p8_1000}}.
+\item Result summary from \texttt{\detokenize{summary_by_scope.csv}}: \texttt{\detokenize{memory_X}} had \texttt{\detokenize{0/1000}} failures, \texttt{\detokenize{memory_Z}} had \texttt{\detokenize{0/1000}} failures, and the paired \texttt{\detokenize{combined}} row had \texttt{\detokenize{0/1000}} failures. This should be read as below the resolution of the 1000-shot smoke sample, not as evidence that the FER is zero.
+\item Combined mean decode time was \texttt{\detokenize{0.0403428542s}}; combined mean total transition evaluations were \texttt{\detokenize{661768.62}}; replay wall time was \texttt{\detokenize{51.5s}}; the native engine was available and used.
+\end{itemize}
+
 \subsection*{2026-06-18 Paper Placeholder, LLM Acknowledgement, And Figure Deduplication}
 
 \begin{itemize}

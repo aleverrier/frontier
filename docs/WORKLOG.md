@@ -1,5 +1,33 @@
 # Frontier Worklog
 
+## 2026-06-18 BB144 p=0.002 Quick DEM Replay
+
+- Cloned `git@github.com:aleverrier/frontier.git` into
+  `/Users/anthony/research/tests/frontier` for a fresh local reproducibility
+  check.
+- Created a Python 3.14.2 virtualenv from `constraints/py314-macos-validated.txt`,
+  installed the editable package, and rebuilt `_frontier_native`.
+- Validation before the run:
+  - `.venv/bin/python -m tools.dem_loader --backend bravyi_depth7 --p-location 0.002 --column-order deadline_reorder`
+    reported `memory_X` and `memory_Z` detector matrices `936x8784`, logical
+    matrices `12x8784`, 12 noisy rounds, and `deadline_reorder`.
+  - `.venv/bin/python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
+    passed with 3/3 successful smoke shots.
+- Generated 1000 matched BB144/Gross DEM sample shots per memory sector at
+  `p_location=0.002` with seed `20260618`. Local ignored artifact:
+  `results/bb144_p0p002_1000_sample_rows.csv`.
+- Replayed the sample with native Frontier, `K=1024`, `Delta=10`,
+  `score_alpha=0.8`, `fwd_bwd_committee`, `cpus=1`, `shards_per_side=10`,
+  and `native_batch_size=64`. Local ignored result root:
+  `results/bb144_p0p002_frontier_replay_k1024_Delta10_alpha0p8_1000`.
+- Result summary from `summary_by_scope.csv`: `memory_X` had `0/1000`
+  failures, `memory_Z` had `0/1000` failures, and the paired `combined` row had
+  `0/1000` failures. This should be read as below the resolution of the
+  1000-shot smoke sample, not as evidence that the FER is zero.
+- Combined mean decode time was `0.0403428542s`; combined mean total transition
+  evaluations were `661768.62`; replay wall time was `51.5s`; the native engine
+  was available and used.
+
 ## 2026-06-18 Paper Placeholder, LLM Acknowledgement, And Figure Deduplication
 
 - Added an explicit paper-citation placeholder in `CITATION.cff`, `README.md`,
