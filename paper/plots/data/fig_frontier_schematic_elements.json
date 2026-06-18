@@ -1,6 +1,7 @@
 {
   "caveats": [
-    "This is an explanatory generated schematic, not simulation output."
+    "This is an explanatory generated schematic, not simulation output.",
+    "Raw sample corpora and full simulation outputs are not committed, so this sidecar supports plot reproduction from summary data, not rerunning the publication-scale simulations."
   ],
   "code_version": "Source checkout version was not recorded in the source summary table.",
   "columns": {
@@ -72,19 +73,46 @@
   "dependency_constraints_file": null,
   "description": "Element and incidence table for the explanatory Frontier active-boundary schematic.",
   "figure_id": "frontier_schematic",
+  "manifest_status": "reproducible",
+  "manifest_statuses": [
+    "reproducible"
+  ],
+  "output_file": "paper/plots/outputs/fig_frontier_decoder_schematic.png",
+  "output_files": [
+    "paper/plots/outputs/fig_frontier_decoder_schematic.png"
+  ],
   "panel_id": "",
-  "paper_reference": "Figure fig:frontier_schematic in frontier_decoder2.tex lines 277-279.",
+  "paper_reference": "fig:frontier_schematic; frontier_decoder2.tex lines 276-278; rendered PDF candidate Frontier_decoder-2.pdf sha256 1406a80c7448f6964634da42d4f520b0cf03f97b60899034ac2aff1219cb29c5",
   "paper_source": {
     "filename": "frontier_decoder2.tex",
-    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+    "note": "No literal frontier_decoder2(2).tex file was present in the working environment; Frontier_decoder-2.pdf is the newest available rendered PDF candidate.",
+    "pdf_filename": "Frontier_decoder-2.pdf",
+    "pdf_sha256": "1406a80c7448f6964634da42d4f520b0cf03f97b60899034ac2aff1219cb29c5",
+    "sha256": "288da4629eddc7038f38f3ae2948d358b57a018544eb6f2591a7aebe5f8e5380",
+    "tex_filename": "frontier_decoder2.tex",
+    "tex_sha256": "288da4629eddc7038f38f3ae2948d358b57a018544eb6f2591a7aebe5f8e5380"
   },
+  "plot_reproducibility": "committed-summary-data",
   "random_seeds": null,
+  "raw_corpus": {
+    "archive_identifier": null,
+    "available_in_repo": false,
+    "notes": "This repository commits compact plot-ready summary data only; raw per-shot corpora or full run outputs are not included."
+  },
   "raw_source": {
     "file": "better-beam:docs/paper/build_paper_assets.py",
     "sha256": "ea690748656f05e94aad7b2a5efd4f399f242da7dbaa991d7ad9e77daf456e2a"
   },
   "release_version": null,
+  "renderer": "paper/plots/scripts/plot_frontier_schematic.py",
   "row_count": 45,
   "sample_count": null,
-  "source_command": "python docs/paper/build_paper_assets.py"
+  "simulation_reproducibility": "raw-corpus-not-committed",
+  "source_artifact": {
+    "file": "better-beam:docs/paper/build_paper_assets.py",
+    "sha256": "ea690748656f05e94aad7b2a5efd4f399f242da7dbaa991d7ad9e77daf456e2a"
+  },
+  "source_artifact_note": "Local/source artifact label normalized for provenance; not a public DOI or archive identifier.",
+  "source_checkout_hash": null,
+  "source_command": "Plot data copied from an existing compact summary artifact; committed renderer listed in the renderer field regenerates the paper plot output from this CSV."
 }

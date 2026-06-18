@@ -1,8 +1,17 @@
 # Paper Plot Data
 
-This directory contains minimal plot-ready summary tables for the current paper source `frontier_decoder2.tex`, sha256 `d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e`.
+This directory contains minimal plot-ready summary tables for the recorded paper
+source `frontier_decoder2.tex`, sha256
+`288da4629eddc7038f38f3ae2948d358b57a018544eb6f2591a7aebe5f8e5380`.
+The available rendered PDF candidate is `Frontier_decoder-2.pdf`, sha256
+`1406a80c7448f6964634da42d4f520b0cf03f97b60899034ac2aff1219cb29c5`.
 
 The files are deliberately compact. They are summary tables, generated schematic inputs, or compact figure-state tables. They are not raw per-shot corpora.
+
+The current checkout includes Matplotlib renderers for every paper figure listed
+in `paper/plots/manifest.csv`. The table
+`fig_transition_evals_percentiles.csv` is marked `support-data`: it is consumed
+by the transition-evaluation renderer but is not a standalone figure output.
 
 `MANIFEST.md` is generated with:
 
@@ -72,11 +81,25 @@ Each CSV must have a same-stem `.json` sidecar containing:
 - `confidence_interval_method`, if plotted
 - `csv_sha256`
 - `caveats`
+- `plot_reproducibility`
+- `simulation_reproducibility`
+- `raw_corpus`
+- `source_artifact`
+- `source_checkout_hash`
+- `renderer`
+- `output_file`
+- `output_files`, when one CSV feeds multiple manifest outputs
 
 If a required field is unknown, leave it null or empty and explain the limitation in `caveats`; do not fill it with a guess.
 
 ## Provenance Notes
 
-- Source paths from local or scratch machines were normalized to stable labels such as `better-beam:` and `scratch-better-beam-results:`.
-- Rows in `paper/plots/manifest.csv` are `script-missing` until a committed renderer can regenerate each published PNG from these tables.
+- Source paths from local or scratch machines were normalized to stable labels
+  such as `better-beam:` and `scratch-better-beam-results:`. These labels are
+  local/source artifact handles, not public DOIs or archive identifiers.
+- Rows in `paper/plots/manifest.csv` are `reproducible` only when a committed
+  renderer regenerates the listed PNG from committed summary tables.
 - Offline diagnostic columns such as truth-missing or bad-ranking failure classes use ground-truth labels for analysis only and must not be used as online decoder decisions.
+- Raw sample corpora and full publication-scale run outputs are not committed
+  here; the sidecars record plot reproducibility from summary data separately
+  from simulation reproducibility.

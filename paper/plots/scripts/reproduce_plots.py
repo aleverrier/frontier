@@ -1,10 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Reproduce paper plots from committed plot-ready data.
-
-The repository contains compact paper plot-ready tables, but it only marks rows
-``reproducible`` after a committed figure-specific renderer exists. Until then,
-the CLI lists the data and honestly skips rows with ``script-missing`` status.
-"""
+"""Reproduce paper plots from committed plot-ready data."""
 
 from __future__ import annotations
 
@@ -38,6 +33,7 @@ REQUIRED_COLUMNS = [
 
 REPRODUCIBLE = "reproducible"
 SCRIPT_MISSING = "script-missing"
+SUPPORT_DATA = "support-data"
 
 
 def _repo_path(value: str) -> Path:
@@ -97,6 +93,12 @@ def _run_external_script(row: dict[str, str], out_dir: Path) -> int:
         str(data_path),
         "--output",
         str(output_path),
+        "--figure-id",
+        row["figure_id"],
+        "--panel-id",
+        row["panel_id"],
+        "--manifest",
+        str(MANIFEST_PATH),
     ]
     return subprocess.run(command, cwd=REPO_ROOT, check=False).returncode
 
@@ -110,6 +112,9 @@ def _reproduce_rows(rows: list[dict[str, str]], out_dir: Path, strict: bool) -> 
     for row in rows:
         label = _row_label(row)
         row_status = row["status"]
+        if row_status == SUPPORT_DATA:
+            print(f"Skipping {label or '<unknown>'}: status=support-data; used by another renderer.")
+            continue
         if row_status != REPRODUCIBLE:
             missing = (
                 "a committed figure-specific renderer is not available"

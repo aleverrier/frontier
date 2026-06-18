@@ -19,9 +19,10 @@ python -m tools.asset_manifest --root paper/plots/data --title "Paper Plot Data 
 ```
 
 - Confirm `paper/plots/manifest.csv` is honest: reproducible rows must have
-  committed data and scripts; rows with committed data but no renderer must
-  remain `script-missing`; missing data must remain marked `data-missing` or
-  `external-archive-needed`.
+  committed data and scripts; committed companion tables that are not
+  standalone outputs must be `support-data`; rows with committed data but no
+  renderer must remain `script-missing`; missing data must remain marked
+  `data-missing` or `external-archive-needed`.
 
 - Run validation:
 
@@ -36,6 +37,7 @@ python -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-o
 python examples/minimal_decode.py
 python examples/inspect_dem.py
 bash examples/replay_rotated_surface_d3.sh
+python paper/plots/scripts/reproduce_plots.py --all --strict --out-dir /tmp/frontier-paper-plots
 ```
 
 ## Tag And Archive

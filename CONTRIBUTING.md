@@ -72,8 +72,10 @@ or changes a paper plot must update:
 
 Do not fabricate plot values, paper figure references, archive identifiers, or
 statistical caveats. Do not mark a row `reproducible` unless the committed data
-and script regenerate the listed output. If data are present but the renderer is
-not, use `script-missing`. If data are not present, use `data-missing` or
+and script regenerate the listed output. Use `support-data` for committed
+companion tables that are consumed by another renderer but are not standalone
+figure outputs. If data are present but the renderer is not, use
+`script-missing`. If data are not present, use `data-missing` or
 `external-archive-needed`.
 
 ## Bundled Assets

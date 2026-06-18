@@ -1,5 +1,7 @@
 {
-  "caveats": [],
+  "caveats": [
+    "Raw sample corpora and full simulation outputs are not committed, so this sidecar supports plot reproduction from summary data, not rerunning the publication-scale simulations."
+  ],
   "code_version": "Source checkout version was not recorded in the source summary table.",
   "columns": {
     "bin_left": {
@@ -27,7 +29,7 @@
       "unit": null
     },
     "tail_fraction_ge_bin_left": {
-      "definition": "Imported plot-ready summary column from the source artifact.",
+      "definition": "empirical fraction with transition_evals at least bin_left.",
       "unit": null
     }
   },
@@ -43,19 +45,46 @@
   "dependency_constraints_file": null,
   "description": "Gross/BB144 p=0.001 transition-evaluation tail curve table.",
   "figure_id": "transition_evals",
+  "manifest_status": "reproducible",
+  "manifest_statuses": [
+    "reproducible"
+  ],
+  "output_file": "paper/plots/outputs/fig_bb144_p001_transition_eval_hist_paper.png",
+  "output_files": [
+    "paper/plots/outputs/fig_bb144_p001_transition_eval_hist_paper.png"
+  ],
   "panel_id": "tail_curve",
-  "paper_reference": "Figure fig:transition_evals in frontier_decoder2.tex lines 769-781.",
+  "paper_reference": "fig:transition_evals; frontier_decoder2.tex lines 754-766; rendered PDF candidate Frontier_decoder-2.pdf sha256 1406a80c7448f6964634da42d4f520b0cf03f97b60899034ac2aff1219cb29c5",
   "paper_source": {
     "filename": "frontier_decoder2.tex",
-    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+    "note": "No literal frontier_decoder2(2).tex file was present in the working environment; Frontier_decoder-2.pdf is the newest available rendered PDF candidate.",
+    "pdf_filename": "Frontier_decoder-2.pdf",
+    "pdf_sha256": "1406a80c7448f6964634da42d4f520b0cf03f97b60899034ac2aff1219cb29c5",
+    "sha256": "288da4629eddc7038f38f3ae2948d358b57a018544eb6f2591a7aebe5f8e5380",
+    "tex_filename": "frontier_decoder2.tex",
+    "tex_sha256": "288da4629eddc7038f38f3ae2948d358b57a018544eb6f2591a7aebe5f8e5380"
   },
+  "plot_reproducibility": "committed-summary-data",
   "random_seeds": null,
+  "raw_corpus": {
+    "archive_identifier": null,
+    "available_in_repo": false,
+    "notes": "This repository commits compact plot-ready summary data only; raw per-shot corpora or full run outputs are not included."
+  },
   "raw_source": {
     "file": "better-beam:docs/paper/v4_simulation_results/data/plot_data_bb144_p001_transition_eval_tail_curve.csv",
     "sha256": "6f5db6f617cbab2630ebf93f79dbdb1edd70350fb3f0dfeda79c7b7fce1f8c3c"
   },
   "release_version": null,
+  "renderer": "paper/plots/scripts/plot_transition_evals.py",
   "row_count": 62,
   "sample_count": null,
-  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+  "simulation_reproducibility": "raw-corpus-not-committed",
+  "source_artifact": {
+    "file": "better-beam:docs/paper/v4_simulation_results/data/plot_data_bb144_p001_transition_eval_tail_curve.csv",
+    "sha256": "6f5db6f617cbab2630ebf93f79dbdb1edd70350fb3f0dfeda79c7b7fce1f8c3c"
+  },
+  "source_artifact_note": "Local/source artifact label normalized for provenance; not a public DOI or archive identifier.",
+  "source_checkout_hash": null,
+  "source_command": "Plot data copied from an existing compact summary artifact; committed renderer listed in the renderer field regenerates the paper plot output from this CSV."
 }

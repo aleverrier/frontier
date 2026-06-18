@@ -52,7 +52,8 @@ claims unless those facts are available.
 - Release notes: `CHANGELOG.md`.
 - Internal maintenance log: `docs/WORKLOG.md`.
 - Asset checksums: `docs/ASSET_MANIFEST.md`.
-- Paper-plot data manifest: `paper/plots/manifest.csv`.
+- Paper-plot data manifest: `paper/plots/data/MANIFEST.md`.
+- Paper figure manifest: `paper/plots/manifest.csv`.
 - CodeMeta export: `codemeta.json`, derived from `pyproject.toml`,
   `CITATION.cff`, `ACKNOWLEDGEMENTS.md`, and repository docs.
 

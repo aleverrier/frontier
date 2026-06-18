@@ -9,7 +9,8 @@ Metadata authority order is documented in `docs/ACADEMIC_METADATA.md`. Use
 `pyproject.toml` for package version, `CITATION.cff` for citation metadata,
 `CHANGELOG.md` for release notes, `docs/WORKLOG.md` for maintenance notes,
 `docs/ASSET_MANIFEST.md` for bundled asset checksums, and
-`paper/plots/manifest.csv` for paper-plot data status.
+`paper/plots/data/MANIFEST.md` for paper-plot data checksums, and
+`paper/plots/manifest.csv` for paper figure-to-data/script/output status.
 
 ## Setup
 
@@ -29,6 +30,7 @@ python -m pytest -q
 python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3
 python -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder
 python -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder
+python paper/plots/scripts/reproduce_plots.py --all --strict --out-dir /tmp/frontier-paper-plots
 ```
 
 ## Platform Notes
@@ -53,7 +55,9 @@ promise Windows/MSVC support unless it has been explicitly ported and tested.
 - Do not mark a paper plot as `reproducible` unless the committed data and
   script regenerate the listed output file.
 - If figure data are present but no committed renderer exists, mark the row as
-  `script-missing`. If figure data are missing, mark the manifest row as
+  `script-missing`. If a row is committed companion data consumed by another
+  renderer but is not a standalone output, mark it as `support-data`. If figure
+  data are missing, mark the manifest row as
   `data-missing` or `external-archive-needed`; if the paper figure list is not
   present, keep the manifest schema-only and document the missing list in
   `paper/plots/README.md`.

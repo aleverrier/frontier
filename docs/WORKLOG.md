@@ -1,10 +1,45 @@
 # Frontier Worklog
 
+## 2026-06-18 Paper Plot Renderer Completion
+
+- Added shared plot helpers and committed Matplotlib renderers for all current
+  paper figures listed in `paper/plots/manifest.csv`.
+- Updated the manifest so actual figure rows are `reproducible` from committed
+  summary tables. The transition percentile table is now `support-data` because
+  it is consumed by the transition-evaluation renderer and is not a standalone
+  plot output.
+- Regenerated `paper/plots/data/MANIFEST.md` after normalizing JSON sidecars
+  with explicit plot-vs-simulation reproducibility fields, raw-corpus absence,
+  renderer paths, and output paths.
+- Updated README, paper plot docs, reproducibility docs, contribution notes,
+  file-scope audit, academic metadata authority order, and plot/metadata
+  regression tests.
+- Refreshed manuscript-source metadata against the available
+  `frontier_decoder2.tex` file, sha256
+  `288da4629eddc7038f38f3ae2948d358b57a018544eb6f2591a7aebe5f8e5380`, and the
+  available rendered PDF candidate `Frontier_decoder-2.pdf`, sha256
+  `1406a80c7448f6964634da42d4f520b0cf03f97b60899034ac2aff1219cb29c5`. A
+  literal `frontier_decoder2(2).tex` file was not present.
+- Kept the PyPA-compatible `license = "Apache-2.0"` and `license-files`
+  metadata without the legacy Apache classifier; current setuptools rejects
+  license classifiers when validating the license-expression form.
+- Validation completed with `$PYTHON_BIN` as the active project interpreter:
+  editable install, native build, `pytest -q` (`27 passed`), plot/metadata
+  subset (`23 passed`), frontier smoke, both DEM loader checks with
+  `p_location=0.001` and `deadline_reorder`, both Python examples, plot
+  `--list`, plot `--all --strict`, asset-manifest diffs, private-path grep,
+  `ruff check .`, and `git diff --check`. The bare replay shell command is
+  environment-dependent on this machine because the unactivated system
+  `python3` lacks `scipy`; `PYTHON_BIN=$PYTHON_BIN bash
+  examples/replay_rotated_surface_d3.sh` passed.
+
 ## 2026-06-18 Paper Plot Summary Tables
 
 - Treated `frontier_decoder2.tex` as the current paper source for the figure
   inventory, with sha256
-  `d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e`.
+  `d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e`
+  at the time of the initial table import; the renderer-completion entry above
+  records the later available manuscript hash refresh.
 - Added compact plot-ready CSV tables and JSON sidecars for every current
   figure or panel, including the generated schematic, BB72 algorithm recap
   state table, surface/color code-capacity panels, surface memory-Z DEM

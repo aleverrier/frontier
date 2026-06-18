@@ -69,7 +69,7 @@ Paper plot reproduction lives in `paper/plots/`.
 
 ```bash
 python paper/plots/scripts/reproduce_plots.py --list
-python paper/plots/scripts/reproduce_plots.py --all
+python paper/plots/scripts/reproduce_plots.py --all --strict --out-dir /tmp/frontier-paper-plots
 ```
 
 The manifest `paper/plots/manifest.csv` maps each figure or panel to the
@@ -77,12 +77,17 @@ minimal plot-ready data file, plotting script, output path, data kind, source,
 generation command, environment, status, and caveats. `paper/plots/data/` is for
 small summary CSV files and same-stem JSON sidecars, not raw per-shot corpora.
 
-This checkout contains compact plot-ready summary tables and JSON sidecars for
-the current `frontier_decoder2.tex` figure inventory. It does not include raw
-paper sample corpora. The current manifest rows are `script-missing`, not
-`reproducible`, because figure-specific plotting scripts have not been
-committed yet. Future rows with missing tables must use `data-missing` or
-`external-archive-needed`; rows with tables but no renderer must remain
+This checkout contains compact plot-ready summary tables, JSON sidecars, and
+Matplotlib renderers for every current paper figure in the recorded
+`frontier_decoder2.tex` inventory. Rows marked `reproducible` regenerate their
+listed PNG output from committed summary data. Rows marked `support-data` are
+committed companion inputs used by another renderer and are skipped by `--all`.
+
+Raw paper sample corpora and full publication-scale run outputs are not
+committed here. A plot being reproducible from committed summary tables does
+not mean that the underlying simulation is reproducible from this repo alone.
+Future rows with missing tables must use `data-missing` or
+`external-archive-needed`; rows with tables but no renderer must use
 `script-missing`.
 
 Regenerate paper-data checksums with:

@@ -11,6 +11,8 @@ with the public software release.
 - `plots/outputs/`: local generated plot outputs, ignored by git by default.
 
 The current checkout includes a figure manifest plus compact plot-ready tables
-and sidecars for `frontier_decoder2.tex`. It does not include raw per-shot paper
-sample corpora, and no row is marked `reproducible` until a committed renderer
-can regenerate the listed output from the committed data.
+and sidecars for the recorded `frontier_decoder2.tex` inventory. It also
+includes Matplotlib renderers for every current paper figure, so
+`python paper/plots/scripts/reproduce_plots.py --all --strict` regenerates the
+listed local PNG outputs from committed summary data. It does not include raw
+per-shot paper sample corpora.

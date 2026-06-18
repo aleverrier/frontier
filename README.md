@@ -89,9 +89,10 @@ python -m pip install -e . -c constraints/<validated-environment>.txt
 The committed `constraints/py314-macos-validated.txt` file is one validated
 environment, not a default for all users.
 
-The Ubuntu Python 3.12 CI environment is validated in GitHub Actions, but this
-checkout has not captured exact Ubuntu pins yet. See
-`constraints/py312-ubuntu-ci.TODO.md` before adding a Linux constraints file.
+CI validates Ubuntu Python 3.11/3.12 and macOS Python 3.12. The Ubuntu Python
+3.12 CI environment is validated in GitHub Actions, but this checkout has not
+captured exact Ubuntu pins yet. See `constraints/py312-ubuntu-ci.TODO.md`
+before adding a Linux constraints file.
 
 ## Smoke Test
 
@@ -104,18 +105,20 @@ frontier-smoke --K 16 --Delta 100 --shots 3
 
 Paper-specific plot reproduction lives under `paper/plots/`. The current
 checkout contains minimal plot-ready summary tables and JSON sidecars for the
-current `frontier_decoder2.tex` figure inventory. The manifest rows are still
-`script-missing`, not `reproducible`, because figure-specific plotting scripts
-have not been committed in this repo yet.
+recorded `frontier_decoder2.tex` figure inventory, plus committed Matplotlib
+renderers for every current paper figure. The generated PNGs are ignored by git
+unless maintainers intentionally add reference images elsewhere.
 
 ```bash
 python paper/plots/scripts/reproduce_plots.py --list
-python paper/plots/scripts/reproduce_plots.py --all
+python paper/plots/scripts/reproduce_plots.py --all --strict --out-dir /tmp/frontier-paper-plots
 ```
 
-Before marking a figure `reproducible`, add a committed renderer that regenerates
-the listed output from the committed CSV and sidecar, then refresh
-`paper/plots/data/MANIFEST.md`.
+Rows marked `reproducible` regenerate their listed output from committed
+summary data and a committed renderer. Rows marked `support-data` are committed
+companion inputs consumed by another renderer and are skipped by `--all`.
+Publication-scale raw sample corpora are not committed here, so plot
+reproducibility is separate from simulation reproduction.
 
 ## Python API
 

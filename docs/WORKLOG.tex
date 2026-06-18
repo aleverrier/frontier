@@ -1,9 +1,21 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-18 Paper Plot Renderer Completion}
+
+\begin{itemize}
+\item Added shared plot helpers and committed Matplotlib renderers for all current paper figures listed in \texttt{\detokenize{paper/plots/manifest.csv}}.
+\item Updated the manifest so actual figure rows are \texttt{\detokenize{reproducible}} from committed summary tables. The transition percentile table is now \texttt{\detokenize{support-data}} because it is consumed by the transition-evaluation renderer and is not a standalone plot output.
+\item Regenerated \texttt{\detokenize{paper/plots/data/MANIFEST.md}} after normalizing JSON sidecars with explicit plot-vs-simulation reproducibility fields, raw-corpus absence, renderer paths, and output paths.
+\item Updated README, paper plot docs, reproducibility docs, contribution notes, file-scope audit, academic metadata authority order, and plot/metadata regression tests.
+\item Refreshed manuscript-source metadata against the available \texttt{\detokenize{frontier_decoder2.tex}} file, sha256 \texttt{\detokenize{288da4629eddc7038f38f3ae2948d358b57a018544eb6f2591a7aebe5f8e5380}}, and the available rendered PDF candidate \texttt{\detokenize{Frontier_decoder-2.pdf}}, sha256 \texttt{\detokenize{1406a80c7448f6964634da42d4f520b0cf03f97b60899034ac2aff1219cb29c5}}. A literal \texttt{\detokenize{frontier_decoder2(2).tex}} file was not present.
+\item Kept the PyPA-compatible \texttt{\detokenize{license = "Apache-2.0"}} and \texttt{\detokenize{license-files}} metadata without the legacy Apache classifier; current setuptools rejects license classifiers when validating the license-expression form.
+\item Validation completed with \texttt{\detokenize{$PYTHON_BIN}} as the active project interpreter: editable install, native build, \texttt{\detokenize{pytest -q}} with \texttt{27 passed}, plot/metadata subset with \texttt{23 passed}, frontier smoke, both DEM loader checks with \texttt{\detokenize{p_location=0.001}} and \texttt{\detokenize{deadline_reorder}}, both Python examples, plot \texttt{\detokenize{--list}}, plot \texttt{\detokenize{--all --strict}}, asset-manifest diffs, private-path grep, \texttt{\detokenize{ruff check .}}, and \texttt{\detokenize{git diff --check}}. The bare replay shell command is environment-dependent on this machine because the unactivated system \texttt{\detokenize{python3}} lacks \texttt{\detokenize{scipy}}; \texttt{\detokenize{PYTHON_BIN=$PYTHON_BIN bash examples/replay_rotated_surface_d3.sh}} passed.
+\end{itemize}
+
 \subsection*{2026-06-18 Paper Plot Summary Tables}
 
 \begin{itemize}
-\item Treated \texttt{\detokenize{frontier_decoder2.tex}} as the current paper source for the figure inventory, with sha256 \texttt{\detokenize{d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e}}.
+\item Treated \texttt{\detokenize{frontier_decoder2.tex}} as the current paper source for the figure inventory, with sha256 \texttt{\detokenize{d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e}} at the time of the initial table import; the renderer-completion entry above records the later available manuscript hash refresh.
 \item Added compact plot-ready CSV tables and JSON sidecars for every current figure or panel, including the generated schematic, BB72 algorithm recap state table, surface/color code-capacity panels, surface memory-Z DEM comparison, BB72/Gross detector-side DEM panels, Gross transition-evaluation tail/percentile data, and the Gross \(p=0.002\) failure-decomposition table.
 \item Left all manifest rows as \texttt{\detokenize{script-missing}}, not \texttt{\detokenize{reproducible}}, because the committed repo still lacks figure-specific renderers for the published PNGs.
 \item Normalized local and scratch source paths in imported CSVs to stable source labels and avoided copying raw per-shot corpora.

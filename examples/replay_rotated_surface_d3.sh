@@ -4,7 +4,16 @@ set -euo pipefail
 OUT_ROOT="${1:-$(mktemp -d "${TMPDIR:-/tmp}/frontier-example.XXXXXX")}"
 SAMPLE_ROWS="${OUT_ROOT}/rotated_surface_d3_sample_rows.csv"
 REPLAY_DIR="${OUT_ROOT}/rotated_surface_d3_replay"
-PYTHON_BIN="${PYTHON_BIN:-${PYTHON:-python}}"
+
+if [[ -z "${PYTHON_BIN:-}" ]]; then
+  if [[ -n "${PYTHON:-}" ]]; then
+    PYTHON_BIN="${PYTHON}"
+  elif command -v python3 >/dev/null 2>&1; then
+    PYTHON_BIN="python3"
+  else
+    PYTHON_BIN="python"
+  fi
+fi
 
 "${PYTHON_BIN}" -m tools.frontier_sample_rows \
   --out "${SAMPLE_ROWS}" \

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import importlib
+import json
 import tomllib
 from pathlib import Path
 
@@ -250,6 +251,16 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "paper/plots/data/README.md",
         "paper/plots/data/MANIFEST.md",
         "paper/plots/scripts/reproduce_plots.py",
+        "paper/plots/scripts/plot_utils.py",
+        "paper/plots/scripts/plot_frontier_schematic.py",
+        "paper/plots/scripts/plot_algorithm_recap.py",
+        "paper/plots/scripts/plot_surface_threshold.py",
+        "paper/plots/scripts/plot_color_threshold.py",
+        "paper/plots/scripts/plot_surface_memory_z_dem_mwpm.py",
+        "paper/plots/scripts/plot_bb72_dem.py",
+        "paper/plots/scripts/plot_gross_dem.py",
+        "paper/plots/scripts/plot_transition_evals.py",
+        "paper/plots/scripts/plot_failure_decomposition.py",
         "paper/plots/outputs/.gitignore",
         "Makefile",
         ".github/workflows/ci.yml",
@@ -314,6 +325,26 @@ def test_academic_metadata_docs_are_present_and_linked() -> None:
     assert "No formal response SLA is declared" in security
     assert (REPO_ROOT / "CONTRIBUTING.md").exists()
     assert (REPO_ROOT / "CHANGELOG.md").exists()
+
+
+def test_codemeta_stays_consistent_with_package_and_citation_metadata() -> None:
+    pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    codemeta = json.loads((REPO_ROOT / "codemeta.json").read_text(encoding="utf-8"))
+    citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    authors = (REPO_ROOT / "AUTHORS.md").read_text(encoding="utf-8")
+
+    assert codemeta["version"] == pyproject["project"]["version"]
+    assert codemeta["license"] == "https://spdx.org/licenses/Apache-2.0"
+    assert "doi" not in {key.lower() for key in codemeta}
+    codemeta_names = {
+        f"{entry['givenName']} {entry['familyName']}" for entry in codemeta["author"]
+    }
+    assert codemeta_names == {"Anthony Leverrier", "Rüdiger Urbanke"}
+    for name in codemeta_names:
+        given, family = name.rsplit(" ", 1)
+        assert name in authors
+        assert f'given-names: "{given}"' in citation
+        assert f'family-names: "{family}"' in citation
 
 
 def test_public_model_construction_uses_public_progressive_helper() -> None:

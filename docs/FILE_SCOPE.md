@@ -34,12 +34,22 @@ serving that surface were removed.
 | `docs/LICENSING.md` | Apache-2.0 scope, third-party licensing notes, and vendoring-notice guidance. |
 | `paper/README.md` | Top-level paper-specific reproduction area index. |
 | `paper/plots/README.md` | Paper-plot reproduction status, manifest contract, commands, required data columns, and provenance caveats. |
-| `paper/plots/manifest.csv` | Figure/panel-to-data/script/output manifest for the current `frontier_decoder2.tex` figure inventory; rows are `script-missing` until renderers are committed. |
+| `paper/plots/manifest.csv` | Figure/panel-to-data/script/output manifest for the recorded `frontier_decoder2.tex` figure inventory; actual figure rows are `reproducible` and the transition percentile table is `support-data`. |
 | `paper/plots/data/*.csv` | Minimal plot-ready summary, schematic, and compact figure-state tables for current paper figures; raw per-shot corpora are intentionally excluded. |
 | `paper/plots/data/*.json` | Same-stem sidecar metadata, checksums, source labels, decoder settings, and caveats for each paper plot CSV. |
 | `paper/plots/data/README.md` | Exact current paper plot table columns plus required JSON sidecar schema. |
 | `paper/plots/data/MANIFEST.md` | Deterministic checksum manifest for retained paper-plot data files. |
-| `paper/plots/scripts/reproduce_plots.py` | Paper-plot reproduction entry point that lists manifest rows and refuses to fabricate missing data. |
+| `paper/plots/scripts/reproduce_plots.py` | Paper-plot reproduction entry point that lists manifest rows and dispatches reproducible rows to figure-specific renderers. |
+| `paper/plots/scripts/plot_utils.py` | Shared CSV, sidecar, manifest, output, axis, and Matplotlib helper utilities for paper plot renderers. |
+| `paper/plots/scripts/plot_frontier_schematic.py` | Renderer for the Figure 1 frontier active-boundary schematic from committed element coordinates. |
+| `paper/plots/scripts/plot_algorithm_recap.py` | Renderer for the Figure 2 four-panel ordered-frontier recursion state-plane recap. |
+| `paper/plots/scripts/plot_surface_threshold.py` | Renderer for the Figure 3 rotated-surface code-capacity FER and retained-list panels. |
+| `paper/plots/scripts/plot_color_threshold.py` | Renderer for the Figure 4 hexagonal color-code FER and retained-state panels. |
+| `paper/plots/scripts/plot_surface_memory_z_dem_mwpm.py` | Renderer for the Figure 5 rotated-surface memory-Z DEM Frontier versus MWPM comparison. |
+| `paper/plots/scripts/plot_bb72_dem.py` | Renderer for the Figure 6 BB72 detector-side DEM panels. |
+| `paper/plots/scripts/plot_gross_dem.py` | Renderer for the Figure 7, Figure 8, and Figure 9 Gross/BB144 detector-side DEM panels. |
+| `paper/plots/scripts/plot_transition_evals.py` | Renderer for the Figure 10 Gross/BB144 transition-evaluation tail curve using percentile support data. |
+| `paper/plots/scripts/plot_failure_decomposition.py` | Renderer for the Figure 11 Gross/BB144 failure-decomposition figure. |
 | `paper/plots/outputs/.gitignore` | Keeps generated local plot outputs out of git unless reference images are intentionally added elsewhere. |
 | `Makefile` | Standard local shortcuts for native build, tests, smoke, DEM info, and cleanup. |
 | `.github/workflows/ci.yml` | Lightweight GitHub Actions validation for install, native build, tests, smoke, and DEM info. |
@@ -66,7 +76,7 @@ serving that surface were removed.
 | `examples/replay_rotated_surface_d3.sh` | Tiny temp-directory sample-row and replay workflow. |
 | `tests/test_frontier_export.py` | Regression coverage for the exported frontier wrapper/replay behavior. |
 | `tests/test_examples_and_cli.py` | Subprocess smoke coverage for examples, CLI help, and tiny rotated-surface replay outputs. |
-| `tests/test_paper_plots.py` | Paper-plot manifest, missing-data honesty, reproduction CLI, and data-checksum regression tests. |
+| `tests/test_paper_plots.py` | Paper-plot manifest, support-data, renderer dispatch, output reproduction, sidecar, and data-checksum regression tests. |
 | `grosscode/__init__.py` | Small top-level export for split-sector DEM construction. |
 | `grosscode/core.py` | Shared sparse-matrix and probability helpers used by retained DEM helpers. |
 | `grosscode/codes/__init__.py` | Public code-builder exports. |
