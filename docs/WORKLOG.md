@@ -1,5 +1,22 @@
 # Frontier Worklog
 
+## 2026-06-18 Navigation and Public API Orientation
+
+- Added `docs/ARCHITECTURE.md`, `docs/COMMANDS.md`, `docs/ENVIRONMENT.md`, `docs/LICENSING.md`, `AGENTS.md`, a `Makefile`, GitHub Actions CI, and tiny runnable examples under `examples/`.
+- Added the lightweight `frontier/` package (`frontier.__init__`, `frontier.decoder`, `frontier.dem`, and `py.typed`) as stable public re-exports while keeping existing `tools.*` imports and console-script implementations intact.
+- Updated README navigation and `docs/FILE_SCOPE.md` so humans and agents can find the architecture guide, command index, environment variables, examples, retained-file audit, and license-pending notice quickly.
+- Added module docstrings, argparse help epilogues, and section headers to the retained long `tools/` modules without changing decoder math, native extension naming, or public reproduction command semantics.
+- Added lightweight tests for public package imports, console-script module entry points, architecture docs, command docs, and file-scope coverage.
+- Validation completed with `/Users/anthony/research/better-beam/tools/py` because this shell had no `python` alias and the system `python3` lacked `setuptools`:
+  - `/Users/anthony/research/better-beam/tools/py setup.py build_ext --inplace`
+  - `/Users/anthony/research/better-beam/tools/py -m pytest -q` (`11 passed`)
+  - `/Users/anthony/research/better-beam/tools/py -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
+  - `/Users/anthony/research/better-beam/tools/py -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder`
+  - `/Users/anthony/research/better-beam/tools/py -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder`
+  - `/Users/anthony/research/better-beam/tools/py examples/minimal_decode.py`
+  - `/Users/anthony/research/better-beam/tools/py examples/inspect_dem.py`
+  - `PYTHON_BIN=/Users/anthony/research/better-beam/tools/py bash examples/replay_rotated_surface_d3.sh`
+
 ## 2026-06-15
 
 - Created the initial `frontier` export.

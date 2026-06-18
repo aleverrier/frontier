@@ -25,6 +25,32 @@ Legacy BP/min-sum decoder families, triangle-quotient decoders, polar DEM
 experiments, and old research benchmark harnesses are not part of this export.
 See `docs/FILE_SCOPE.md` for the file-by-file audit.
 
+## Repository Map
+
+- `docs/ARCHITECTURE.md`: architecture guide for humans and agents.
+- `docs/FILE_SCOPE.md`: retained-file audit and removed-file categories.
+- `docs/COMMANDS.md`: console-script command index.
+- `docs/ENVIRONMENT.md`: supported environment variables and native debug toggles.
+- `docs/WORKLOG.md`: agent-readable maintenance log.
+- `examples/README.md`: tiny runnable examples.
+- TODO: choose and add the repository license; until then, see
+  `docs/LICENSING.md`.
+
+| Console script | Implementation |
+| --- | --- |
+| `frontier-smoke` | `tools/frontier_decoder.py` |
+| `frontier-dem-info` | `tools/dem_loader.py` |
+| `frontier-sample-rows` | `tools/frontier_sample_rows.py` |
+| `frontier-replay` | `tools/frontier_sample_replay.py` |
+| `frontier-bb144-benchmark` | `tools/frontier_bb144_benchmark.py` |
+
+### For Agents
+
+- Start with `docs/ARCHITECTURE.md` and `AGENTS.md`.
+- Do not infer intended file scope from old removed modules; use
+  `docs/FILE_SCOPE.md`.
+- Run the validation commands before changing decoder internals.
+
 ## Install
 
 ```bash

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import csv
+import importlib
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -10,6 +12,8 @@ from tools import frontier_decoder as frontier
 from tools import frontier_sample_rows
 from tools import frontier_sample_replay as replay
 from tools import frontier_progressive as progressive
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _factor(
@@ -157,3 +161,86 @@ def test_pressure_means_are_nan_without_runtime_warning() -> None:
     )
     assert row["pressure_forward_mean"] != row["pressure_forward_mean"]
     assert row["pressure_backward_mean"] != row["pressure_backward_mean"]
+
+
+def test_frontier_package_reexports_public_decoder_api() -> None:
+    frontier_pkg = importlib.import_module("frontier")
+    dem_pkg = importlib.import_module("frontier.dem")
+
+    assert frontier_pkg.FrontierModel is frontier.FrontierModel
+    assert frontier_pkg.decode_frontier is frontier.decode_frontier
+    assert dem_pkg.load_dem_family is dem_loader.load_dem_family
+
+    from frontier import FrontierModel, decode_frontier
+    from frontier.dem import load_dem_family
+
+    model = _model()
+    result = decode_frontier(model, 0, K=16, Delta=100.0)
+    assert isinstance(model, FrontierModel)
+    assert result.status == "ok"
+    assert callable(load_dem_family)
+
+
+def test_console_script_modules_have_main() -> None:
+    script_modules = {
+        "frontier-smoke": "tools.frontier_decoder",
+        "frontier-dem-info": "tools.dem_loader",
+        "frontier-sample-rows": "tools.frontier_sample_rows",
+        "frontier-replay": "tools.frontier_sample_replay",
+        "frontier-bb144-benchmark": "tools.frontier_bb144_benchmark",
+    }
+    for script, module_name in script_modules.items():
+        module = importlib.import_module(module_name)
+        assert callable(getattr(module, "main", None)), script
+
+
+def test_architecture_docs_reference_key_files() -> None:
+    text = (REPO_ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
+    for path in (
+        "frontier_native.py",
+        "native/_frontier_native.cpp",
+        "tools/frontier_decoder.py",
+        "tools/frontier_progressive.py",
+        "tools/dem_loader.py",
+        "tools/frontier_sample_rows.py",
+        "tools/frontier_sample_replay.py",
+        "tools/frontier_bb144_benchmark.py",
+        "grosscode/dem/builder.py",
+        "grosscode/circuits/backends.py",
+        "tests/test_frontier_export.py",
+    ):
+        assert path in text
+
+
+def test_commands_docs_reference_all_console_scripts() -> None:
+    text = (REPO_ROOT / "docs" / "COMMANDS.md").read_text(encoding="utf-8")
+    for script in (
+        "frontier-smoke",
+        "frontier-dem-info",
+        "frontier-sample-rows",
+        "frontier-replay",
+        "frontier-bb144-benchmark",
+    ):
+        assert script in text
+
+
+def test_file_scope_mentions_new_docs_and_examples() -> None:
+    text = (REPO_ROOT / "docs" / "FILE_SCOPE.md").read_text(encoding="utf-8")
+    for path in (
+        "AGENTS.md",
+        "docs/ARCHITECTURE.md",
+        "docs/COMMANDS.md",
+        "docs/ENVIRONMENT.md",
+        "docs/LICENSING.md",
+        "Makefile",
+        ".github/workflows/ci.yml",
+        "frontier/__init__.py",
+        "frontier/decoder.py",
+        "frontier/dem.py",
+        "frontier/py.typed",
+        "examples/README.md",
+        "examples/minimal_decode.py",
+        "examples/inspect_dem.py",
+        "examples/replay_rotated_surface_d3.sh",
+    ):
+        assert path in text

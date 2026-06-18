@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Focused frontier timing probe for the BB144/Gross split-sector DEM."""
+"""Focused frontier timing probe for the BB144/Gross split-sector DEM.
+
+Public entry point: `main`.
+
+This module is the `frontier-bb144-benchmark` CLI and benchmark support code,
+not the preferred library API.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +30,12 @@ def _parse_args() -> argparse.Namespace:
         description=(
             "Time native frontier selected bidirectional-committee decode on "
             "the accepted BB144/Gross split-sector DEM benchmark."
-        )
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""example:
+  python -m tools.frontier_bb144_benchmark --sample-rows sample_rows.csv --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder --K 512 --Delta 12 --rows-per-scope 10 --repeats 3 --payload replay
+
+See docs/COMMANDS.md for command details.""",
     )
     parser.add_argument("--sample-rows", type=Path, required=True)
     parser.add_argument("--backend", default="bravyi_depth7")

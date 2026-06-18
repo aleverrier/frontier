@@ -7,11 +7,22 @@ serving that surface were removed.
 | File | Why it remains |
 | --- | --- |
 | `README.md` | Public install, smoke-test, replay, benchmark, matrix, and reproduction instructions. |
+| `AGENTS.md` | Operational setup, validation, and style checklist for coding agents. |
 | `docs/WORKLOG.md` | Agent-readable change log for repo maintenance. |
 | `docs/WORKLOG.tex` | Human-readable TeX change log matching `docs/WORKLOG.md`. |
 | `docs/FILE_SCOPE.md` | This audit of the retained file set. |
+| `docs/ARCHITECTURE.md` | Human/agent orientation guide for workflows, module ownership, public APIs, native dispatch, and safe changes. |
+| `docs/COMMANDS.md` | Console-script command index with minimal commands, outputs, and common failure modes. |
+| `docs/ENVIRONMENT.md` | Public environment-variable documentation plus internal native debug toggles. |
+| `docs/LICENSING.md` | Explicit pending-license notice until the maintainer chooses a repository license. |
+| `Makefile` | Standard local shortcuts for native build, tests, smoke, DEM info, and cleanup. |
+| `.github/workflows/ci.yml` | Lightweight GitHub Actions validation for install, native build, tests, smoke, and DEM info. |
 | `pyproject.toml` | Package metadata, dependencies, console scripts, and pytest config. |
 | `setup.py` | Native C++ extension build definition for `_frontier_native`. |
+| `frontier/__init__.py` | Public top-level import surface re-exporting stable decoder and DEM helpers. |
+| `frontier/decoder.py` | Stable decoder API re-exports backed by `tools.frontier_decoder`. |
+| `frontier/dem.py` | Stable DEM loader API re-exports backed by `tools.dem_loader`. |
+| `frontier/py.typed` | Marker declaring the public `frontier` package as typed. |
 | `frontier_native.py` | Python wrapper around the compiled native extension. |
 | `native/_frontier_native.cpp` | C++ frontier engine used by the public decoder path. |
 | `tools/__init__.py` | Lightweight package marker for CLI/support modules. |
@@ -21,6 +32,10 @@ serving that surface were removed.
 | `tools/frontier_sample_replay.py` | Matched sample replay CLI for BB144/Gross and related DEM rows. |
 | `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe over explicit sample rows. |
 | `tools/frontier_progressive.py` | Minimal frontier column/layout/order helpers used by the public wrapper and DEM loader. |
+| `examples/README.md` | Short guide to runnable examples. |
+| `examples/minimal_decode.py` | Tiny public-API decode example matching the smoke model. |
+| `examples/inspect_dem.py` | Minimal DEM loader example for `rotated_surface_d3`. |
+| `examples/replay_rotated_surface_d3.sh` | Tiny temp-directory sample-row and replay workflow. |
 | `tests/test_frontier_export.py` | Regression coverage for the exported frontier wrapper/replay behavior. |
 | `grosscode/__init__.py` | Small top-level export for split-sector DEM construction. |
 | `grosscode/core.py` | Shared sparse-matrix and probability helpers used by retained DEM helpers. |

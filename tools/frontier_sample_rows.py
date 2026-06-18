@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""Generate matched DEM sample rows for frontier replay.
+
+Public entry point: `main`.
+
+This module is a CLI/support module, not the preferred library API.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -133,7 +140,14 @@ def _iter_sample_rows(
 
 
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate DEM sample rows for frontier-replay.")
+    parser = argparse.ArgumentParser(
+        description="Generate DEM sample rows for frontier-replay.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""example:
+  python -m tools.frontier_sample_rows --out sample_rows.csv --backend rotated_surface_d3 --p-location 0.001 --shots 4 --seed 20260615
+
+See docs/COMMANDS.md for command details.""",
+    )
     parser.add_argument("--out", type=Path, required=True, help="Output sample_rows.csv path.")
     parser.add_argument("--metadata-out", type=Path, help="Optional metadata JSON path.")
     parser.add_argument("--backend", default="bravyi_depth7")

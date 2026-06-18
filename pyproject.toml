@@ -23,10 +23,14 @@ frontier-sample-rows = "tools.frontier_sample_rows:main"
 frontier-replay = "tools.frontier_sample_replay:main"
 frontier-bb144-benchmark = "tools.frontier_bb144_benchmark:main"
 
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
 [tool.setuptools.packages.find]
-include = ["grosscode*", "tools*"]
+include = ["frontier*", "grosscode*", "tools*"]
 
 [tool.setuptools.package-data]
+frontier = ["py.typed"]
 grosscode = [
   "assets/gross144/dem/*.json",
   "assets/gross144/dem/*.npy",

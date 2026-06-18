@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Minimal DEM-to-frontier loader for BB/Gross and surface-code backends."""
+"""Minimal DEM-to-frontier loader for BB/Gross and surface-code backends.
+
+Public entry points: `LoadedProgressiveFamily`, `SUPPORTED_COLUMN_ORDERS`,
+`load_dem_family`, `build_backward_deadline_ordered_family`, and `main`.
+
+This module is both support/library code and the implementation of
+`frontier-dem-info`.
+"""
 
 from __future__ import annotations
 
@@ -335,7 +342,14 @@ def build_backward_deadline_ordered_family(*, base_family: LoadedProgressiveFami
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Load supported DEM matrices and print frontier dimensions.")
+    parser = argparse.ArgumentParser(
+        description="Load supported DEM matrices and print frontier dimensions.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""example:
+  python -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder
+
+See docs/COMMANDS.md for command details.""",
+    )
     parser.add_argument("--backend", default="bravyi_depth7")
     parser.add_argument("--p-location", type=float, default=0.004)
     parser.add_argument(

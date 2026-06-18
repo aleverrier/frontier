@@ -1,3 +1,10 @@
+"""Frontier column, layout, ordering, and scoring helpers.
+
+Public entry points are the dataclasses and helper functions imported by
+`tools.frontier_decoder` and `tools.dem_loader`. This is support code, not a
+top-level user CLI.
+"""
+
 from __future__ import annotations
 
 import bisect

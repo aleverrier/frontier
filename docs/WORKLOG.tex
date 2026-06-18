@@ -1,5 +1,16 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-18 Navigation and Public API Orientation}
+
+\begin{itemize}
+\item Added \texttt{\detokenize{docs/ARCHITECTURE.md}}, \texttt{\detokenize{docs/COMMANDS.md}}, \texttt{\detokenize{docs/ENVIRONMENT.md}}, \texttt{\detokenize{docs/LICENSING.md}}, \texttt{\detokenize{AGENTS.md}}, a \texttt{\detokenize{Makefile}}, GitHub Actions CI, and tiny runnable examples under \texttt{\detokenize{examples/}}.
+\item Added the lightweight \texttt{\detokenize{frontier/}} package with \texttt{\detokenize{frontier.__init__}}, \texttt{\detokenize{frontier.decoder}}, \texttt{\detokenize{frontier.dem}}, and \texttt{\detokenize{py.typed}} as stable public re-exports while keeping existing \texttt{\detokenize{tools.*}} imports and console-script implementations intact.
+\item Updated README navigation and \texttt{\detokenize{docs/FILE_SCOPE.md}} so humans and agents can find the architecture guide, command index, environment variables, examples, retained-file audit, and license-pending notice quickly.
+\item Added module docstrings, argparse help epilogues, and section headers to the retained long \texttt{\detokenize{tools/}} modules without changing decoder math, native extension naming, or public reproduction command semantics.
+\item Added lightweight tests for public package imports, console-script module entry points, architecture docs, command docs, and file-scope coverage.
+\item Validation completed with \texttt{\detokenize{/Users/anthony/research/better-beam/tools/py}} because this shell had no \texttt{python} alias and the system \texttt{python3} lacked \texttt{setuptools}: native build, \texttt{\detokenize{pytest -q}} with \texttt{11 passed}, frontier smoke with \texttt{\detokenize{--K 16 --Delta 100 --shots 3}}, \texttt{\detokenize{rotated_surface_d3}} DEM info, \texttt{\detokenize{bravyi_depth7}} DEM info, and all three examples.
+\end{itemize}
+
 \subsection*{2026-06-15}
 
 \begin{itemize}

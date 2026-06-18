@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: |
+          python -m pip install -U pip setuptools wheel
+          python -m pip install -e .
+
+      - name: Build native extension
+        run: python setup.py build_ext --inplace
+
+      - name: Tests
+        run: python -m pytest -q
+
+      - name: Smoke test
+        run: python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3
+
+      - name: DEM info smoke
+        run: python -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder

@@ -1,3 +1,12 @@
+"""Frontier decoder API and tiny smoke CLI.
+
+Public entry points: `FrontierModel`, `FrontierResult`, `FrontierStats`,
+`FrontierCommitteeMember`, `decode_frontier`, `decode_frontier_committee`,
+`native_binary_available`, `native_choice_available`, and `main`.
+
+This module is both library API and the implementation of `frontier-smoke`.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -32,6 +41,9 @@ _NATIVE_CHOICE_COMPATIBILITY_CACHE: dict[tuple[tuple[int, ...], int, int, int, i
 _NATIVE_CHOICE_MODEL_CACHE: dict[tuple[tuple[int, ...], int, int, int, int, int, int], object] = {}
 
 
+# Log/bit utilities and option normalization.
+
+
 def _normalize_metric_mode(metric_mode: str) -> str:
     mode = str(metric_mode).strip().lower()
     if mode in {"logsumexp_float", "float", "exact"}:
@@ -54,6 +66,9 @@ def _score_mode_for_alpha(score_alpha: float) -> str:
         raise ValueError("score_alpha must be finite and non-negative")
     token = f"{alpha:.12g}".replace("-", "m").replace(".", "p")
     return f"future_parity_logodds_a{token}"
+
+
+# Data models.
 
 
 @dataclass(frozen=True, slots=True)
@@ -104,6 +119,9 @@ class FrontierResult:
     committee_members: tuple[FrontierCommitteeMember, ...] = tuple()
 
 
+# Log/bit utilities.
+
+
 def _logaddexp_pair(a: float, b: float) -> float:
     if not math.isfinite(float(a)):
         return float(b)
@@ -130,6 +148,9 @@ def _syndrome_to_int(syndrome: int | np.ndarray | Sequence[int]) -> int:
         if int(value) & 1:
             out |= 1 << int(index)
     return int(out)
+
+
+# Model coercion.
 
 
 def _infer_num_detectors(
@@ -308,6 +329,9 @@ def _empty_stats(*, started: float, processed_columns: int = 0, no_path_count: i
         no_path_count=int(no_path_count),
         total_time_s=float(time.perf_counter() - float(started)),
     )
+
+
+# Native compatibility and model specs.
 
 
 def _is_binary_fastpath_compatible(
@@ -676,6 +700,9 @@ def _get_native_choice_model(model: FrontierModel) -> object:
     return native_model
 
 
+# Native result conversion.
+
+
 def _frontier_stats_from_native(payload: Mapping[str, object]) -> FrontierStats:
     return FrontierStats(
         processed_columns=int(payload.get("processed_columns", 0)),
@@ -1023,6 +1050,9 @@ def _decode_frontier_native_binary_committee_many_replay_payloads(
     return tuple(payload for payload in tuple(payloads))
 
 
+# Python reference decoder.
+
+
 def _decode_frontier_binary_adapter(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
@@ -1243,6 +1273,9 @@ def _decode_frontier_python_reference(
     )
 
 
+# Public dispatch API.
+
+
 def decode_frontier(
     problem_or_model: object,
     syndrome: int | np.ndarray | Sequence[int],
@@ -1375,6 +1408,9 @@ def decode_frontier(
     )
 
 
+# Committee API.
+
+
 def _committee_member_summary(*, direction: str, result: FrontierResult) -> FrontierCommitteeMember:
     top1, _top2 = _frontier_top_posteriors(result)
     return FrontierCommitteeMember(
@@ -1485,6 +1521,9 @@ def decode_frontier_committee(
     )
 
 
+# Smoke CLI.
+
+
 def _smoke_columns() -> tuple[progressive.FactorTransition, ...]:
     return (
         progressive.FactorTransition(
@@ -1509,7 +1548,14 @@ def _smoke_columns() -> tuple[progressive.FactorTransition, ...]:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Tiny frontier smoke benchmark")
+    parser = argparse.ArgumentParser(
+        description="Tiny frontier smoke benchmark",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""example:
+  python -m tools.frontier_decoder --K 16 --Delta 100 --shots 3
+
+See docs/COMMANDS.md for command details.""",
+    )
     parser.add_argument("--K", "--beam-cap", dest="K", type=int, default=8)
     parser.add_argument("--Delta", "--delta", dest="Delta", type=float, default=8.0)
     parser.add_argument("--shots", type=int, default=20)

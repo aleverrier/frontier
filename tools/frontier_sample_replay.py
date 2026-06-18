@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+"""Replay frontier on matched detector-side DEM sample rows.
+
+Public entry point: `main`.
+
+This module is the `frontier-replay` CLI and support implementation. Prefer the
+`frontier` package for library-style decoder imports.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -23,6 +31,9 @@ os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ.get("TMPDIR", "/tmp"))
 
 from tools import frontier_decoder as frontier
 from tools import dem_loader
+
+
+# CSV schemas.
 
 
 PER_SHOT_FIELDS = [
@@ -194,6 +205,9 @@ class DirectionPressure:
     backward: float = float("nan")
 
 
+# Direction mode normalization.
+
+
 def _parse_scopes(raw: str) -> tuple[str, ...]:
     return tuple(piece.strip() for piece in str(raw).split(",") if piece.strip())
 
@@ -234,6 +248,9 @@ def _decoder_mode_from_direction_mode(direction_mode: str) -> str:
     if mode == "backward_only":
         return "backward"
     raise ValueError(f"unsupported direction mode {direction_mode!r}")
+
+
+# Pressure estimators.
 
 
 def _iter_set_bits(mask: int) -> Iterable[int]:
@@ -379,6 +396,9 @@ def _copy_pressure(bundle: DecodeBundle, pressure: DirectionPressure) -> DecodeB
         pressure_forward=float(pressure.forward),
         pressure_backward=float(pressure.backward),
     )
+
+
+# Sample-row loading.
 
 
 def _load_sample_rows(
@@ -719,6 +739,9 @@ def _bundle_from_native_selected_committee_payload(
     )
 
 
+# Native batch decoding helpers.
+
+
 def _decode_many_native_replay_payloads(
     *,
     model: frontier.FrontierModel,
@@ -767,6 +790,9 @@ def _decode_many_native_replay_payloads(
         )
     except (AttributeError, RuntimeError):
         return None
+
+
+# Per-shot row construction.
 
 
 def _native_replay_logical_hat(payload: Mapping[str, object]) -> int | None:
@@ -973,6 +999,9 @@ def _decode_one(
         ),
         pressure,
     )
+
+
+# Native batch decoding helpers.
 
 
 def _decode_many_native_bundles(
@@ -1261,6 +1290,9 @@ def _result_transition_evals(result: frontier.FrontierResult | None) -> int:
 
 def _result_max_post(result: frontier.FrontierResult | None) -> int:
     return 0 if result is None else int(result.stats.max_post_prune_state_count)
+
+
+# Shard execution.
 
 
 def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
@@ -1581,6 +1613,9 @@ def _run_shard(task: Mapping[str, object]) -> dict[str, object]:
         "shots_completed": int(len(rows)),
         "elapsed_s": float(time.time() - started),
     }
+
+
+# Summary/report generation.
 
 
 def _quantile(values: Sequence[float], q: float) -> float:
@@ -1911,8 +1946,18 @@ def _write_report(summary_rows: Sequence[Mapping[str, object]], *, out_dir: Path
     (out_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+# CLI.
+
+
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Replay frontier on matched DEM sample rows.")
+    parser = argparse.ArgumentParser(
+        description="Replay frontier on matched DEM sample rows.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""example:
+  python -m tools.frontier_sample_replay --sample-rows sample_rows.csv --out-dir results/frontier_replay --code rotated_surface_d3 --backend rotated_surface_d3 --p-location 0.001 --shot-start 0 --shot-stop 3 --K 16 --Delta 100 --direction-mode fwd_bwd_committee --engine auto
+
+See docs/COMMANDS.md for command details.""",
+    )
     parser.add_argument("--sample-rows", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--code", type=str, required=True)
