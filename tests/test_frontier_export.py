@@ -277,11 +277,18 @@ def test_license_metadata_docs_are_present() -> None:
 
 def test_academic_metadata_docs_are_present_and_linked() -> None:
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    acknowledgements = (REPO_ROOT / "ACKNOWLEDGEMENTS.md").read_text(encoding="utf-8")
+    academic_metadata = (REPO_ROOT / "docs" / "ACADEMIC_METADATA.md").read_text(encoding="utf-8")
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     provenance = (REPO_ROOT / "docs" / "ASSET_PROVENANCE.md").read_text(encoding="utf-8")
 
     assert "cff-version: 1.2.0" in citation
     assert 'license: "Apache-2.0"' in citation
+    assert 'given-names: "Rüdiger"' in citation
+    assert "Plan France 2030" in acknowledgements
+    assert "ANR-22-PETQ-0006" in acknowledgements
+    assert "COSMIQ group at\nInria" in acknowledgements
+    assert "Plan France 2030" in academic_metadata
     assert "CITATION.cff" in readme
     assert "docs/REPRODUCIBILITY.md" in readme
     assert "grosscode/assets/gross144" in provenance

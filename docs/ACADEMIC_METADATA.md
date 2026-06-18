@@ -6,7 +6,7 @@ repository. It avoids inferred DOI, ORCID, funding, and asset-origin claims.
 ## Citation Metadata
 
 - Software title: `frontier: C++-accelerated frontier decoder export`.
-- Software authors declared in `CITATION.cff`: Anthony Leverrier and Ruediger
+- Software authors declared in `CITATION.cff`: Anthony Leverrier and Rüdiger
   Urbanke.
 - Software version: `0.1.0`.
 - Release date: `2026-06-18`.
@@ -21,8 +21,13 @@ repository. It avoids inferred DOI, ORCID, funding, and asset-origin claims.
 
 ## Funding Metadata
 
-No funding agency, grant/project name, grant number, or institutional
-acknowledgement is declared by this repository.
+- Funding programme: Plan France 2030.
+- Project/grant identifier: ANR-22-PETQ-0006.
+- Acknowledgement text: Anthony Leverrier acknowledges the Plan France 2030
+  through the project ANR-22-PETQ-0006.
+- Institutional acknowledgement: Rüdiger Urbanke gratefully acknowledges the
+  hospitality of the COSMIQ group at Inria, where this work was carried out
+  during his sabbatical.
 
 ## Asset Provenance Status
 

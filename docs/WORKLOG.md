@@ -3,8 +3,9 @@
 ## 2026-06-18 Metadata Finalization
 
 - Replaced provisional metadata with declared current status: software authors
-  Anthony Leverrier and Ruediger Urbanke, no declared ORCIDs, no assigned DOI,
-  no declared funding metadata, and no separate asset-license statement beyond
+  Anthony Leverrier and Rüdiger Urbanke, no declared ORCIDs, no assigned DOI,
+  Plan France 2030 project ANR-22-PETQ-0006 funding, COSMIQ/Inria sabbatical
+  hospitality acknowledgement, and no separate asset-license statement beyond
   the repository `NOTICE`.
 - Added `constraints/py314-macos-validated.txt` from the MacBook Python 3.14.2
   validation environment and removed the provisional constraints note.

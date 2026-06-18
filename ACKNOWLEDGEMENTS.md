@@ -2,8 +2,11 @@
 
 ## Funding And Institutional Details
 
-No funding agency, grant number, project name, or institutional acknowledgement
-is declared by this repository.
+Anthony Leverrier acknowledges the Plan France 2030 through the project
+ANR-22-PETQ-0006.
+
+Rüdiger Urbanke gratefully acknowledges the hospitality of the COSMIQ group at
+Inria, where this work was carried out during his sabbatical.
 
 ## Upstream Software
 
