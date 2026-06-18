@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it using the metadata in this file."
+message: "If you use this software, please cite it using the metadata in this file. Paper citation placeholder: arXiv identifier pending and will be added after public posting."
 title: "frontier: C++-accelerated frontier decoder export"
 type: software
 authors:

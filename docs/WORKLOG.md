@@ -1,5 +1,22 @@
 # Frontier Worklog
 
+## 2026-06-18 Paper Placeholder, LLM Acknowledgement, And Figure Deduplication
+
+- Added an explicit paper-citation placeholder in `CITATION.cff`, `README.md`,
+  and `docs/ACADEMIC_METADATA.md`: the Frontier decoder paper arXiv identifier
+  is pending and should replace the placeholder as soon as the public arXiv
+  record exists.  No fake DOI or arXiv identifier was added.
+- Added a large-language-model acknowledgement to `ACKNOWLEDGEMENTS.md` and
+  `docs/ACADEMIC_METADATA.md`, matching the paper statement that OpenAI Codex
+  assisted with programming, documentation, and testing.
+- Removed the duplicate Gross/BB144 FER-vs-average-retained manifest row
+  `gross_dem_avg_retained_duplicate`; the figure is now represented only as the
+  right panel of `gross_dem_circuit`, so `reproduce_plots.py --all --strict`
+  does not render the same PNG twice.
+- Updated `paper/plots/README.md`, `docs/FILE_SCOPE.md`, and regression tests so
+  reproducible figure outputs must be unique and the post-deduplication Figure
+  9/10 numbering is documented.
+
 ## 2026-06-18 Build Metadata Classifier Repair
 
 - Removed the stale `License :: OSI Approved :: Apache Software License`

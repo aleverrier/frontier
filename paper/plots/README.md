@@ -61,16 +61,12 @@ directory is ignored by git except for its `.gitignore` file.
 | `bb72_dem_circuit` | Figure 6 | `paper/plots/data/fig_bb72_dem_fer_vs_p.csv`; `paper/plots/data/fig_bb72_dem_fer_vs_mean_states.csv` | `paper/plots/scripts/plot_bb72_dem.py` | `python paper/plots/scripts/reproduce_plots.py --figure bb72_dem_circuit --strict` | `paper/plots/outputs/fig_bb72_dem_fer_vs_p_paper.png`; `paper/plots/outputs/fig_bb72_dem_fer_vs_mean_states_paper.png` | yes, from committed summary tables | no | raw sample corpora not committed |
 | `gross_dem_circuit` | Figure 7 | `paper/plots/data/fig_gross_dem_fer_vs_p.csv`; `paper/plots/data/fig_gross_dem_fer_vs_avg_retained.csv` | `paper/plots/scripts/plot_gross_dem.py` | `python paper/plots/scripts/reproduce_plots.py --figure gross_dem_circuit --strict` | `paper/plots/outputs/fig_bb144_recent_frontier_fer_vs_p_paper.png`; `paper/plots/outputs/fig_bb144_p001_fer_vs_avg_retained_list_size_paper.png` | yes, from committed summary tables | no | raw sample corpora not committed |
 | `gross_dem_avg_retained` | Figure 8 | `paper/plots/data/fig_gross_dem_avg_vs_peak_retained.csv` | `paper/plots/scripts/plot_gross_dem.py` | `python paper/plots/scripts/reproduce_plots.py --figure gross_dem_avg_retained --strict` | `paper/plots/outputs/fig_bb144_p001_avg_vs_peak_retained_list_size_paper.png` | yes, from committed summary table | no | raw sample corpora not committed |
-| `gross_dem_avg_retained_duplicate` | Figure 9 | `paper/plots/data/fig_gross_dem_fer_vs_avg_retained.csv` | `paper/plots/scripts/plot_gross_dem.py` | `python paper/plots/scripts/reproduce_plots.py --figure gross_dem_avg_retained_duplicate --strict` | `paper/plots/outputs/fig_bb144_p001_fer_vs_avg_retained_list_size_paper.png` | yes, from committed summary table | no | raw sample corpora not committed |
-| `transition_evals` | Figure 10 | `paper/plots/data/fig_transition_evals_tail.csv`; support data `paper/plots/data/fig_transition_evals_percentiles.csv` | `paper/plots/scripts/plot_transition_evals.py` | `python paper/plots/scripts/reproduce_plots.py --figure transition_evals --strict` | `paper/plots/outputs/fig_bb144_p001_transition_eval_hist_paper.png` | yes, from committed tail table plus committed percentile guide table | no | raw timing rows not committed |
-| `failure_decomposition` | Figure 11 | `paper/plots/data/fig_failure_decomposition.csv` | `paper/plots/scripts/plot_failure_decomposition.py` | `python paper/plots/scripts/reproduce_plots.py --figure failure_decomposition --strict` | `paper/plots/outputs/fig_bb144_p002_failure_decomposition_avg_axis.png` | yes, from committed diagnostic summary table | no | raw sample corpora not committed |
+| `transition_evals` | Figure 9 | `paper/plots/data/fig_transition_evals_tail.csv`; support data `paper/plots/data/fig_transition_evals_percentiles.csv` | `paper/plots/scripts/plot_transition_evals.py` | `python paper/plots/scripts/reproduce_plots.py --figure transition_evals --strict` | `paper/plots/outputs/fig_bb144_p001_transition_eval_hist_paper.png` | yes, from committed tail table plus committed percentile guide table | no | raw timing rows not committed |
+| `failure_decomposition` | Figure 10 | `paper/plots/data/fig_failure_decomposition.csv` | `paper/plots/scripts/plot_failure_decomposition.py` | `python paper/plots/scripts/reproduce_plots.py --figure failure_decomposition --strict` | `paper/plots/outputs/fig_bb144_p002_failure_decomposition_avg_axis.png` | yes, from committed diagnostic summary table | no | raw sample corpora not committed |
 
-The paper source reused the TeX label `fig:gross_dem_avg_retained` for two
-different Gross/BB144 retained-list figures. The manifest preserves this fact
-in `paper_reference` while assigning distinct manifest IDs:
-`gross_dem_avg_retained` for average-vs-peak retained list size and
-`gross_dem_avg_retained_duplicate` for the standalone FER-vs-average-retained
-figure.
+The manifest intentionally contains one row per reproducible output file.  The
+Gross/BB144 FER-vs-average-retained panel appears only as the right panel of
+`gross_dem_circuit`, so `--all --strict` does not render the same figure twice.
 
 ## Manifest Contract
 

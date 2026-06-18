@@ -61,7 +61,6 @@ EXPECTED_FIGURE_IDS = {
     "bb72_dem_circuit",
     "gross_dem_circuit",
     "gross_dem_avg_retained",
-    "gross_dem_avg_retained_duplicate",
     "transition_evals",
     "failure_decomposition",
 }
@@ -129,6 +128,14 @@ def test_each_actual_paper_figure_has_a_reproducible_output_row() -> None:
     rows = _manifest_rows()
     reproducible_ids = {row["figure_id"] for row in rows if row["status"] == "reproducible"}
     assert EXPECTED_FIGURE_IDS <= reproducible_ids
+
+
+def test_reproducible_rows_do_not_duplicate_output_files() -> None:
+    rows = _manifest_rows()
+    output_files = [
+        row["output_file"] for row in rows if row["status"] == "reproducible"
+    ]
+    assert len(output_files) == len(set(output_files))
 
 
 def test_sidecars_match_csvs_and_state_plot_reproducibility() -> None:

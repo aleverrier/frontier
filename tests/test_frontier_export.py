@@ -311,11 +311,16 @@ def test_academic_metadata_docs_are_present_and_linked() -> None:
     assert "cff-version: 1.2.0" in citation
     assert 'license: "Apache-2.0"' in citation
     assert 'given-names: "Rüdiger"' in citation
+    assert "arXiv identifier pending" in citation
     assert "Plan France 2030" in acknowledgements
     assert "ANR-22-PETQ-0006" in acknowledgements
     assert "COSMIQ group at\nInria" in acknowledgements
+    assert "OpenAI Codex" in acknowledgements
     assert "Plan France 2030" in academic_metadata
+    assert "arXiv identifier\n  pending" in academic_metadata
+    assert "OpenAI Codex" in academic_metadata
     assert "CITATION.cff" in readme
+    assert "Paper citation placeholder" in readme
     assert "docs/REPRODUCIBILITY.md" in readme
     assert "grosscode/assets/gross144" in provenance
     assert '"codeRepository": "https://github.com/aleverrier/frontier"' in codemeta

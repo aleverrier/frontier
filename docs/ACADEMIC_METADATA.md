@@ -16,9 +16,11 @@ repository. It avoids inferred DOI, ORCID, funding, and asset-origin claims.
 - ORCIDs: none declared.
 - Institution or lab: none declared.
 - Software DOI: none assigned in this repository.
-- Related paper/preprint DOI or arXiv ID: none assigned in this repository.
+- Related paper/preprint placeholder: Frontier decoder paper, arXiv identifier
+  pending.  Replace this placeholder as soon as the public arXiv record is
+  available.
 - Citation policy: cite the software using `CITATION.cff`; cite the paper
-  separately when a public paper identifier is available.
+  separately once a public paper identifier is available.
 
 ## Funding Metadata
 
@@ -29,6 +31,9 @@ repository. It avoids inferred DOI, ORCID, funding, and asset-origin claims.
 - Institutional acknowledgement: Rüdiger Urbanke gratefully acknowledges the
   hospitality of the COSMIQ group at Inria, where this work was carried out
   during his sabbatical.
+- LLM acknowledgement: we acknowledge the use of large language models, in
+  particular OpenAI Codex, to assist with the programming, documentation, and
+  testing of the frontier decoder implementation.
 
 ## Asset Provenance Status
 
@@ -42,8 +47,8 @@ asset license statement is declared in this repository.
 
 For citable releases, keep `CITATION.cff`, `CHANGELOG.md`,
 `docs/ASSET_MANIFEST.md`, and the relevant constraints file synchronized with
-the tagged source state. Do not add DOI, ORCID, funding, or asset-license
-claims unless those facts are available.
+the tagged source state. Do not add DOI, ORCID, funding, arXiv identifier, or
+asset-license claims unless those facts are available.
 
 ## Metadata Authority Order
 

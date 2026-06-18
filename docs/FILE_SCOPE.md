@@ -47,9 +47,9 @@ serving that surface were removed.
 | `paper/plots/scripts/plot_color_threshold.py` | Renderer for the Figure 4 hexagonal color-code FER and retained-state panels. |
 | `paper/plots/scripts/plot_surface_memory_z_dem_mwpm.py` | Renderer for the Figure 5 rotated-surface memory-Z DEM Frontier versus MWPM comparison. |
 | `paper/plots/scripts/plot_bb72_dem.py` | Renderer for the Figure 6 BB72 detector-side DEM panels. |
-| `paper/plots/scripts/plot_gross_dem.py` | Renderer for the Figure 7, Figure 8, and Figure 9 Gross/BB144 detector-side DEM panels. |
-| `paper/plots/scripts/plot_transition_evals.py` | Renderer for the Figure 10 Gross/BB144 transition-evaluation tail curve using percentile support data. |
-| `paper/plots/scripts/plot_failure_decomposition.py` | Renderer for the Figure 11 Gross/BB144 failure-decomposition figure. |
+| `paper/plots/scripts/plot_gross_dem.py` | Renderer for the Figure 7 and Figure 8 Gross/BB144 detector-side DEM panels. |
+| `paper/plots/scripts/plot_transition_evals.py` | Renderer for the Figure 9 Gross/BB144 transition-evaluation tail curve using percentile support data. |
+| `paper/plots/scripts/plot_failure_decomposition.py` | Renderer for the Figure 10 Gross/BB144 failure-decomposition figure. |
 | `paper/plots/outputs/.gitignore` | Keeps generated local plot outputs out of git unless reference images are intentionally added elsewhere. |
 | `Makefile` | Standard local shortcuts for native build, tests, smoke, DEM info, and cleanup. |
 | `.github/workflows/ci.yml` | Lightweight GitHub Actions validation for install, native build, tests, smoke, and DEM info. |

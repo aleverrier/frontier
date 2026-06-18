@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-- No unreleased changes.
+- Added an explicit paper-citation placeholder pending the public arXiv record.
+- Added the OpenAI Codex large-language-model acknowledgement.
+- Removed the duplicate Gross/BB144 paper-figure manifest row and added a
+  regression check against duplicate reproducible figure outputs.
 
 ## 0.1.0 - 2026-06-18
 
