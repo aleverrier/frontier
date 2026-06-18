@@ -8,13 +8,15 @@ serving that surface were removed.
 | --- | --- |
 | `README.md` | Public install, smoke-test, replay, benchmark, matrix, and reproduction instructions. |
 | `AGENTS.md` | Operational setup, validation, and style checklist for coding agents. |
+| `LICENSE` | Apache License 2.0 text for repository code and documentation unless a file states otherwise. |
+| `NOTICE` | Repository attribution and bundled-asset provenance note without relicensing third-party material. |
 | `docs/WORKLOG.md` | Agent-readable change log for repo maintenance. |
 | `docs/WORKLOG.tex` | Human-readable TeX change log matching `docs/WORKLOG.md`. |
 | `docs/FILE_SCOPE.md` | This audit of the retained file set. |
 | `docs/ARCHITECTURE.md` | Human/agent orientation guide for workflows, module ownership, public APIs, native dispatch, and safe changes. |
 | `docs/COMMANDS.md` | Console-script command index with minimal commands, outputs, and common failure modes. |
 | `docs/ENVIRONMENT.md` | Public environment-variable documentation plus internal native debug toggles. |
-| `docs/LICENSING.md` | Explicit pending-license notice until the maintainer chooses a repository license. |
+| `docs/LICENSING.md` | Apache-2.0 scope, third-party licensing caveats, and vendoring-notice guidance. |
 | `Makefile` | Standard local shortcuts for native build, tests, smoke, DEM info, and cleanup. |
 | `.github/workflows/ci.yml` | Lightweight GitHub Actions validation for install, native build, tests, smoke, and DEM info. |
 | `pyproject.toml` | Package metadata, dependencies, console scripts, and pytest config. |
@@ -22,6 +24,7 @@ serving that surface were removed.
 | `frontier/__init__.py` | Public top-level import surface re-exporting stable decoder and DEM helpers. |
 | `frontier/decoder.py` | Stable decoder API re-exports backed by `tools.frontier_decoder`. |
 | `frontier/dem.py` | Stable DEM loader API re-exports backed by `tools.dem_loader`. |
+| `frontier/progressive.py` | Stable model-construction API re-exports backed by `tools.frontier_progressive`. |
 | `frontier/py.typed` | Marker declaring the public `frontier` package as typed. |
 | `frontier_native.py` | Python wrapper around the compiled native extension. |
 | `native/_frontier_native.cpp` | C++ frontier engine used by the public decoder path. |
@@ -37,6 +40,7 @@ serving that surface were removed.
 | `examples/inspect_dem.py` | Minimal DEM loader example for `rotated_surface_d3`. |
 | `examples/replay_rotated_surface_d3.sh` | Tiny temp-directory sample-row and replay workflow. |
 | `tests/test_frontier_export.py` | Regression coverage for the exported frontier wrapper/replay behavior. |
+| `tests/test_examples_and_cli.py` | Subprocess smoke coverage for examples, CLI help, and tiny rotated-surface replay outputs. |
 | `grosscode/__init__.py` | Small top-level export for split-sector DEM construction. |
 | `grosscode/core.py` | Shared sparse-matrix and probability helpers used by retained DEM helpers. |
 | `grosscode/codes/__init__.py` | Public code-builder exports. |

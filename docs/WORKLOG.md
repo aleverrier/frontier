@@ -1,21 +1,68 @@
 # Frontier Worklog
 
+## 2026-06-18 Apache-2.0 Licensing
+
+- Added the root `LICENSE` file with the standard Apache License 2.0 text and
+  a root `NOTICE` file for repository attribution plus bundled-asset provenance
+  caveats.
+- Updated `pyproject.toml` with `license = { file = "LICENSE" }` and the
+  Apache Software License classifier.
+- Replaced the former license-status note in `docs/LICENSING.md` with Apache-2.0
+  scope guidance, third-party caveats, and the rationale for not using
+  CC BY-NC-SA as a software-code license.
+- Updated README navigation and the README `License` section, plus
+  `docs/ARCHITECTURE.md`, `AGENTS.md`, and `docs/FILE_SCOPE.md`, so humans and
+  agents preserve Apache-2.0 and third-party notices in future changes.
+- Added a lightweight regression test that checks the license text, docs,
+  README, package metadata, and file-scope audit.
+
+## 2026-06-18 Navigation Polish and CLI Testability
+
+- Removed developer-machine absolute paths from validation notes and kept
+  interpreter references generic as `$PYTHON_BIN`.
+- Added `frontier.progressive` as a public wrapper for small model-construction
+  primitives, then updated `examples/minimal_decode.py` to use only public
+  `frontier.*` imports.
+- Removed `sys.path` manipulation from Python examples; they now model
+  installed editable-package usage.
+- Normalized all CLI modules around `main(argv=None)` and `_parse_args(argv)`,
+  including `tools.dem_loader`, `tools.frontier_decoder`,
+  `tools.frontier_sample_replay`, and `tools.frontier_bb144_benchmark`.
+- Corrected `docs/ENVIRONMENT.md` to match `resolve_cache_root`, fixed the
+  rotated-surface replay command label in `docs/COMMANDS.md`, and documented
+  platform/compiler expectations in `docs/ARCHITECTURE.md`.
+- Added `tests/test_examples_and_cli.py` for example subprocess checks, CLI
+  help checks, and a tiny rotated-surface replay output smoke test.
+- Extended CI to exercise installed console scripts, examples, and help output.
+- Validation completed with `$PYTHON_BIN` as the active project interpreter:
+  - `$PYTHON_BIN -m pip install -e .`
+  - `$PYTHON_BIN setup.py build_ext --inplace`
+  - `$PYTHON_BIN -m pytest -q` (`15 passed`)
+  - `$PYTHON_BIN -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
+  - `$PYTHON_BIN -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder`
+  - `$PYTHON_BIN -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder`
+  - `$PYTHON_BIN examples/minimal_decode.py`
+  - `$PYTHON_BIN examples/inspect_dem.py`
+  - `PYTHON_BIN=$PYTHON_BIN bash examples/replay_rotated_surface_d3.sh`
+
 ## 2026-06-18 Navigation and Public API Orientation
 
 - Added `docs/ARCHITECTURE.md`, `docs/COMMANDS.md`, `docs/ENVIRONMENT.md`, `docs/LICENSING.md`, `AGENTS.md`, a `Makefile`, GitHub Actions CI, and tiny runnable examples under `examples/`.
 - Added the lightweight `frontier/` package (`frontier.__init__`, `frontier.decoder`, `frontier.dem`, and `py.typed`) as stable public re-exports while keeping existing `tools.*` imports and console-script implementations intact.
-- Updated README navigation and `docs/FILE_SCOPE.md` so humans and agents can find the architecture guide, command index, environment variables, examples, retained-file audit, and license-pending notice quickly.
+- Updated README navigation and `docs/FILE_SCOPE.md` so humans and agents can find the architecture guide, command index, environment variables, examples, retained-file audit, and licensing notes quickly.
 - Added module docstrings, argparse help epilogues, and section headers to the retained long `tools/` modules without changing decoder math, native extension naming, or public reproduction command semantics.
 - Added lightweight tests for public package imports, console-script module entry points, architecture docs, command docs, and file-scope coverage.
-- Validation completed with `/Users/anthony/research/better-beam/tools/py` because this shell had no `python` alias and the system `python3` lacked `setuptools`:
-  - `/Users/anthony/research/better-beam/tools/py setup.py build_ext --inplace`
-  - `/Users/anthony/research/better-beam/tools/py -m pytest -q` (`11 passed`)
-  - `/Users/anthony/research/better-beam/tools/py -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
-  - `/Users/anthony/research/better-beam/tools/py -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder`
-  - `/Users/anthony/research/better-beam/tools/py -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder`
-  - `/Users/anthony/research/better-beam/tools/py examples/minimal_decode.py`
-  - `/Users/anthony/research/better-beam/tools/py examples/inspect_dem.py`
-  - `PYTHON_BIN=/Users/anthony/research/better-beam/tools/py bash examples/replay_rotated_surface_d3.sh`
+- Validation completed with a project-local Python interpreter because this
+  shell had no active `python` alias and the system `python3` lacked
+  `setuptools`:
+  - `$PYTHON_BIN setup.py build_ext --inplace`
+  - `$PYTHON_BIN -m pytest -q` (`11 passed`)
+  - `$PYTHON_BIN -m tools.frontier_decoder --K 16 --Delta 100 --shots 3`
+  - `$PYTHON_BIN -m tools.dem_loader --backend rotated_surface_d3 --p-location 0.001 --column-order deadline_reorder`
+  - `$PYTHON_BIN -m tools.dem_loader --backend bravyi_depth7 --p-location 0.001 --column-order deadline_reorder`
+  - `$PYTHON_BIN examples/minimal_decode.py`
+  - `$PYTHON_BIN examples/inspect_dem.py`
+  - `PYTHON_BIN=$PYTHON_BIN bash examples/replay_rotated_surface_d3.sh`
 
 ## 2026-06-15
 

@@ -1,14 +1,37 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-18 Apache-2.0 Licensing}
+
+\begin{itemize}
+\item Added the root \texttt{\detokenize{LICENSE}} file with the standard Apache License 2.0 text and a root \texttt{\detokenize{NOTICE}} file for repository attribution plus bundled-asset provenance caveats.
+\item Updated \texttt{\detokenize{pyproject.toml}} with \texttt{\detokenize{license = \{ file = "LICENSE" \}}} and the Apache Software License classifier.
+\item Replaced the former license-status note in \texttt{\detokenize{docs/LICENSING.md}} with Apache-2.0 scope guidance, third-party caveats, and the rationale for not using CC BY-NC-SA as a software-code license.
+\item Updated README navigation and the README license section, plus \texttt{\detokenize{docs/ARCHITECTURE.md}}, \texttt{\detokenize{AGENTS.md}}, and \texttt{\detokenize{docs/FILE_SCOPE.md}}, so humans and agents preserve Apache-2.0 and third-party notices in future changes.
+\item Added a lightweight regression test that checks the license text, docs, README, package metadata, and file-scope audit.
+\end{itemize}
+
+\subsection*{2026-06-18 Navigation Polish and CLI Testability}
+
+\begin{itemize}
+\item Removed developer-machine absolute paths from validation notes and kept interpreter references generic as \texttt{\detokenize{$PYTHON_BIN}}.
+\item Added \texttt{\detokenize{frontier.progressive}} as a public wrapper for small model-construction primitives, then updated \texttt{\detokenize{examples/minimal_decode.py}} to use only public \texttt{\detokenize{frontier.*}} imports.
+\item Removed \texttt{\detokenize{sys.path}} manipulation from Python examples; they now model installed editable-package usage.
+\item Normalized all CLI modules around \texttt{\detokenize{main(argv=None)}} and \texttt{\detokenize{_parse_args(argv)}}, including \texttt{\detokenize{tools.dem_loader}}, \texttt{\detokenize{tools.frontier_decoder}}, \texttt{\detokenize{tools.frontier_sample_replay}}, and \texttt{\detokenize{tools.frontier_bb144_benchmark}}.
+\item Corrected \texttt{\detokenize{docs/ENVIRONMENT.md}} to match \texttt{\detokenize{resolve_cache_root}}, fixed the rotated-surface replay command label in \texttt{\detokenize{docs/COMMANDS.md}}, and documented platform/compiler expectations in \texttt{\detokenize{docs/ARCHITECTURE.md}}.
+\item Added \texttt{\detokenize{tests/test_examples_and_cli.py}} for example subprocess checks, CLI help checks, and a tiny rotated-surface replay output smoke test.
+\item Extended CI to exercise installed console scripts, examples, and help output.
+\item Validation completed with \texttt{\detokenize{$PYTHON_BIN}} as the active project interpreter: editable install, native build, \texttt{\detokenize{pytest -q}} with \texttt{15 passed}, frontier smoke, \texttt{\detokenize{rotated_surface_d3}} DEM info, \texttt{\detokenize{bravyi_depth7}} DEM info, and all three examples.
+\end{itemize}
+
 \subsection*{2026-06-18 Navigation and Public API Orientation}
 
 \begin{itemize}
 \item Added \texttt{\detokenize{docs/ARCHITECTURE.md}}, \texttt{\detokenize{docs/COMMANDS.md}}, \texttt{\detokenize{docs/ENVIRONMENT.md}}, \texttt{\detokenize{docs/LICENSING.md}}, \texttt{\detokenize{AGENTS.md}}, a \texttt{\detokenize{Makefile}}, GitHub Actions CI, and tiny runnable examples under \texttt{\detokenize{examples/}}.
 \item Added the lightweight \texttt{\detokenize{frontier/}} package with \texttt{\detokenize{frontier.__init__}}, \texttt{\detokenize{frontier.decoder}}, \texttt{\detokenize{frontier.dem}}, and \texttt{\detokenize{py.typed}} as stable public re-exports while keeping existing \texttt{\detokenize{tools.*}} imports and console-script implementations intact.
-\item Updated README navigation and \texttt{\detokenize{docs/FILE_SCOPE.md}} so humans and agents can find the architecture guide, command index, environment variables, examples, retained-file audit, and license-pending notice quickly.
+\item Updated README navigation and \texttt{\detokenize{docs/FILE_SCOPE.md}} so humans and agents can find the architecture guide, command index, environment variables, examples, retained-file audit, and licensing notes quickly.
 \item Added module docstrings, argparse help epilogues, and section headers to the retained long \texttt{\detokenize{tools/}} modules without changing decoder math, native extension naming, or public reproduction command semantics.
 \item Added lightweight tests for public package imports, console-script module entry points, architecture docs, command docs, and file-scope coverage.
-\item Validation completed with \texttt{\detokenize{/Users/anthony/research/better-beam/tools/py}} because this shell had no \texttt{python} alias and the system \texttt{python3} lacked \texttt{setuptools}: native build, \texttt{\detokenize{pytest -q}} with \texttt{11 passed}, frontier smoke with \texttt{\detokenize{--K 16 --Delta 100 --shots 3}}, \texttt{\detokenize{rotated_surface_d3}} DEM info, \texttt{\detokenize{bravyi_depth7}} DEM info, and all three examples.
+\item Validation completed with a project-local Python interpreter because this shell had no active \texttt{python} alias and the system \texttt{python3} lacked \texttt{setuptools}: native build, \texttt{\detokenize{pytest -q}} with \texttt{11 passed}, frontier smoke with \texttt{\detokenize{--K 16 --Delta 100 --shots 3}}, \texttt{\detokenize{rotated_surface_d3}} DEM info, \texttt{\detokenize{bravyi_depth7}} DEM info, and all three examples.
 \end{itemize}
 
 \subsection*{2026-06-15}

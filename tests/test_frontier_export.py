@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import csv
 import importlib
-import sys
 from pathlib import Path
 
 import pytest
@@ -123,19 +122,8 @@ def test_sample_rows_cli_generates_replay_loadable_rows(tmp_path) -> None:
 
 def test_dem_info_bad_gross_asset_override_prints_no_partial_header(monkeypatch, capsys, tmp_path) -> None:
     monkeypatch.setenv("GROSSCODE_ASSET_ROOT", str(tmp_path / "missing_assets"))
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "frontier-dem-info",
-            "--backend",
-            "bravyi_depth7",
-            "--p-location",
-            "0.001",
-        ],
-    )
 
-    assert dem_loader.main() == 1
+    assert dem_loader.main(["--backend", "bravyi_depth7", "--p-location", "0.001"]) == 1
     captured = capsys.readouterr()
     assert "scope,detector_matrix" not in captured.out
     assert "GROSSCODE_ASSET_ROOT" in captured.err
@@ -166,10 +154,13 @@ def test_pressure_means_are_nan_without_runtime_warning() -> None:
 def test_frontier_package_reexports_public_decoder_api() -> None:
     frontier_pkg = importlib.import_module("frontier")
     dem_pkg = importlib.import_module("frontier.dem")
+    progressive_pkg = importlib.import_module("frontier.progressive")
 
     assert frontier_pkg.FrontierModel is frontier.FrontierModel
     assert frontier_pkg.decode_frontier is frontier.decode_frontier
     assert dem_pkg.load_dem_family is dem_loader.load_dem_family
+    assert progressive_pkg.FactorTransition is progressive.FactorTransition
+    assert progressive_pkg.columns_from_factor_transitions is not progressive._columns_from_factor_transitions
 
     from frontier import FrontierModel, decode_frontier
     from frontier.dem import load_dem_family
@@ -198,6 +189,7 @@ def test_architecture_docs_reference_key_files() -> None:
     text = (REPO_ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
     for path in (
         "frontier_native.py",
+        "frontier/progressive.py",
         "native/_frontier_native.cpp",
         "tools/frontier_decoder.py",
         "tools/frontier_progressive.py",
@@ -227,6 +219,8 @@ def test_commands_docs_reference_all_console_scripts() -> None:
 def test_file_scope_mentions_new_docs_and_examples() -> None:
     text = (REPO_ROOT / "docs" / "FILE_SCOPE.md").read_text(encoding="utf-8")
     for path in (
+        "LICENSE",
+        "NOTICE",
         "AGENTS.md",
         "docs/ARCHITECTURE.md",
         "docs/COMMANDS.md",
@@ -237,10 +231,28 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "frontier/__init__.py",
         "frontier/decoder.py",
         "frontier/dem.py",
+        "frontier/progressive.py",
         "frontier/py.typed",
         "examples/README.md",
         "examples/minimal_decode.py",
         "examples/inspect_dem.py",
         "examples/replay_rotated_surface_d3.sh",
+        "tests/test_examples_and_cli.py",
     ):
         assert path in text
+
+
+def test_license_metadata_docs_are_present() -> None:
+    license_text = (REPO_ROOT / "LICENSE").read_text(encoding="utf-8")
+    licensing_doc = (REPO_ROOT / "docs" / "LICENSING.md").read_text(encoding="utf-8")
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    pyproject = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    file_scope = (REPO_ROOT / "docs" / "FILE_SCOPE.md").read_text(encoding="utf-8")
+
+    assert "Apache License" in license_text
+    assert "Version 2.0" in license_text
+    assert "Apache License 2.0" in licensing_doc
+    assert "Apache License 2.0" in readme
+    assert 'license = { file = "LICENSE" }' in pyproject
+    assert "License :: OSI Approved :: Apache Software License" in pyproject
+    assert "LICENSE" in file_scope

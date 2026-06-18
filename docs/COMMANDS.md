@@ -67,7 +67,7 @@ frontier-sample-rows --out sample_rows.csv --backend rotated_surface_d3 --p-loca
 frontier-replay \
   --sample-rows sample_rows.csv \
   --out-dir results/frontier_replay \
-  --code bb144 \
+  --code rotated_surface_d3 \
   --backend rotated_surface_d3 \
   --p-location 0.001 \
   --shot-start 0 \

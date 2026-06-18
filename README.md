@@ -33,8 +33,8 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
 - `docs/ENVIRONMENT.md`: supported environment variables and native debug toggles.
 - `docs/WORKLOG.md`: agent-readable maintenance log.
 - `examples/README.md`: tiny runnable examples.
-- TODO: choose and add the repository license; until then, see
-  `docs/LICENSING.md`.
+- `LICENSE`: Apache License 2.0; see `docs/LICENSING.md` for notes on scope
+  and third-party material.
 
 | Console script | Implementation |
 | --- | --- |
@@ -307,3 +307,9 @@ print(hx.shape, hz.shape)
 problem = build_split_sector_problem(backend="bravyi_depth7", error_rate=0.004)
 print(problem.D_X.shape, problem.D_Z.shape)
 ```
+
+## License
+
+This repository is licensed under the Apache License 2.0. See `LICENSE` and
+`docs/LICENSING.md`. Third-party dependencies and any explicitly marked
+third-party files/assets remain under their own licenses.

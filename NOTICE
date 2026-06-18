@@ -1,0 +1,13 @@
+Frontier
+Copyright 2026 Frontier contributors.
+
+This repository contains research software for the C++-accelerated frontier
+decoder path and bundled assets needed for the documented BB144/Gross and
+surface-code workflows.
+
+Third-party dependencies are distributed under their own licenses.
+
+The bundled Gross/BB144 CSS matrices, Stim circuits, and derived split-sector
+DEM snapshot files are retained as research assets for the documented
+workflows. This NOTICE does not relicense third-party material or remove any
+more specific notice that may accompany a file.

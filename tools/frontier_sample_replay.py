@@ -1949,7 +1949,7 @@ def _write_report(summary_rows: Sequence[Mapping[str, object]], *, out_dir: Path
 # CLI.
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Replay frontier on matched DEM sample rows.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -2008,7 +2008,11 @@ See docs/COMMANDS.md for command details.""",
     parser.add_argument("--warmup-native", action="store_true")
     parser.add_argument("--progress-every-shards", type=int, default=1)
     parser.add_argument("--allow-existing", action="store_true")
-    args = parser.parse_args(argv)
+    return parser.parse_args(argv)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parse_args(argv)
     args.direction_mode = _normalize_direction_mode(args.direction_mode, args.decoder_mode)
     args.decoder_mode = _decoder_mode_from_direction_mode(str(args.direction_mode))
 

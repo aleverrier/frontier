@@ -17,6 +17,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from typing import Sequence
 
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -25,7 +26,7 @@ from tools import frontier_decoder as frontier
 from tools.dem_loader import load_dem_family
 
 
-def _parse_args() -> argparse.Namespace:
+def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Time native frontier selected bidirectional-committee decode on "
@@ -70,7 +71,7 @@ See docs/COMMANDS.md for command details.""",
         action="store_true",
         help="Compatibility alias for --payload full.",
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def _configure_mplconfigdir() -> None:
@@ -166,8 +167,8 @@ def _decode_payloads(
     )
 
 
-def main() -> int:
-    args = _parse_args()
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parse_args(argv)
     _configure_mplconfigdir()
     scopes = tuple(args.scope) if args.scope else ("memory_X", "memory_Z")
     payload_mode = "full" if bool(args.full_payload) else str(args.payload)

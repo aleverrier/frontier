@@ -3,23 +3,21 @@
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
 from frontier import FrontierModel, decode_frontier, decode_frontier_committee
-from tools import frontier_progressive as progressive
+from frontier.progressive import (
+    FactorTransition,
+    OutcomeTransition,
+    build_frontier_layout,
+    columns_from_factor_transitions,
+)
 
 
-def _factor(factor_id: int, p0: float, det1: int, log1: int) -> progressive.FactorTransition:
-    return progressive.FactorTransition(
+def _factor(factor_id: int, p0: float, det1: int, log1: int) -> FactorTransition:
+    return FactorTransition(
         factor_id=int(factor_id),
         outcomes=(
-            progressive.OutcomeTransition(probability=float(p0), detector_mask=0, logical_mask=0),
-            progressive.OutcomeTransition(
+            OutcomeTransition(probability=float(p0), detector_mask=0, logical_mask=0),
+            OutcomeTransition(
                 probability=float(1.0 - p0),
                 detector_mask=int(det1),
                 logical_mask=int(log1),
@@ -32,7 +30,7 @@ def _factor(factor_id: int, p0: float, det1: int, log1: int) -> progressive.Fact
 
 def build_model() -> FrontierModel:
     columns = tuple(
-        progressive._columns_from_factor_transitions(
+        columns_from_factor_transitions(
             (
                 _factor(0, 0.55, 1, 1),
                 _factor(1, 0.70, 1, 0),
@@ -41,7 +39,7 @@ def build_model() -> FrontierModel:
     )
     return FrontierModel(
         columns=columns,
-        layout=progressive.build_frontier_layout(list(columns), num_detectors=1),
+        layout=build_frontier_layout(list(columns), num_detectors=1),
         num_detectors=1,
         num_observables=1,
     )

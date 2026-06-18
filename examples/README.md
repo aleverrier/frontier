@@ -1,6 +1,6 @@
 # Examples
 
-These examples are intentionally tiny and safe to run from a fresh checkout.
+These examples are intentionally tiny and safe to run after an editable install.
 
 - `minimal_decode.py` builds the same two-factor model used by the smoke test
   and calls `decode_frontier` plus `decode_frontier_committee`.

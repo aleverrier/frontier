@@ -7,7 +7,11 @@ name = "frontier"
 version = "0.1.0"
 description = "C++-accelerated frontier decoder with optional forward/backward committee."
 readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.11"
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+]
 dependencies = [
   "matplotlib>=3.8",
   "ldpc>=2.4",

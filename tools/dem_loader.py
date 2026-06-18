@@ -341,7 +341,7 @@ def build_backward_deadline_ordered_family(*, base_family: LoadedProgressiveFami
     )
 
 
-def _parse_args() -> argparse.Namespace:
+def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Load supported DEM matrices and print frontier dimensions.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -363,11 +363,11 @@ See docs/COMMANDS.md for command details.""",
     parser.add_argument("--external-benchmark-label")
     parser.add_argument("--external-noisy-rounds", type=int)
     parser.add_argument("--external-perfect-rounds", type=int, default=1)
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
-def main() -> int:
-    args = _parse_args()
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parse_args(argv)
     scopes = tuple(args.scope) if args.scope else ("memory_X", "memory_Z")
     rows: list[tuple[str, LoadedProgressiveFamily]] = []
     try:

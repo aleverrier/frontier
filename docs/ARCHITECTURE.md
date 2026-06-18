@@ -29,6 +29,7 @@ BB144/Gross reproduction commands.
 | Path | Role |
 | --- | --- |
 | `frontier_native.py` | Import wrapper around the compiled `_frontier_native` extension. It keeps native availability checks and class aliases in one place. |
+| `frontier/progressive.py` | Public re-export surface for small frontier model-construction primitives used by examples and light API users. |
 | `native/_frontier_native.cpp` | C++ frontier engine and Python bindings. This is the hot native implementation; keep the extension name `_frontier_native`. |
 | `tools/frontier_decoder.py` | Public decoder dataclasses, dispatch API, Python reference decoder, native adapters, committee selection, and `frontier-smoke` CLI. |
 | `tools/frontier_progressive.py` | Frontier column, layout, ordering, scoring, and payload helpers shared by the decoder and DEM loader. |
@@ -64,6 +65,11 @@ The intended Python API is:
 - `tools.frontier_decoder.FrontierCommitteeMember`
 - `tools.frontier_decoder.decode_frontier`
 - `tools.frontier_decoder.decode_frontier_committee`
+- `frontier.progressive.FactorTransition`
+- `frontier.progressive.OutcomeTransition`
+- `frontier.progressive.columns_from_factor_transitions`
+- `frontier.progressive.build_frontier_layout`
+- `frontier.progressive.optimize_column_order`
 - `grosscode.dem.builder.build_split_sector_problem`
 - `grosscode.codes.surface.standard_surface_checks`
 - `grosscode.codes.rotated_surface.load_rotated_surface_code`
@@ -106,6 +112,21 @@ Important environment variables are documented in `docs/ENVIRONMENT.md`:
 - Generated replay/benchmark outputs should stay under local result paths such
   as `results/` and should not be committed.
 
+Repository code and documentation are Apache-2.0 unless otherwise marked. Do
+not add third-party code or assets without preserving upstream license notices.
+If vendoring code from MIT, BSD, Apache, or similar projects, preserve headers
+and record the provenance in `NOTICE` or a third-party notice file.
+
+## Platform and Compiler Support
+
+- CI validates Ubuntu with Python 3.11 and 3.12.
+- Local development has also validated the native extension on macOS with a
+  Clang-compatible toolchain.
+- The native extension expects a C++17 compiler compatible with the current
+  source and `setup.py` flags.
+- Windows/MSVC is not currently advertised as supported. Treat it as a porting
+  target only after explicit implementation and CI coverage.
+
 ## How to Make Safe Changes
 
 - Avoid changing decoder tie-breaking without explicit tests.
@@ -113,5 +134,6 @@ Important environment variables are documented in `docs/ENVIRONMENT.md`:
 - Update `README.md` and `docs/FILE_SCOPE.md` when adding or removing files.
 - Update tests when changing public CLI or API behavior.
 - Preserve bundled Gross/BB144 assets and the `_frontier_native` extension name.
+- Preserve Apache-2.0 and third-party license notices.
 - Run the validation commands in `AGENTS.md` before landing decoder or workflow
   changes.

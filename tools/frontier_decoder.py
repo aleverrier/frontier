@@ -1547,7 +1547,7 @@ def _smoke_columns() -> tuple[progressive.FactorTransition, ...]:
     )
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Tiny frontier smoke benchmark",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -1559,7 +1559,11 @@ See docs/COMMANDS.md for command details.""",
     parser.add_argument("--K", "--beam-cap", dest="K", type=int, default=8)
     parser.add_argument("--Delta", "--delta", dest="Delta", type=float, default=8.0)
     parser.add_argument("--shots", type=int, default=20)
-    args = parser.parse_args(argv)
+    return parser.parse_args(argv)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parse_args(argv)
     results: list[FrontierResult] = []
     for shot in range(int(args.shots)):
         syndrome = int(shot & 1)
