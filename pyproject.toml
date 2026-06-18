@@ -10,6 +10,25 @@ readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.11"
+authors = [
+  { name = "Anthony Leverrier" },
+  { name = "Rüdiger Urbanke" },
+]
+keywords = [
+  "quantum error correction",
+  "LDPC codes",
+  "frontier decoder",
+  "BB code",
+  "Gross code",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Physics",
+]
 dependencies = [
   "matplotlib>=3.8",
   "ldpc>=2.4",
@@ -24,6 +43,13 @@ frontier-dem-info = "tools.dem_loader:main"
 frontier-sample-rows = "tools.frontier_sample_rows:main"
 frontier-replay = "tools.frontier_sample_replay:main"
 frontier-bb144-benchmark = "tools.frontier_bb144_benchmark:main"
+
+[project.urls]
+Repository = "https://github.com/aleverrier/frontier"
+Issues = "https://github.com/aleverrier/frontier/issues"
+Changelog = "https://github.com/aleverrier/frontier/blob/main/CHANGELOG.md"
+Citation = "https://github.com/aleverrier/frontier/blob/main/CITATION.cff"
+Reproducibility = "https://github.com/aleverrier/frontier/blob/main/docs/REPRODUCIBILITY.md"
 
 [project.optional-dependencies]
 dev = [
@@ -47,3 +73,19 @@ grosscode = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+ignore = [
+  "E402",  # CLI modules adjust sys.path before imports for direct script execution.
+  "E731",  # Existing frontier ranking helper uses a local lambda.
+]
+
+[tool.mypy]
+python_version = "3.11"
+packages = ["frontier"]
+ignore_missing_imports = true
+warn_unused_configs = true

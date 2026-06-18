@@ -26,13 +26,15 @@ bash examples/replay_rotated_surface_d3.sh
 When exact constraints are available, install with:
 
 ```bash
-python -m pip install -e . -c constraints/py314-macos-validated.txt
+python -m pip install -e . -c constraints/<validated-environment>.txt
 ```
 
-The committed constraints file was captured from the MacBook Python 3.14.2
-validation environment. For cluster or Linux reproduction, use the same capture
-pattern described in `constraints/README.md` from the validated target
-environment.
+The committed `constraints/py314-macos-validated.txt` file was captured from
+the MacBook Python 3.14.2 validation environment. It is one available validated
+environment, not a default for all users. For cluster or Linux reproduction,
+use the capture pattern in `constraints/README.md` from the validated target
+environment. The Ubuntu Python 3.12 CI constraints are not pinned in this
+checkout; see `constraints/py312-ubuntu-ci.TODO.md`.
 
 The `bravyi_depth7`, `p=0.001` Gross/BB144 DEM smoke path should report
 detector matrices `936x8784` and logical matrices `12x8784` for both
@@ -60,6 +62,34 @@ Publication-grade reproduction should record:
 
 Large publication sample corpora are not checked into this repository. Archive
 them separately and cite their immutable identifier in reports.
+
+## Paper Plot Reproduction
+
+Paper plot reproduction lives in `paper/plots/`.
+
+```bash
+python paper/plots/scripts/reproduce_plots.py --list
+python paper/plots/scripts/reproduce_plots.py --all
+```
+
+The manifest `paper/plots/manifest.csv` maps each figure or panel to the
+minimal plot-ready data file, plotting script, output path, data kind, source,
+generation command, environment, status, and caveats. `paper/plots/data/` is for
+small summary CSV files and same-stem JSON sidecars, not raw per-shot corpora.
+
+This checkout contains compact plot-ready summary tables and JSON sidecars for
+the current `frontier_decoder2.tex` figure inventory. It does not include raw
+paper sample corpora. The current manifest rows are `script-missing`, not
+`reproducible`, because figure-specific plotting scripts have not been
+committed yet. Future rows with missing tables must use `data-missing` or
+`external-archive-needed`; rows with tables but no renderer must remain
+`script-missing`.
+
+Regenerate paper-data checksums with:
+
+```bash
+python -m tools.asset_manifest --root paper/plots/data --title "Paper Plot Data Manifest" > paper/plots/data/MANIFEST.md
+```
 
 ## Reporting Results
 

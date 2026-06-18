@@ -1,0 +1,90 @@
+{
+  "caveats": [
+    "This is an explanatory generated schematic, not simulation output."
+  ],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "element_id": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "element_type": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "is_active": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "is_closed": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "is_logical": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "is_processed": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "matrix_column": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "matrix_row": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "notes": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "processed_count": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "source": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "target": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "value": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "x": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "y": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": null,
+  "csv_sha256": "8ef74fa3fed51cc215530af0f37c15dbf2fee146e4d068a11ea87ad4c7f4a0c0",
+  "decoder_settings": {},
+  "dependency_constraints_file": null,
+  "description": "Element and incidence table for the explanatory Frontier active-boundary schematic.",
+  "figure_id": "frontier_schematic",
+  "panel_id": "",
+  "paper_reference": "Figure fig:frontier_schematic in frontier_decoder2.tex lines 277-279.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:docs/paper/build_paper_assets.py",
+    "sha256": "ea690748656f05e94aad7b2a5efd4f399f242da7dbaa991d7ad9e77daf456e2a"
+  },
+  "release_version": null,
+  "row_count": 45,
+  "sample_count": null,
+  "source_command": "python docs/paper/build_paper_assets.py"
+}

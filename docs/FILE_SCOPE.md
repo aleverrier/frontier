@@ -9,13 +9,17 @@ serving that surface were removed.
 | `README.md` | Public install, smoke-test, replay, benchmark, matrix, and reproduction instructions. |
 | `AGENTS.md` | Operational setup, validation, and style checklist for coding agents. |
 | `CITATION.cff` | Citation metadata for citable software releases. |
+| `codemeta.json` | CodeMeta software metadata derived from declared package, citation, and repository facts. |
+| `AUTHORS.md` | Software authorship list matching `CITATION.cff` plus contributor-list policy. |
 | `ACKNOWLEDGEMENTS.md` | Funding, institutional, and upstream-software acknowledgement status. |
 | `CONTRIBUTING.md` | Human-facing contribution, validation, compatibility, reproducibility, and asset-change rules. |
+| `SECURITY.md` | Minimal security-reporting policy for public research software. |
 | `CHANGELOG.md` | Release-level change log; distinct from the internal worklog files. |
 | `LICENSE` | Apache License 2.0 text for repository code and documentation unless a file states otherwise. |
 | `NOTICE` | Repository attribution and bundled-asset provenance note without relicensing third-party material. |
 | `constraints/README.md` | Explains reproducibility constraints versus package requirements. |
 | `constraints/py314-macos-validated.txt` | Exact dependency constraints captured from the MacBook Python 3.14.2 validation environment. |
+| `constraints/py312-ubuntu-ci.TODO.md` | Placeholder instructions for truthfully capturing exact Ubuntu Python 3.12 CI constraints. |
 | `docs/WORKLOG.md` | Agent-readable change log for repo maintenance. |
 | `docs/WORKLOG.tex` | Human-readable TeX change log matching `docs/WORKLOG.md`. |
 | `docs/ACADEMIC_METADATA.md` | Declared citation, funding, DOI, and provenance metadata status. |
@@ -28,6 +32,15 @@ serving that surface were removed.
 | `docs/COMMANDS.md` | Console-script command index with minimal commands, outputs, and common failure modes. |
 | `docs/ENVIRONMENT.md` | Public environment-variable documentation plus internal native debug toggles. |
 | `docs/LICENSING.md` | Apache-2.0 scope, third-party licensing notes, and vendoring-notice guidance. |
+| `paper/README.md` | Top-level paper-specific reproduction area index. |
+| `paper/plots/README.md` | Paper-plot reproduction status, manifest contract, commands, required data columns, and provenance caveats. |
+| `paper/plots/manifest.csv` | Figure/panel-to-data/script/output manifest for the current `frontier_decoder2.tex` figure inventory; rows are `script-missing` until renderers are committed. |
+| `paper/plots/data/*.csv` | Minimal plot-ready summary, schematic, and compact figure-state tables for current paper figures; raw per-shot corpora are intentionally excluded. |
+| `paper/plots/data/*.json` | Same-stem sidecar metadata, checksums, source labels, decoder settings, and caveats for each paper plot CSV. |
+| `paper/plots/data/README.md` | Exact current paper plot table columns plus required JSON sidecar schema. |
+| `paper/plots/data/MANIFEST.md` | Deterministic checksum manifest for retained paper-plot data files. |
+| `paper/plots/scripts/reproduce_plots.py` | Paper-plot reproduction entry point that lists manifest rows and refuses to fabricate missing data. |
+| `paper/plots/outputs/.gitignore` | Keeps generated local plot outputs out of git unless reference images are intentionally added elsewhere. |
 | `Makefile` | Standard local shortcuts for native build, tests, smoke, DEM info, and cleanup. |
 | `.github/workflows/ci.yml` | Lightweight GitHub Actions validation for install, native build, tests, smoke, and DEM info. |
 | `pyproject.toml` | Package metadata, dependencies, console scripts, and pytest config. |
@@ -53,6 +66,7 @@ serving that surface were removed.
 | `examples/replay_rotated_surface_d3.sh` | Tiny temp-directory sample-row and replay workflow. |
 | `tests/test_frontier_export.py` | Regression coverage for the exported frontier wrapper/replay behavior. |
 | `tests/test_examples_and_cli.py` | Subprocess smoke coverage for examples, CLI help, and tiny rotated-surface replay outputs. |
+| `tests/test_paper_plots.py` | Paper-plot manifest, missing-data honesty, reproduction CLI, and data-checksum regression tests. |
 | `grosscode/__init__.py` | Small top-level export for split-sector DEM construction. |
 | `grosscode/core.py` | Shared sparse-matrix and probability helpers used by retained DEM helpers. |
 | `grosscode/codes/__init__.py` | Public code-builder exports. |

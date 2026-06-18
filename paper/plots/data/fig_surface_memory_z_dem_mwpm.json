@@ -1,0 +1,104 @@
+{
+  "caveats": [],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "avg_retained_list_size": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "avg_retained_list_size_stderr": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "decoder": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "distance": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fail_total": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_hi": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_lo": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_per_round": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_per_round_hi": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_per_round_lo": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "frontier_Delta": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "frontier_K": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "matrix_cols": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "matrix_rows": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "retained_estimate_samples": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "shots": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "status": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": "Wilson 95% confidence interval in fer_lo/fer_hi and per-round columns.",
+  "csv_sha256": "eee27de2719b8da5c88eb6f594f358d052cbf8fcc4762098df314ef01d0e7291",
+  "decoder_settings": {
+    "frontier_Delta": 12,
+    "frontier_K": 2048,
+    "p_location": 0.002
+  },
+  "dependency_constraints_file": null,
+  "description": "Rotated-surface memory-Z detector-side DEM Frontier-vs-MWPM table.",
+  "figure_id": "surface_memory_z_dem_mwpm",
+  "panel_id": "",
+  "paper_reference": "Figure fig:surface_memory_z_dem_mwpm in frontier_decoder2.tex lines 673-682.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:docs/paper/data/surface_memory_z_dem_frontier_vs_mwpm.csv",
+    "sha256": "56162e0fc84f2c2f8e82881a55fdd7eb150a450807c67183f95aeccaffef8cb7"
+  },
+  "release_version": null,
+  "row_count": 8,
+  "sample_count": null,
+  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+}

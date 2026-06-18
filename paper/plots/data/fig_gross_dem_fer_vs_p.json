@@ -1,0 +1,96 @@
+{
+  "caveats": [],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "config": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "decoder": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "decoder_label": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fail_total": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_high95": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_low95": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_per_round": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_per_round_high95": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_per_round_low95": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "matrix": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "p_location": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "source": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "source_decoder": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "status": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "trials": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": "Wilson 95% confidence interval where ci_low/ci_high columns are present.",
+  "csv_sha256": "07a4633773f4dfa5781c606044304ac35d7aa342cdb1abac6dcbae3d7c0718ef",
+  "decoder_settings": {
+    "matrix_DX": "936x8784",
+    "matrix_DZ": "936x8784",
+    "rounds": 12
+  },
+  "dependency_constraints_file": null,
+  "description": "Gross/BB144 split-sector detector-side DEM FER-vs-p table.",
+  "figure_id": "gross_dem_circuit",
+  "panel_id": "left",
+  "paper_reference": "Figure fig:gross_dem_circuit in frontier_decoder2.tex lines 732-740.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:docs/paper/v4_simulation_results/data/plot_data_bb144_dem_fer_vs_p.csv",
+    "sha256": "021978bfb52e6e25684662835239600eb168047620f335694949e64ff8c08e2e"
+  },
+  "release_version": null,
+  "row_count": 12,
+  "sample_count": null,
+  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+}

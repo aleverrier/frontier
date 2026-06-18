@@ -1,0 +1,133 @@
+{
+  "caveats": [
+    "Failure classes are offline diagnostics using truth/logical-class labels; they must not be used as online decoder decisions."
+  ],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "Delta": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "K": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "avg_retained_list_size": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "bad_ranking": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "bad_ranking_rate": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "empty_terminal_frontier": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "empty_terminal_frontier_rate": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "exception_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fail_total": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "logical_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "logical_support_loss": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "logical_support_loss_rate": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "mean_peak_retained_list_size": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "no_path_rate": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "p_location": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_result_dir": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_trials": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "source_trials": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "syndrome_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "terminal_ranking_failure": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "terminal_ranking_failure_rate": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "truth_missing_rate": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "truth_missing_terminal": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": null,
+  "csv_sha256": "8ac8b1f7e2d09eb21d8378529b04712f652a80e59d7c7c6a0fcb13bf895d85a9",
+  "decoder_settings": {
+    "K": "8192 or 16384 by Delta",
+    "matrix_DX": "936x8784",
+    "matrix_DZ": "936x8784",
+    "p_location": 0.002,
+    "rounds": 12,
+    "score_alpha": 0.8
+  },
+  "dependency_constraints_file": null,
+  "description": "Gross/BB144 p=0.002 failure-decomposition table on average retained-list x-axis.",
+  "figure_id": "failure_decomposition",
+  "panel_id": "",
+  "paper_reference": "Figure fig:failure_decomposition in frontier_decoder2.tex lines 786-788.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:results/20260617_bb144_p002_avg_retained_axis_v1/analysis/bb144_p002_failure_decomposition_avg_axis_plot_data.csv",
+    "sha256": "6d38a35f88c789010a4d7c3206400b625781b5bbbae33d70910ebfd0cef2eae3"
+  },
+  "release_version": null,
+  "row_count": 15,
+  "sample_count": null,
+  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+}

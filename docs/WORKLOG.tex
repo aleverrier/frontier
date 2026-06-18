@@ -1,5 +1,25 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-18 Paper Plot Summary Tables}
+
+\begin{itemize}
+\item Treated \texttt{\detokenize{frontier_decoder2.tex}} as the current paper source for the figure inventory, with sha256 \texttt{\detokenize{d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e}}.
+\item Added compact plot-ready CSV tables and JSON sidecars for every current figure or panel, including the generated schematic, BB72 algorithm recap state table, surface/color code-capacity panels, surface memory-Z DEM comparison, BB72/Gross detector-side DEM panels, Gross transition-evaluation tail/percentile data, and the Gross \(p=0.002\) failure-decomposition table.
+\item Left all manifest rows as \texttt{\detokenize{script-missing}}, not \texttt{\detokenize{reproducible}}, because the committed repo still lacks figure-specific renderers for the published PNGs.
+\item Normalized local and scratch source paths in imported CSVs to stable source labels and avoided copying raw per-shot corpora.
+\item Updated paper-plot docs and tests so \texttt{\detokenize{script-missing}} rows must have committed CSV data, same-stem sidecars, and matching checksums while the CLI continues to skip unreproducible rows honestly.
+\end{itemize}
+
+\subsection*{2026-06-18 Paper Plot Reproduction Scaffold}
+
+\begin{itemize}
+\item Audited the checkout for paper figure lists and plot-ready summary tables; none were present, so no paper plot data or numeric figure values were added.
+\item Added an honest paper plot scaffold under \texttt{\detokenize{paper/plots/}}: schema-only \texttt{\detokenize{manifest.csv}}, missing-data documentation, ignored generated outputs, and \texttt{\detokenize{reproduce_plots.py}} commands that list or skip missing rows without fabricating data.
+\item Extended \texttt{\detokenize{tools/asset_manifest.py}} with optional \texttt{\detokenize{--root}} and \texttt{\detokenize{--title}} arguments while preserving the default Gross/BB144 asset manifest output, then added \texttt{\detokenize{paper/plots/data/MANIFEST.md}} for the current retained paper-data directory.
+\item Added \texttt{\detokenize{tests/test_paper_plots.py}} so the manifest schema, missing-data honesty, plot reproduction entry point, and data-manifest checksums are enforced.
+\item Added \texttt{\detokenize{codemeta.json}}, \texttt{\detokenize{AUTHORS.md}}, \texttt{\detokenize{SECURITY.md}}, and \texttt{\detokenize{constraints/py312-ubuntu-ci.TODO.md}} using only declared repository facts, and updated README, AGENTS, CONTRIBUTING, reproducibility, release, metadata, file-scope, and typecheck docs accordingly.
+\end{itemize}
+
 \subsection*{2026-06-18 Metadata Finalization}
 
 \begin{itemize}

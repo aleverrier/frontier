@@ -1,0 +1,111 @@
+{
+  "caveats": [
+    "The attached TeX duplicates the label fig:gross_dem_avg_retained later for a different figure."
+  ],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "Delta": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "K": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "ci_high": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "ci_low": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "decoder": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "exception_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fail_total": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "logical_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "point_label": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_mean_frame_peak_list_size": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_transition_evals_total_mean": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_trials": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "source": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "status": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "syndrome_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "trials": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "x_avg_retained_list_size_per_side_column": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "y_mean_peak_retained_list_size_per_side_trace": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": null,
+  "csv_sha256": "f7d758fcba46b8ef6518c90d098a9b211147d078c3c9fb8bf094864ea2721c10",
+  "decoder_settings": {
+    "matrix_DX": "936x8784",
+    "matrix_DZ": "936x8784",
+    "p_location": 0.001,
+    "rounds": 12
+  },
+  "dependency_constraints_file": null,
+  "description": "Gross/BB144 p=0.001 average-vs-peak retained-list table.",
+  "figure_id": "gross_dem_avg_retained",
+  "panel_id": "avg_vs_peak",
+  "paper_reference": "Figure fig:gross_dem_avg_retained in frontier_decoder2.tex lines 745-747.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:docs/paper/v4_simulation_results/data/plot_data_bb144_p001_avg_vs_peak_retained_list_size.csv",
+    "sha256": "7bfb2f4a5b5263c9304dd51b0de44e94d0848d235857ed708fb4b28d6da9f94f"
+  },
+  "release_version": null,
+  "row_count": 8,
+  "sample_count": null,
+  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+}

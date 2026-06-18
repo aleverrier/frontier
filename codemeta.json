@@ -1,0 +1,43 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "frontier",
+  "description": "C++-accelerated frontier decoder with optional forward/backward committee.",
+  "codeRepository": "https://github.com/aleverrier/frontier",
+  "issueTracker": "https://github.com/aleverrier/frontier/issues",
+  "license": "https://spdx.org/licenses/Apache-2.0",
+  "version": "0.1.0",
+  "datePublished": "2026-06-18",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Anthony",
+      "familyName": "Leverrier"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Rüdiger",
+      "familyName": "Urbanke"
+    }
+  ],
+  "programmingLanguage": [
+    "Python",
+    "C++"
+  ],
+  "runtimePlatform": "Python >=3.11",
+  "keywords": [
+    "quantum error correction",
+    "LDPC codes",
+    "frontier decoder",
+    "BB code",
+    "Gross code"
+  ],
+  "funding": "Plan France 2030, ANR-22-PETQ-0006",
+  "softwareRequirements": [
+    "matplotlib>=3.8",
+    "ldpc>=2.4",
+    "numpy>=2.0",
+    "scipy>=1.12",
+    "stim>=1.15"
+  ]
+}

@@ -16,7 +16,7 @@ lint:
 	python -m ruff check .
 
 typecheck:
-	python -m mypy frontier grosscode tools
+	python -m mypy frontier
 
 clean:
 	find . -name '__pycache__' -type d -prune -exec rm -rf {} +

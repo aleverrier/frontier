@@ -1,0 +1,43 @@
+{
+  "caveats": [
+    "Companion table for vertical percentile guides, not a standalone curve."
+  ],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "metric": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "transition_evals": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": null,
+  "csv_sha256": "9c76f027379fcc435bd7b97ebf9ae734808957cd1b89b53407533a78d3ad3dfa",
+  "decoder_settings": {
+    "Delta": 20,
+    "K": 16384,
+    "p_location": 0.001,
+    "score_alpha": 0.8
+  },
+  "dependency_constraints_file": null,
+  "description": "Percentile guide values for the Gross/BB144 transition-evaluation tail figure.",
+  "figure_id": "transition_evals",
+  "panel_id": "percentile_guides",
+  "paper_reference": "Figure fig:transition_evals in frontier_decoder2.tex lines 769-781.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:docs/paper/v4_simulation_results/data/bb144_p001_transition_eval_hist_percentiles.csv",
+    "sha256": "1ceb5f82bc73c40172729284573d78ade22e7624c7b38be70cb756afb36047b2"
+  },
+  "release_version": null,
+  "row_count": 7,
+  "sample_count": null,
+  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+}

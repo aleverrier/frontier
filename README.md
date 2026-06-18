@@ -35,9 +35,19 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
 - `docs/ASSET_PROVENANCE.md`: bundled-asset provenance status.
 - `docs/RELEASE.md`: release and archival checklist.
 - `docs/ACADEMIC_METADATA.md`: declared academic metadata status.
+- `paper/plots/README.md`: paper-plot reproduction status, commands, and data
+  policy.
+- `paper/plots/manifest.csv`: figure-to-data/script/output manifest.
+- `paper/plots/data/`: minimal plot-ready summary tables, sidecar metadata,
+  and checksums when paper data are available.
+- `paper/plots/scripts/`: plot reproduction entry points.
 - `docs/WORKLOG.md`: agent-readable maintenance log.
 - `examples/README.md`: tiny runnable examples.
 - `CITATION.cff`: citation metadata for citable releases.
+- `codemeta.json`: CodeMeta software metadata derived from declared repo
+  facts.
+- `AUTHORS.md`: software authorship and contributor-list policy.
+- `SECURITY.md`: minimal security reporting policy for research software.
 - `ACKNOWLEDGEMENTS.md`: funding, institutional, and upstream-software acknowledgements.
 - `CONTRIBUTING.md`: human-facing contribution guide.
 - `CHANGELOG.md`: release-level change log.
@@ -73,8 +83,15 @@ For exact reproducibility constraints, see `constraints/README.md`. Once a
 known-good constraints file exists, install with:
 
 ```bash
-python -m pip install -e . -c constraints/py314-macos-validated.txt
+python -m pip install -e . -c constraints/<validated-environment>.txt
 ```
+
+The committed `constraints/py314-macos-validated.txt` file is one validated
+environment, not a default for all users.
+
+The Ubuntu Python 3.12 CI environment is validated in GitHub Actions, but this
+checkout has not captured exact Ubuntu pins yet. See
+`constraints/py312-ubuntu-ci.TODO.md` before adding a Linux constraints file.
 
 ## Smoke Test
 
@@ -82,6 +99,23 @@ python -m pip install -e . -c constraints/py314-macos-validated.txt
 python -m pytest -q
 frontier-smoke --K 16 --Delta 100 --shots 3
 ```
+
+## Paper Plot Reproduction
+
+Paper-specific plot reproduction lives under `paper/plots/`. The current
+checkout contains minimal plot-ready summary tables and JSON sidecars for the
+current `frontier_decoder2.tex` figure inventory. The manifest rows are still
+`script-missing`, not `reproducible`, because figure-specific plotting scripts
+have not been committed in this repo yet.
+
+```bash
+python paper/plots/scripts/reproduce_plots.py --list
+python paper/plots/scripts/reproduce_plots.py --all
+```
+
+Before marking a figure `reproducible`, add a committed renderer that regenerates
+the listed output from the committed CSV and sidecar, then refresh
+`paper/plots/data/MANIFEST.md`.
 
 ## Python API
 
@@ -323,6 +357,9 @@ from the activated virtual environment, then rerun the smoke test and replay.
 The repo bundles the static Gross/BB144 files needed for the default
 `bravyi_depth7`, `p=0.001` reproduction, and uses builders/generators for the
 other supported matrix families.
+
+The following is a low-level matrix-builder example; decoder-facing user code
+should prefer `frontier.dem`.
 
 - Gross split-sector detector-side DEM:
   `grosscode.dem.builder.build_split_sector_problem(...)` returns `D_X`, `D_Z`,

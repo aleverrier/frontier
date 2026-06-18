@@ -1,0 +1,154 @@
+{
+  "caveats": [
+    "The attached TeX uses the same fig:gross_dem_avg_retained label for two standalone Gross retained-list figures."
+  ],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "Delta": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "K": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "bad_ranking": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "ci_high": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "ci_low": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "decoder": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "exception_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fail_total": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "fer_per_round": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "logical_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "per_round_ci_high": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "per_round_ci_low": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "plot_group": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "plot_x": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_fail_total": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_mean_frame_peak_list_size": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_mean_peak_side_list_size": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_transition_evals_total_mean": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "scan_trials": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "series": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "source_decoder": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "status": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "syndrome_fail": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "trials": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "truth_missing_terminal": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "truth_present_but_not_selected": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "x_avg_retained_list_size_per_side_column": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "x_coordinate_source": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "x_mean_list_size_per_side": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": "Wilson 95% confidence interval where ci_low/ci_high columns are present.",
+  "csv_sha256": "98b2a70ac39702124611375c9e97376e15c2104d0ddce9867561eaa5b7b93228",
+  "decoder_settings": {
+    "Delta_sweep": "retained-list sweep",
+    "K": "8192 except endpoint 16384",
+    "p_location": 0.001
+  },
+  "dependency_constraints_file": null,
+  "description": "Gross/BB144 p=0.001 FER-vs-average-retained-list table.",
+  "figure_id": "gross_dem_circuit",
+  "panel_id": "right",
+  "paper_reference": "Figure fig:gross_dem_circuit right panel and duplicate-label standalone figure in frontier_decoder2.tex lines 732-764.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:docs/paper/v4_simulation_results/data/plot_data_bb144_p001_fer_vs_avg_retained_list_size.csv",
+    "sha256": "99378dfd1084c1d1394932bcb37c63fbb18593a5fc069a1cf59ed8da126ebdb6"
+  },
+  "release_version": null,
+  "row_count": 10,
+  "sample_count": null,
+  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+}

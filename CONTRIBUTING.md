@@ -36,6 +36,10 @@ make lint
 make typecheck
 ```
 
+`make typecheck` is an advisory public-API check scoped to the `frontier`
+package. It is not a strict type gate for the full retained research-code
+surface.
+
 ## Coding Style
 
 - Prefer small, explicit functions with type annotations for new Python code.
@@ -54,6 +58,23 @@ make typecheck
   sample corpus, matrix family, decoder settings, worker count, and native
   availability.
 - Do not commit large generated sample corpora or result directories.
+
+## Paper Plot Data
+
+Paper plot reproduction is tracked under `paper/plots/`. Any change that adds
+or changes a paper plot must update:
+
+- `paper/plots/manifest.csv`
+- the minimal CSV data file and same-stem JSON sidecar under `paper/plots/data/`
+- `paper/plots/data/MANIFEST.md`
+- `paper/plots/README.md`
+- `tests/test_paper_plots.py`, if the reproduction contract changes
+
+Do not fabricate plot values, paper figure references, archive identifiers, or
+statistical caveats. Do not mark a row `reproducible` unless the committed data
+and script regenerate the listed output. If data are present but the renderer is
+not, use `script-missing`. If data are not present, use `data-missing` or
+`external-archive-needed`.
 
 ## Bundled Assets
 
@@ -78,6 +99,12 @@ python -m tools.asset_manifest > docs/ASSET_MANIFEST.md
 - Substantial contributions should update `CITATION.cff`,
   `ACKNOWLEDGEMENTS.md`, and `docs/ACADEMIC_METADATA.md` when author,
   funding, DOI, or preferred-citation facts change.
+
+## Interaction Norms
+
+Keep issues and reviews professional, specific, and focused on the software,
+data, documentation, and reproducibility questions. This repository does not
+currently maintain a separate code-of-conduct governance document.
 
 ## Issues
 

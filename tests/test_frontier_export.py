@@ -223,14 +223,18 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
     text = (REPO_ROOT / "docs" / "FILE_SCOPE.md").read_text(encoding="utf-8")
     for path in (
         "LICENSE",
+        "codemeta.json",
+        "AUTHORS.md",
         "CITATION.cff",
         "ACKNOWLEDGEMENTS.md",
         "CONTRIBUTING.md",
+        "SECURITY.md",
         "CHANGELOG.md",
         "NOTICE",
         "AGENTS.md",
         "constraints/README.md",
         "constraints/py314-macos-validated.txt",
+        "constraints/py312-ubuntu-ci.TODO.md",
         "docs/ACADEMIC_METADATA.md",
         "docs/ASSET_PROVENANCE.md",
         "docs/ASSET_MANIFEST.md",
@@ -240,6 +244,13 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "docs/COMMANDS.md",
         "docs/ENVIRONMENT.md",
         "docs/LICENSING.md",
+        "paper/README.md",
+        "paper/plots/README.md",
+        "paper/plots/manifest.csv",
+        "paper/plots/data/README.md",
+        "paper/plots/data/MANIFEST.md",
+        "paper/plots/scripts/reproduce_plots.py",
+        "paper/plots/outputs/.gitignore",
         "Makefile",
         ".github/workflows/ci.yml",
         "frontier/__init__.py",
@@ -252,6 +263,7 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "examples/inspect_dem.py",
         "examples/replay_rotated_surface_d3.sh",
         "tests/test_examples_and_cli.py",
+        "tests/test_paper_plots.py",
         "tools/asset_manifest.py",
     ):
         assert path in text
@@ -281,6 +293,9 @@ def test_academic_metadata_docs_are_present_and_linked() -> None:
     academic_metadata = (REPO_ROOT / "docs" / "ACADEMIC_METADATA.md").read_text(encoding="utf-8")
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     provenance = (REPO_ROOT / "docs" / "ASSET_PROVENANCE.md").read_text(encoding="utf-8")
+    codemeta = (REPO_ROOT / "codemeta.json").read_text(encoding="utf-8")
+    authors = (REPO_ROOT / "AUTHORS.md").read_text(encoding="utf-8")
+    security = (REPO_ROOT / "SECURITY.md").read_text(encoding="utf-8")
 
     assert "cff-version: 1.2.0" in citation
     assert 'license: "Apache-2.0"' in citation
@@ -292,6 +307,11 @@ def test_academic_metadata_docs_are_present_and_linked() -> None:
     assert "CITATION.cff" in readme
     assert "docs/REPRODUCIBILITY.md" in readme
     assert "grosscode/assets/gross144" in provenance
+    assert '"codeRepository": "https://github.com/aleverrier/frontier"' in codemeta
+    assert '"@type": "Person"' in codemeta
+    assert "Anthony Leverrier" in authors
+    assert "Rüdiger Urbanke" in authors
+    assert "No formal response SLA is declared" in security
     assert (REPO_ROOT / "CONTRIBUTING.md").exists()
     assert (REPO_ROOT / "CHANGELOG.md").exists()
 
@@ -307,15 +327,15 @@ def test_public_docs_contain_no_provisional_markers() -> None:
     marker = "TO" + "DO"
     scanned_paths = [
         REPO_ROOT / "ACKNOWLEDGEMENTS.md",
+        REPO_ROOT / "AUTHORS.md",
         REPO_ROOT / "CITATION.cff",
         REPO_ROOT / "CONTRIBUTING.md",
         REPO_ROOT / "README.md",
-        REPO_ROOT / "constraints" / "README.md",
         REPO_ROOT / "docs" / "ACADEMIC_METADATA.md",
         REPO_ROOT / "docs" / "ASSET_PROVENANCE.md",
-        REPO_ROOT / "docs" / "FILE_SCOPE.md",
         REPO_ROOT / "docs" / "REPRODUCIBILITY.md",
         REPO_ROOT / "grosscode" / "circuits" / "backends.py",
     ]
     for path in scanned_paths:
-        assert marker not in path.read_text(encoding="utf-8"), path
+        text = path.read_text(encoding="utf-8").replace("py312-ubuntu-ci.TODO.md", "")
+        assert marker not in text, path

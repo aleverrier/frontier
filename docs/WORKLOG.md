@@ -1,5 +1,43 @@
 # Frontier Worklog
 
+## 2026-06-18 Paper Plot Summary Tables
+
+- Treated `frontier_decoder2.tex` as the current paper source for the figure
+  inventory, with sha256
+  `d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e`.
+- Added compact plot-ready CSV tables and JSON sidecars for every current
+  figure or panel, including the generated schematic, BB72 algorithm recap
+  state table, surface/color code-capacity panels, surface memory-Z DEM
+  comparison, BB72/Gross detector-side DEM panels, Gross transition-evaluation
+  tail/percentile data, and the Gross p=0.002 failure-decomposition table.
+- Left all manifest rows as `script-missing`, not `reproducible`, because the
+  committed repo still lacks figure-specific renderers for the published PNGs.
+- Normalized local and scratch source paths in imported CSVs to stable source
+  labels and avoided copying raw per-shot corpora.
+- Updated paper-plot docs and tests so `script-missing` rows must have committed
+  CSV data, same-stem sidecars, and matching checksums while the CLI continues
+  to skip unreproducible rows honestly.
+
+## 2026-06-18 Paper Plot Reproduction Scaffold
+
+- Audited the checkout for paper figure lists and plot-ready summary tables;
+  none were present, so no paper plot data or numeric figure values were added.
+- Added an honest paper plot scaffold under `paper/plots/`: schema-only
+  `manifest.csv`, missing-data documentation, ignored generated outputs, and
+  `reproduce_plots.py` commands that list or skip missing rows without
+  fabricating data.
+- Extended `tools/asset_manifest.py` with optional `--root` and `--title`
+  arguments while preserving the default Gross/BB144 asset manifest output, then
+  added `paper/plots/data/MANIFEST.md` for the current retained paper-data
+  directory.
+- Added `tests/test_paper_plots.py` so the manifest schema, missing-data
+  honesty, plot reproduction entry point, and data-manifest checksums are
+  enforced.
+- Added `codemeta.json`, `AUTHORS.md`, `SECURITY.md`, and
+  `constraints/py312-ubuntu-ci.TODO.md` using only declared repository facts,
+  and updated README, AGENTS, CONTRIBUTING, reproducibility, release, metadata,
+  file-scope, and typecheck docs accordingly.
+
 ## 2026-06-18 Metadata Finalization
 
 - Replaced provisional metadata with declared current status: software authors

@@ -1,0 +1,61 @@
+{
+  "caveats": [],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "bin_left": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "bin_right": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "count": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "tail_ci_high95": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "tail_ci_low95": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "tail_count_ge_bin_left": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "tail_fraction_ge_bin_left": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": "Wilson 95% confidence interval for binomial tail counts.",
+  "csv_sha256": "56bcfde6dc55ef1af14073a44aa1d133a0fba562258c7b56bdb15f355a170355",
+  "decoder_settings": {
+    "Delta": 20,
+    "K": 16384,
+    "p_location": 0.001,
+    "score_alpha": 0.8
+  },
+  "dependency_constraints_file": null,
+  "description": "Gross/BB144 p=0.001 transition-evaluation tail curve table.",
+  "figure_id": "transition_evals",
+  "panel_id": "tail_curve",
+  "paper_reference": "Figure fig:transition_evals in frontier_decoder2.tex lines 769-781.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:docs/paper/v4_simulation_results/data/plot_data_bb144_p001_transition_eval_tail_curve.csv",
+    "sha256": "6f5db6f617cbab2630ebf93f79dbdb1edd70350fb3f0dfeda79c7b7fce1f8c3c"
+  },
+  "release_version": null,
+  "row_count": 62,
+  "sample_count": null,
+  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+}

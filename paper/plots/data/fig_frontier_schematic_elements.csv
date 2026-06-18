@@ -1,0 +1,46 @@
+element_type,element_id,source,target,x,y,matrix_row,matrix_column,processed_count,is_processed,is_active,is_logical,is_closed,value,notes
+variable_node,j1,,,0.75,3.45,,0,5,True,False,False,False,,Small explanatory surface-code-style detector model.
+variable_node,j2,,,1.9,3.45,,1,5,True,False,False,False,,Small explanatory surface-code-style detector model.
+variable_node,j3,,,3.05,3.45,,2,5,True,False,False,False,,Small explanatory surface-code-style detector model.
+variable_node,j4,,,0.75,2.25,,3,5,True,False,False,False,,Small explanatory surface-code-style detector model.
+variable_node,j5,,,1.9,2.25,,4,5,True,False,False,False,,Small explanatory surface-code-style detector model.
+variable_node,j6,,,3.05,2.25,,5,5,False,False,False,False,,Small explanatory surface-code-style detector model.
+variable_node,j7,,,0.75,1.0500000000000003,,6,5,False,False,False,False,,Small explanatory surface-code-style detector model.
+variable_node,j8,,,1.9,1.0500000000000003,,7,5,False,False,False,False,,Small explanatory surface-code-style detector model.
+variable_node,j9,,,3.05,1.0500000000000003,,8,5,False,False,False,False,,Small explanatory surface-code-style detector model.
+check_node,c1,,,1.32,4.05,0,,5,False,False,False,True,,Active rows are checks touching both processed and unprocessed variables.
+check_node,c2,,,2.48,4.05,1,,5,False,False,False,True,,Active rows are checks touching both processed and unprocessed variables.
+check_node,c3,,,1.32,2.85,2,,5,False,False,False,True,,Active rows are checks touching both processed and unprocessed variables.
+check_node,c4,,,2.48,2.85,3,,5,False,True,False,False,,Active rows are checks touching both processed and unprocessed variables.
+check_node,c5,,,1.32,1.65,4,,5,False,True,False,False,,Active rows are checks touching both processed and unprocessed variables.
+check_node,c6,,,2.48,1.65,5,,5,False,True,False,False,,Active rows are checks touching both processed and unprocessed variables.
+check_node,c7,,,1.32,0.45,6,,5,False,False,False,False,,Active rows are checks touching both processed and unprocessed variables.
+check_node,c8,,,2.48,0.45,7,,5,False,False,False,False,,Active rows are checks touching both processed and unprocessed variables.
+logical_node,L,,,3.78,2.25,8,,5,False,False,True,False,,Active rows are checks touching both processed and unprocessed variables.
+incidence_edge,c1:j1,c1,j1,,,0,0,5,True,False,False,True,1,Matrix entry and factor-graph edge.
+incidence_edge,c1:j2,c1,j2,,,0,1,5,True,False,False,True,1,Matrix entry and factor-graph edge.
+incidence_edge,c2:j2,c2,j2,,,1,1,5,True,False,False,True,1,Matrix entry and factor-graph edge.
+incidence_edge,c2:j3,c2,j3,,,1,2,5,True,False,False,True,1,Matrix entry and factor-graph edge.
+incidence_edge,c3:j1,c3,j1,,,2,0,5,True,False,False,True,1,Matrix entry and factor-graph edge.
+incidence_edge,c3:j2,c3,j2,,,2,1,5,True,False,False,True,1,Matrix entry and factor-graph edge.
+incidence_edge,c3:j4,c3,j4,,,2,3,5,True,False,False,True,1,Matrix entry and factor-graph edge.
+incidence_edge,c3:j5,c3,j5,,,2,4,5,True,False,False,True,1,Matrix entry and factor-graph edge.
+incidence_edge,c4:j2,c4,j2,,,3,1,5,True,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c4:j3,c4,j3,,,3,2,5,True,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c4:j5,c4,j5,,,3,4,5,True,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c4:j6,c4,j6,,,3,5,5,False,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c5:j4,c5,j4,,,4,3,5,True,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c5:j5,c5,j5,,,4,4,5,True,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c5:j7,c5,j7,,,4,6,5,False,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c5:j8,c5,j8,,,4,7,5,False,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c6:j5,c6,j5,,,5,4,5,True,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c6:j6,c6,j6,,,5,5,5,False,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c6:j8,c6,j8,,,5,7,5,False,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c6:j9,c6,j9,,,5,8,5,False,True,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c7:j7,c7,j7,,,6,6,5,False,False,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c7:j8,c7,j8,,,6,7,5,False,False,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c8:j8,c8,j8,,,7,7,5,False,False,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,c8:j9,c8,j9,,,7,8,5,False,False,False,False,1,Matrix entry and factor-graph edge.
+incidence_edge,L:j3,L,j3,,,8,2,5,True,False,True,False,1,Matrix entry and factor-graph edge.
+incidence_edge,L:j6,L,j6,,,8,5,5,False,False,True,False,1,Matrix entry and factor-graph edge.
+incidence_edge,L:j9,L,j9,,,8,8,5,False,False,True,False,1,Matrix entry and factor-graph edge.

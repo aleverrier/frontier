@@ -1,0 +1,116 @@
+{
+  "caveats": [
+    "This table is a compact state-visualization artifact, not a per-shot simulation corpus."
+  ],
+  "code_version": "Source checkout version was not recorded in the source summary table.",
+  "columns": {
+    "Delta": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "K": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "alpha": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "best_score_after_next_column": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "closure_rejected": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "cutoff_score_after_next_column": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "detector_mask": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "future_score_F": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "kept": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "local_state": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "logical_mask": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "merged_from_count": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "next_boundary_column_index": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "next_column_index": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "parent_state_key": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "prefix_mass_P": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "rank": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "score_P_plus_alpha_F": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "stage": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    },
+    "state_key": {
+      "definition": "Imported plot-ready summary column from the source artifact.",
+      "unit": null
+    }
+  },
+  "commit_hash": null,
+  "confidence_interval_method": null,
+  "csv_sha256": "4f076e7b99c4d712dc066af624ef2b080ba734d28968ccdefc3cf7ea718f1765",
+  "decoder_settings": {
+    "Delta": 8,
+    "K": 512,
+    "code": "bb72",
+    "p_location": 0.002,
+    "score_alpha": 0.8
+  },
+  "dependency_constraints_file": null,
+  "description": "Per-state plot table for the four-panel algorithm recap figure.",
+  "figure_id": "algorithm",
+  "panel_id": "steps",
+  "paper_reference": "Figure fig:algorithm in frontier_decoder2.tex lines 457-478.",
+  "paper_source": {
+    "filename": "frontier_decoder2.tex",
+    "sha256": "d1abc814aab7ec6e8bacfab0af31b95d7f84b4a01170b648c2ceefacd5ae153e"
+  },
+  "random_seeds": null,
+  "raw_source": {
+    "file": "better-beam:results/20260601_bb72_dem_score_plane_talk_v1/bb72_dem_p002_k512_delta8_algorithm_recap_states.csv",
+    "sha256": "069ca393dd8e8719e3b92068b114213e200aa0702620268853d27e517d739fce"
+  },
+  "release_version": null,
+  "row_count": 194,
+  "sample_count": null,
+  "source_command": "Copied from existing compact plot-ready summary artifact; no paper-specific renderer is committed in this repo yet."
+}

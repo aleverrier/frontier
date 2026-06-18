@@ -12,6 +12,7 @@ repository. It avoids inferred DOI, ORCID, funding, and asset-origin claims.
 - Release date: `2026-06-18`.
 - Repository: `https://github.com/aleverrier/frontier`.
 - License: Apache-2.0.
+- CodeMeta: `codemeta.json`.
 - ORCIDs: none declared.
 - Institution or lab: none declared.
 - Software DOI: none assigned in this repository.
@@ -43,3 +44,17 @@ For citable releases, keep `CITATION.cff`, `CHANGELOG.md`,
 `docs/ASSET_MANIFEST.md`, and the relevant constraints file synchronized with
 the tagged source state. Do not add DOI, ORCID, funding, or asset-license
 claims unless those facts are available.
+
+## Metadata Authority Order
+
+- Package version source: `pyproject.toml`.
+- Citation metadata source: `CITATION.cff`.
+- Release notes: `CHANGELOG.md`.
+- Internal maintenance log: `docs/WORKLOG.md`.
+- Asset checksums: `docs/ASSET_MANIFEST.md`.
+- Paper-plot data manifest: `paper/plots/manifest.csv`.
+- CodeMeta export: `codemeta.json`, derived from `pyproject.toml`,
+  `CITATION.cff`, `ACKNOWLEDGEMENTS.md`, and repository docs.
+
+Maintainer metadata is not declared in `pyproject.toml` because this repository
+does not currently declare a separate software maintainer or maintainer contact.

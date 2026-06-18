@@ -15,7 +15,13 @@ Use this checklist for citable public releases.
 
 ```bash
 python -m tools.asset_manifest > docs/ASSET_MANIFEST.md
+python -m tools.asset_manifest --root paper/plots/data --title "Paper Plot Data Manifest" > paper/plots/data/MANIFEST.md
 ```
+
+- Confirm `paper/plots/manifest.csv` is honest: reproducible rows must have
+  committed data and scripts; rows with committed data but no renderer must
+  remain `script-missing`; missing data must remain marked `data-missing` or
+  `external-archive-needed`.
 
 - Run validation:
 
