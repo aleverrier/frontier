@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Added an explicit paper-citation placeholder pending the public arXiv record.
+- Replaced the paper-citation placeholder with the public arXiv record for
+  `arXiv:2606.20513`.
 - Added the OpenAI Codex large-language-model acknowledgement.
 - Removed the duplicate Gross/BB144 paper-figure manifest row and added a
   regression check against duplicate reproducible figure outputs.

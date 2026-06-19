@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it using the metadata in this file. Paper citation placeholder: arXiv identifier pending and will be added after public posting."
+message: "If you use this software, please cite it using the metadata in this file and cite the associated paper as arXiv:2606.20513."
 title: "frontier: C++-accelerated frontier decoder export"
 type: software
 authors:
@@ -11,3 +11,18 @@ version: "0.1.0"
 date-released: "2026-06-18"
 repository-code: "https://github.com/aleverrier/frontier"
 license: "Apache-2.0"
+references:
+  - type: article
+    title: "Approximating optimal decoding of quantum LDPC codes with narrow frontiers"
+    authors:
+      - family-names: "Leverrier"
+        given-names: "Anthony"
+      - family-names: "Urbanke"
+        given-names: "Rüdiger"
+    year: 2026
+    doi: "10.48550/arXiv.2606.20513"
+    url: "https://arxiv.org/abs/2606.20513"
+    identifiers:
+      - type: other
+        value: "arXiv:2606.20513"
+        description: "arXiv identifier"

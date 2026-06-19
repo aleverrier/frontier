@@ -1,7 +1,8 @@
 # Academic Metadata
 
 This file records the public academic metadata currently declared by this
-repository. It avoids inferred DOI, ORCID, funding, and asset-origin claims.
+repository. It avoids inferred software DOI, ORCID, funding, and asset-origin
+claims.
 
 ## Citation Metadata
 
@@ -16,11 +17,13 @@ repository. It avoids inferred DOI, ORCID, funding, and asset-origin claims.
 - ORCIDs: none declared.
 - Institution or lab: none declared.
 - Software DOI: none assigned in this repository.
-- Related paper/preprint placeholder: Frontier decoder paper, arXiv identifier
-  pending.  Replace this placeholder as soon as the public arXiv record is
-  available.
+- Related paper/preprint: Anthony Leverrier and Rüdiger Urbanke,
+  "Approximating optimal decoding of quantum LDPC codes with narrow frontiers,"
+  arXiv:2606.20513 [quant-ph], submitted 2026-06-18.
+- Related paper URL: `https://arxiv.org/abs/2606.20513`.
+- Related paper arXiv DOI: `10.48550/arXiv.2606.20513`.
 - Citation policy: cite the software using `CITATION.cff`; cite the paper
-  separately once a public paper identifier is available.
+  separately using `arXiv:2606.20513`.
 
 ## Funding Metadata
 
@@ -47,7 +50,7 @@ asset license statement is declared in this repository.
 
 For citable releases, keep `CITATION.cff`, `CHANGELOG.md`,
 `docs/ASSET_MANIFEST.md`, and the relevant constraints file synchronized with
-the tagged source state. Do not add DOI, ORCID, funding, arXiv identifier, or
+the tagged source state. Do not add software DOI, ORCID, funding, or
 asset-license claims unless those facts are available.
 
 ## Metadata Authority Order

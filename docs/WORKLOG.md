@@ -1,5 +1,17 @@
 # Frontier Worklog
 
+## 2026-06-19 Public arXiv Metadata Update
+
+- Replaced the temporary paper-citation placeholder with the public arXiv
+  record for Anthony Leverrier and Rüdiger Urbanke, "Approximating optimal
+  decoding of quantum LDPC codes with narrow frontiers," `arXiv:2606.20513`
+  [quant-ph], submitted 2026-06-18.
+- Updated `CITATION.cff`, `README.md`, `docs/ACADEMIC_METADATA.md`,
+  `docs/RELEASE.md`, `CHANGELOG.md`, and `codemeta.json` so the software
+  citation remains distinct from the associated paper citation.
+- Updated `tests/test_frontier_export.py` to assert the public arXiv metadata
+  and reject the old placeholder wording.
+
 ## 2026-06-18 BB144 p=0.002 Quick DEM Replay
 
 - Cloned `git@github.com:aleverrier/frontier.git` into

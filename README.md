@@ -122,10 +122,11 @@ reproducibility is separate from simulation reproduction.
 
 ## Citation And Acknowledgements
 
-Use `CITATION.cff` for the software citation. Paper citation placeholder:
-Frontier decoder paper, arXiv identifier pending. Replace this placeholder in
-`CITATION.cff`, this README, and `docs/ACADEMIC_METADATA.md` as soon as the
-public arXiv record is available.
+Use `CITATION.cff` for the software citation. The associated paper is:
+
+Anthony Leverrier and Rüdiger Urbanke, "Approximating optimal decoding of
+quantum LDPC codes with narrow frontiers," arXiv:2606.20513 [quant-ph],
+2026. <https://arxiv.org/abs/2606.20513>
 
 The repository acknowledgements, including funding, institutional details, and
 the OpenAI Codex large-language-model acknowledgement, are recorded in

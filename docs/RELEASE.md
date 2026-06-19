@@ -7,7 +7,7 @@ Use this checklist for citable public releases.
 - Confirm the working tree is clean.
 - Update the version in `pyproject.toml`.
 - Update `CHANGELOG.md`.
-- Ensure `CITATION.cff` version, date, and paper-citation placeholder are
+- Ensure `CITATION.cff` version, date, and related-paper citation metadata are
   current.
 - Review `ACKNOWLEDGEMENTS.md` and `docs/ACADEMIC_METADATA.md` for release
   consistency.
@@ -53,11 +53,12 @@ Archive the tagged release on Zenodo or an institutional repository.
 ## After Public Identifier Assignment
 
 - Add the software DOI to `CITATION.cff`.
-- Replace the paper-citation placeholder with the public arXiv identifier as
-  soon as the preprint is posted.
+- Keep the related paper metadata synchronized with the current public arXiv
+  record.
 - Add preferred citation metadata if the paper/software citation target is
   chosen.
-- Link the DOI or arXiv identifier from `README.md` if appropriate.
+- Link the DOI or updated publication identifier from `README.md` if
+  appropriate.
 
-Do not claim a DOI or arXiv identifier in repository metadata before one
-exists.
+Do not claim a software DOI or publication identifier in repository metadata
+before it exists.

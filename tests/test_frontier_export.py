@@ -311,19 +311,29 @@ def test_academic_metadata_docs_are_present_and_linked() -> None:
     assert "cff-version: 1.2.0" in citation
     assert 'license: "Apache-2.0"' in citation
     assert 'given-names: "Rüdiger"' in citation
-    assert "arXiv identifier pending" in citation
+    assert "arXiv:2606.20513" in citation
+    assert "10.48550/arXiv.2606.20513" in citation
+    assert (
+        "Approximating optimal decoding of quantum LDPC codes with narrow frontiers"
+        in citation
+    )
+    assert "Paper citation placeholder" not in citation
     assert "Plan France 2030" in acknowledgements
     assert "ANR-22-PETQ-0006" in acknowledgements
     assert "COSMIQ group at\nInria" in acknowledgements
     assert "OpenAI Codex" in acknowledgements
     assert "Plan France 2030" in academic_metadata
-    assert "arXiv identifier\n  pending" in academic_metadata
+    assert "arXiv:2606.20513" in academic_metadata
+    assert "https://arxiv.org/abs/2606.20513" in academic_metadata
+    assert "arXiv identifier\n  pending" not in academic_metadata
     assert "OpenAI Codex" in academic_metadata
     assert "CITATION.cff" in readme
-    assert "Paper citation placeholder" in readme
+    assert "arXiv:2606.20513" in readme
+    assert "Paper citation placeholder" not in readme
     assert "docs/REPRODUCIBILITY.md" in readme
     assert "grosscode/assets/gross144" in provenance
     assert '"codeRepository": "https://github.com/aleverrier/frontier"' in codemeta
+    assert '"citation": "https://arxiv.org/abs/2606.20513"' in codemeta
     assert '"@type": "Person"' in codemeta
     assert "Anthony Leverrier" in authors
     assert "Rüdiger Urbanke" in authors
