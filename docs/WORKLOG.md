@@ -1,5 +1,13 @@
 # Frontier Worklog
 
+## 2026-06-23 v0.1.0 GitHub Release Prep
+
+- Moved current release-prep bullets from `CHANGELOG.md` `Unreleased` into the
+  `0.1.0` section so the tag notes match the committed `main` state.
+- Updated `docs/RELEASE.md` to make the v0.1.0 public snapshot explicitly the
+  GitHub tag plus GitHub release, without setting up Zenodo or claiming a
+  software DOI.
+
 ## 2026-06-23 Release Visibility Checklist
 
 - Added `docs/VISIBILITY_RELEASE_CHECKLIST.md` so each release has an explicit

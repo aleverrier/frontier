@@ -2,11 +2,7 @@
 
 ## Unreleased
 
-- Replaced the paper-citation placeholder with the public arXiv record for
-  `arXiv:2606.20513`.
-- Added the OpenAI Codex large-language-model acknowledgement.
-- Removed the duplicate Gross/BB144 paper-figure manifest row and added a
-  regression check against duplicate reproducible figure outputs.
+- No post-0.1.0 changes yet.
 
 ## 0.1.0 - 2026-06-18
 
@@ -20,6 +16,11 @@
 - Compact plot-ready paper figure tables, JSON sidecars, checksum manifest
   coverage, figure-to-data manifest rows, and Matplotlib renderers for the
   recorded `frontier_decoder2.tex` figure inventory.
+- Public arXiv metadata for the associated paper, `arXiv:2606.20513`, while
+  keeping the software citation distinct from the paper citation.
+- OpenAI Codex large-language-model acknowledgement.
+- Duplicate Gross/BB144 paper-figure manifest row removed, with a regression
+  check against duplicate reproducible figure outputs.
 - Notes:
   - large sample corpora and publication-scale result artifacts are not bundled;
   - DOI, funding, and asset-provenance metadata status is recorded in
