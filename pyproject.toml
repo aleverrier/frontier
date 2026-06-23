@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "frontier"
 version = "0.1.0"
-description = "C++-accelerated frontier decoder with optional forward/backward committee."
+description = "Frontier decoder for quantum LDPC codes and detector error models."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
@@ -15,11 +15,21 @@ authors = [
   { name = "Rüdiger Urbanke" },
 ]
 keywords = [
+  "quantum LDPC",
+  "QLDPC",
   "quantum error correction",
-  "LDPC codes",
+  "stabilizer codes",
+  "detector error model",
+  "logical maximum likelihood",
+  "coset decoding",
+  "dynamic programming",
+  "boundary state decoder",
   "frontier decoder",
+  "bivariate bicycle code",
+  "LDPC codes",
   "BB code",
   "Gross code",
+  "Stim",
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -46,7 +56,9 @@ frontier-bb144-benchmark = "tools.frontier_bb144_benchmark:main"
 
 [project.urls]
 Repository = "https://github.com/aleverrier/frontier"
+Documentation = "https://github.com/aleverrier/frontier#readme"
 Issues = "https://github.com/aleverrier/frontier/issues"
+Paper = "https://arxiv.org/abs/2606.20513"
 Changelog = "https://github.com/aleverrier/frontier/blob/main/CHANGELOG.md"
 Citation = "https://github.com/aleverrier/frontier/blob/main/CITATION.cff"
 Reproducibility = "https://github.com/aleverrier/frontier/blob/main/docs/REPRODUCIBILITY.md"

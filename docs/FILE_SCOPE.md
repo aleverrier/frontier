@@ -7,6 +7,7 @@ serving that surface were removed.
 | File | Why it remains |
 | --- | --- |
 | `README.md` | Public install, smoke-test, replay, benchmark, matrix, and reproduction instructions. |
+| `llms.txt` | Compact plain-text project summary for LLM agents and search/indexing tools. |
 | `AGENTS.md` | Operational setup, validation, and style checklist for coding agents. |
 | `CITATION.cff` | Citation metadata for citable software releases. |
 | `codemeta.json` | CodeMeta software metadata derived from declared package, citation, and repository facts. |
@@ -22,11 +23,15 @@ serving that surface were removed.
 | `constraints/py312-ubuntu-ci.TODO.md` | Placeholder instructions for truthfully capturing exact Ubuntu Python 3.12 CI constraints. |
 | `docs/WORKLOG.md` | Agent-readable change log for repo maintenance. |
 | `docs/WORKLOG.tex` | Human-readable TeX change log matching `docs/WORKLOG.md`. |
+| `docs/FRONTIER_CARD.md` | Short human/agent-readable decoder card with classification labels, inputs, outputs, use cases, limitations, minimal commands, and citation pointers. |
+| `docs/DECODER_POSITIONING.md` | Short qualitative guide for positioning Frontier relative to BP+OSD, beam/representative search, tensor-network decoding, and variable elimination. |
 | `docs/ACADEMIC_METADATA.md` | Declared citation, funding, DOI, and provenance metadata status. |
 | `docs/ASSET_PROVENANCE.md` | Bundled Gross/BB144 asset provenance table and declared asset-license status. |
 | `docs/ASSET_MANIFEST.md` | Generated SHA256 checksum manifest for bundled Gross/BB144 assets. |
 | `docs/REPRODUCIBILITY.md` | Smoke and publication-grade reproducibility requirements. |
+| `docs/BENCHMARK_SCHEMA.md` | CSV/JSON schema for benchmark result summaries, with explicit no-fabrication and raw-corpus caveats. |
 | `docs/RELEASE.md` | Release, tag, archive, DOI, and validation checklist for citable releases. |
+| `docs/VISIBILITY_RELEASE_CHECKLIST.md` | Release discoverability, citation-hygiene, release-note, archive, and announcement checklist. |
 | `docs/FILE_SCOPE.md` | This audit of the retained file set. |
 | `docs/ARCHITECTURE.md` | Human/agent orientation guide for workflows, module ownership, public APIs, native dispatch, and safe changes. |
 | `docs/COMMANDS.md` | Console-script command index with minimal commands, outputs, and common failure modes. |

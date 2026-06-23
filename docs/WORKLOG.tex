@@ -1,5 +1,49 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-06-23 Release Visibility Checklist}
+
+\begin{itemize}
+\item Added \texttt{\detokenize{docs/VISIBILITY_RELEASE_CHECKLIST.md}} so each release has an explicit discoverability, citation-hygiene, GitHub-release, Zenodo, social-preview, and announcement checklist without adding unverified release claims.
+\item Linked the checklist from \texttt{\detokenize{docs/RELEASE.md}}, added it to README navigation, and recorded the new retained documentation file in \texttt{\detokenize{docs/FILE_SCOPE.md}}.
+\end{itemize}
+
+\subsection*{2026-06-23 Benchmark Result Schema}
+
+\begin{itemize}
+\item Added \texttt{\detokenize{docs/BENCHMARK_SCHEMA.md}} with the required CSV/JSON columns for benchmark summary rows, including matrix dimensions, decoder configuration, FER, confidence intervals, frontier-size metrics, transition-count percentiles, timing, hardware, and provenance fields.
+\item Linked the schema from \texttt{\detokenize{README.md}} and \texttt{\detokenize{docs/REPRODUCIBILITY.md}}, and updated the retained-file scope audit. The schema explicitly documents that \texttt{\detokenize{paper/plots}} data are compact summary/reproduction artifacts and not publication-scale raw corpora unless a file or sidecar says so.
+\end{itemize}
+
+\subsection*{2026-06-23 Decoder Positioning Guide}
+
+\begin{itemize}
+\item Added \texttt{\detokenize{docs/DECODER_POSITIONING.md}} as a short qualitative guide comparing Frontier's retained boundary-state object with BP/min-sum, BP+OSD/BP+LSD, representative or beam-style search, Tesseract-like search, and tensor-network or variable-elimination decoding.
+\item Linked the guide from \texttt{\detokenize{README.md}} and recorded it in \texttt{\detokenize{docs/FILE_SCOPE.md}}. The guide adds no benchmark numbers and keeps comparison guidance focused on what future benchmark reports should disclose.
+\end{itemize}
+
+\subsection*{2026-06-23 Decoder Card}
+
+\begin{itemize}
+\item Added \texttt{\detokenize{docs/FRONTIER_CARD.md}}, a short human-readable and agent-readable decoder card that describes Frontier as a pruned ordered dynamic-programming decoder for logical/coset decisions on sparse quantum decoding problems.
+\item Linked the card from the top of \texttt{\detokenize{README.md}}, the repository map, and the \texttt{\detokenize{For agents}} startup note.
+\item Updated \texttt{\detokenize{docs/FILE_SCOPE.md}} to include the retained decoder-card document.
+\item The card intentionally avoids new benchmark values, hardware-readiness claims, and general optimality claims for the pruned decoder.
+\end{itemize}
+
+\subsection*{2026-06-23 Citation Title Clarification}
+
+\begin{itemize}
+\item Updated \texttt{\detokenize{CITATION.cff}} to use the discoverable software title \texttt{\detokenize{Frontier decoder for quantum LDPC codes}} and a direct citation message naming this repository and associated paper \texttt{\detokenize{arXiv:2606.20513}}.
+\item Kept the README canonical citation wording and \texttt{\detokenize{docs/ACADEMIC_METADATA.md}} synchronized with the clarified software title without adding undocumented DOI, ORCID, grant, or journal metadata.
+\end{itemize}
+
+\subsection*{2026-06-23 LLM Summary File}
+
+\begin{itemize}
+\item Added root \texttt{\detokenize{llms.txt}} as a compact plain-text summary for LLM agents and indexing tools, covering canonical classification, common beam-search confusion, essential files, minimal validation commands, and citation.
+\item Updated the README agent guidance and retained-file scope audit so the new summary file is discoverable without duplicating the full README.
+\end{itemize}
+
 \subsection*{2026-06-19 Public arXiv Metadata Update}
 
 \begin{itemize}

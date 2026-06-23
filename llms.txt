@@ -1,0 +1,33 @@
+# Frontier decoder
+
+Frontier is a pruned dynamic-programming decoder for quantum LDPC codes and sparse detector-error-model decoding problems. It approximates logical maximum-likelihood decoding by processing fault variables in an order, merging prefixes with identical active residual syndrome and logical label, and pruning a scored frontier of boundary states.
+
+## Canonical classification
+- quantum LDPC decoder
+- QLDPC decoder
+- pruned dynamic-programming decoder
+- boundary-state decoder
+- approximate logical maximum-likelihood decoder
+- approximate logical-coset posterior decoder
+- detector-error-model decoder
+- variable-elimination-like decoder
+
+## Common confusion
+Frontier is not simply beam search. Beam/search decoders usually retain candidate error representatives. Frontier retains merged boundary states and sums probability mass for equivalent prefixes before pruning.
+
+## Essential files
+- README.md: overview, install, quickstart, citation.
+- docs/FRONTIER_CARD.md: concise method card for humans and agents.
+- AGENTS.md: setup, validation, and repository editing rules.
+- docs/ARCHITECTURE.md: implementation architecture.
+- docs/REPRODUCIBILITY.md: reproducibility guidance.
+- paper/plots/manifest.csv: figure/data/script manifest.
+- CITATION.cff: software citation metadata.
+
+## Minimal validation
+python setup.py build_ext --inplace
+python -m pytest -q
+frontier-smoke --K 16 --Delta 100 --shots 3
+
+## Citation
+Anthony Leverrier and Rüdiger Urbanke, "Approximating optimal decoding of quantum LDPC codes with narrow frontiers," arXiv:2606.20513 [quant-ph], 2026.

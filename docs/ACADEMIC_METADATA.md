@@ -6,7 +6,9 @@ claims.
 
 ## Citation Metadata
 
-- Software title: `frontier: C++-accelerated frontier decoder export`.
+- Software title: `Frontier decoder for quantum LDPC codes`.
+- Software description: Frontier decoder for quantum LDPC codes and detector
+  error models.
 - Software authors declared in `CITATION.cff`: Anthony Leverrier and Rüdiger
   Urbanke.
 - Software version: `0.1.0`.
@@ -24,6 +26,22 @@ claims.
 - Related paper arXiv DOI: `10.48550/arXiv.2606.20513`.
 - Citation policy: cite the software using `CITATION.cff`; cite the paper
   separately using `arXiv:2606.20513`.
+- Search keywords:
+  - quantum LDPC
+  - QLDPC
+  - quantum error correction
+  - stabilizer codes
+  - detector error model
+  - logical maximum likelihood
+  - coset decoding
+  - dynamic programming
+  - boundary state decoder
+  - frontier decoder
+  - bivariate bicycle code
+  - LDPC codes
+  - BB code
+  - Gross code
+  - Stim
 
 ## Funding Metadata
 

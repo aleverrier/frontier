@@ -1,5 +1,62 @@
 # Frontier Worklog
 
+## 2026-06-23 Release Visibility Checklist
+
+- Added `docs/VISIBILITY_RELEASE_CHECKLIST.md` so each release has an explicit
+  discoverability, citation-hygiene, GitHub-release, Zenodo, social-preview,
+  and announcement checklist without adding unverified release claims.
+- Linked the checklist from `docs/RELEASE.md`, added it to README navigation,
+  and recorded the new retained documentation file in `docs/FILE_SCOPE.md`.
+
+## 2026-06-23 Benchmark Result Schema
+
+- Added `docs/BENCHMARK_SCHEMA.md` with the required CSV/JSON columns for
+  benchmark summary rows, including matrix dimensions, decoder configuration,
+  FER, confidence intervals, frontier-size metrics, transition-count
+  percentiles, timing, hardware, and provenance fields.
+- Linked the schema from `README.md` and `docs/REPRODUCIBILITY.md`, and updated
+  the retained-file scope audit. The schema explicitly documents that
+  `paper/plots` data are compact summary/reproduction artifacts and not
+  publication-scale raw corpora unless a file or sidecar says so.
+
+## 2026-06-23 Decoder Positioning Guide
+
+- Added `docs/DECODER_POSITIONING.md` as a short qualitative guide comparing
+  Frontier's retained boundary-state object with BP/min-sum, BP+OSD/BP+LSD,
+  representative or beam-style search, Tesseract-like search, and
+  tensor-network or variable-elimination decoding.
+- Linked the guide from `README.md` and recorded it in `docs/FILE_SCOPE.md`.
+  The guide adds no benchmark numbers and keeps comparison guidance focused on
+  what future benchmark reports should disclose.
+
+## 2026-06-23 Decoder Card
+
+- Added `docs/FRONTIER_CARD.md`, a short human-readable and agent-readable
+  decoder card that describes Frontier as a pruned ordered dynamic-programming
+  decoder for logical/coset decisions on sparse quantum decoding problems.
+- Linked the card from the top of `README.md`, the repository map, and the
+  `For agents` startup note.
+- Updated `docs/FILE_SCOPE.md` to include the retained decoder-card document.
+- The card intentionally avoids new benchmark values, hardware-readiness
+  claims, and general optimality claims for the pruned decoder.
+
+## 2026-06-23 Citation Title Clarification
+
+- Updated `CITATION.cff` to use the discoverable software title `Frontier
+  decoder for quantum LDPC codes` and a direct citation message naming this
+  repository and associated paper `arXiv:2606.20513`.
+- Kept the README canonical citation wording and `docs/ACADEMIC_METADATA.md`
+  synchronized with the clarified software title without adding undocumented
+  DOI, ORCID, grant, or journal metadata.
+
+## 2026-06-23 LLM Summary File
+
+- Added root `llms.txt` as a compact plain-text summary for LLM agents and
+  indexing tools, covering canonical classification, common beam-search
+  confusion, essential files, minimal validation commands, and citation.
+- Updated the README agent guidance and retained-file scope audit so the new
+  summary file is discoverable without duplicating the full README.
+
 ## 2026-06-19 Public arXiv Metadata Update
 
 - Replaced the temporary paper-citation placeholder with the public arXiv

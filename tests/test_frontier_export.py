@@ -309,6 +309,11 @@ def test_academic_metadata_docs_are_present_and_linked() -> None:
     security = (REPO_ROOT / "SECURITY.md").read_text(encoding="utf-8")
 
     assert "cff-version: 1.2.0" in citation
+    assert 'title: "Frontier decoder for quantum LDPC codes"' in citation
+    assert (
+        "If you use this software, please cite this repository and the associated paper"
+        in citation
+    )
     assert 'license: "Apache-2.0"' in citation
     assert 'given-names: "Rüdiger"' in citation
     assert "arXiv:2606.20513" in citation
@@ -324,11 +329,13 @@ def test_academic_metadata_docs_are_present_and_linked() -> None:
     assert "OpenAI Codex" in acknowledgements
     assert "Plan France 2030" in academic_metadata
     assert "arXiv:2606.20513" in academic_metadata
+    assert "Frontier decoder for quantum LDPC codes" in academic_metadata
     assert "https://arxiv.org/abs/2606.20513" in academic_metadata
     assert "arXiv identifier\n  pending" not in academic_metadata
     assert "OpenAI Codex" in academic_metadata
     assert "CITATION.cff" in readme
     assert "arXiv:2606.20513" in readme
+    assert "cite this repository using `CITATION.cff`" in readme
     assert "Paper citation placeholder" not in readme
     assert "docs/REPRODUCIBILITY.md" in readme
     assert "grosscode/assets/gross144" in provenance
@@ -346,11 +353,38 @@ def test_codemeta_stays_consistent_with_package_and_citation_metadata() -> None:
     pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     codemeta = json.loads((REPO_ROOT / "codemeta.json").read_text(encoding="utf-8"))
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    academic_metadata = (REPO_ROOT / "docs" / "ACADEMIC_METADATA.md").read_text(
+        encoding="utf-8"
+    )
     authors = (REPO_ROOT / "AUTHORS.md").read_text(encoding="utf-8")
 
     assert codemeta["version"] == pyproject["project"]["version"]
+    assert codemeta["description"] == pyproject["project"]["description"]
+    assert codemeta["keywords"] == pyproject["project"]["keywords"]
     assert codemeta["license"] == "https://spdx.org/licenses/Apache-2.0"
     assert "doi" not in {key.lower() for key in codemeta}
+    for keyword in (
+        "quantum LDPC",
+        "QLDPC",
+        "quantum error correction",
+        "stabilizer codes",
+        "detector error model",
+        "logical maximum likelihood",
+        "coset decoding",
+        "dynamic programming",
+        "boundary state decoder",
+        "frontier decoder",
+        "bivariate bicycle code",
+        "Gross code",
+        "Stim",
+    ):
+        assert keyword in pyproject["project"]["keywords"]
+        assert keyword in citation
+        assert keyword in academic_metadata
+    assert pyproject["project"]["urls"]["Paper"] == "https://arxiv.org/abs/2606.20513"
+    assert pyproject["project"]["urls"]["Documentation"] == (
+        "https://github.com/aleverrier/frontier#readme"
+    )
     codemeta_names = {
         f"{entry['givenName']} {entry['familyName']}" for entry in codemeta["author"]
     }

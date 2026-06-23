@@ -1,6 +1,8 @@
 # Release Process
 
-Use this checklist for citable public releases.
+Use this checklist for citable public releases. For discoverability, citation
+hygiene, release-note, archive, and announcement checks, also complete
+[`docs/VISIBILITY_RELEASE_CHECKLIST.md`](VISIBILITY_RELEASE_CHECKLIST.md).
 
 ## Pre-Release Checklist
 

@@ -57,7 +57,8 @@ Publication-grade reproduction should record:
 - random seeds and sampling method;
 - command lines;
 - output files archived with the result;
-- expected summary columns and schemas;
+- expected summary columns and schemas, using `docs/BENCHMARK_SCHEMA.md` for
+  benchmark result CSV/JSON summaries;
 - confidence intervals and statistical interpretation for FER estimates.
 
 Large publication sample corpora are not checked into this repository. Archive
@@ -98,7 +99,9 @@ python -m tools.asset_manifest --root paper/plots/data --title "Paper Plot Data 
 
 ## Reporting Results
 
-Every reported decoder result should include:
+Every reported decoder result should include the fields in
+`docs/BENCHMARK_SCHEMA.md` when it is exported as a benchmark CSV/JSON summary.
+At minimum, narrative reports should include:
 
 - commit hash or release tag;
 - machine/CPU;

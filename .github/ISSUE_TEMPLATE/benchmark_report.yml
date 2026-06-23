@@ -1,0 +1,78 @@
+name: Benchmark report
+description: Share a reproducible Frontier benchmark result.
+title: "[Benchmark]: "
+labels: ["benchmark"]
+body:
+  - type: input
+    id: code-family
+    attributes:
+      label: Code family
+      placeholder: BB144/Gross, rotated_surface_d3, custom LDPC
+    validations:
+      required: true
+  - type: textarea
+    id: noise-model-dem-source
+    attributes:
+      label: Noise model / DEM source
+      description: Name the DEM/source files or generator. Avoid private machine paths.
+      placeholder: bravyi_depth7 split-sector DEM; Stim circuit source; bundled Gross DEM
+    validations:
+      required: true
+  - type: input
+    id: p-location-physical-error-rate
+    attributes:
+      label: p-location or physical error rate
+      placeholder: p_location=0.002
+    validations:
+      required: true
+  - type: input
+    id: shots
+    attributes:
+      label: Shots
+      placeholder: "100000"
+    validations:
+      required: true
+  - type: textarea
+    id: decoder-parameters
+    attributes:
+      label: Decoder parameters K, Delta, direction mode, ordering
+      placeholder: K=1024, Delta=10, direction=forward, ordering=deadline_reorder
+    validations:
+      required: true
+  - type: textarea
+    id: logical-failures-lfr-ci
+    attributes:
+      label: Logical failures / LFR / confidence interval
+      placeholder: 12 failures / LFR 1.2e-4 / 95% CI [6.2e-5, 2.1e-4]
+    validations:
+      required: true
+  - type: textarea
+    id: runtime-transition-counts
+    attributes:
+      label: Runtime or transition counts
+      placeholder: Wall time, CPU count, mean/p99 runtime, or transition_evals if available.
+    validations:
+      required: true
+  - type: input
+    id: commit-hash
+    attributes:
+      label: Commit hash
+      placeholder: abc1234
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-command
+    attributes:
+      label: Reproduction command
+      description: Paste the exact command, with private paths shortened or replaced.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: data-availability
+    attributes:
+      label: Data availability
+      description: State whether sample rows, summaries, plots, or logs are attached or archived.
+      placeholder: Attached summary CSV; sample rows available on request; raw rows too large.
+    validations:
+      required: true

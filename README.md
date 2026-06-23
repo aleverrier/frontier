@@ -1,14 +1,61 @@
-# frontier
+# Frontier decoder for quantum LDPC codes
 
-Frontier decoder export.
+Frontier is a pruned dynamic-programming decoder for sparse quantum decoding
+problems, including quantum LDPC parity-check matrices and
+detector-error-model matrices. This Frontier decoder approximates logical
+maximum-likelihood decoding by processing fault variables in an order, merging
+prefixes with the same active residual syndrome and logical label, and pruning a
+scored frontier of boundary states.
 
-This repository contains the working C++-accelerated frontier decoder path:
+For a short human-readable and agent-readable orientation card, see
+[`docs/FRONTIER_CARD.md`](docs/FRONTIER_CARD.md).
 
-- native C++ binary frontier engine (`_frontier_native`)
-- forward-only, backward-only, and forward/backward committee decoding
-- `deadline_reorder` for the forward pass
-- `backward_deadline_reorder` for the backward pass
-- Gross/BB and surface-code DEM inspection, replay, and benchmark CLIs
+## Why Frontier?
+
+- approximates logical/coset posterior inference, not only most-likely-error
+  search;
+- merges equivalent boundary states before pruning;
+- is geometry-agnostic at the matrix/DEM level;
+- supports BB144/Gross and surface-code DEM workflows in this repository.
+
+| Decoder style | Retained object | Degeneracy handling | Typical role |
+| --- | --- | --- | --- |
+| BP / min-sum | Tanner-graph messages and local beliefs | Mostly implicit through local marginals | Fast iterative baseline or preconditioner |
+| BP+OSD / BP+LSD | BP reliabilities plus an ordered or localized postprocessing list | Searches around BP-ranked candidates | Strong sparse-matrix decoder family |
+| Beam / representative search | Candidate error representatives | Tracks high-scoring representatives rather than full cosets | Heuristic search over likely errors |
+| Tensor-network / variable elimination | Tensors, separators, or eliminated-variable tables | Sums over eliminated variables, exactly or with truncation | Near-ML reference for structured or low-width instances |
+| Frontier | Boundary states keyed by active residual syndrome and logical label | Merges equivalent prefixes and sums scores before pruning | Pruned logical/coset posterior decoder for supported QLDPC and DEM matrices |
+
+See [`docs/DECODER_POSITIONING.md`](docs/DECODER_POSITIONING.md) for a short
+guide to classifying Frontier relative to BP+OSD, representative search, beam
+search, Tesseract-like search, tensor-network decoding, and variable
+elimination.
+
+## 30-second quickstart
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip setuptools wheel
+python -m pip install -e .
+python setup.py build_ext --inplace
+python -m pytest -q
+frontier-smoke --K 16 --Delta 100 --shots 3
+```
+
+## Canonical citation
+
+If you use this software, please cite this repository using `CITATION.cff` and
+cite the associated paper arXiv:2606.20513, "Approximating optimal decoding of
+quantum LDPC codes with narrow frontiers."
+
+## For agents
+
+Start with `README.md`, [`docs/FRONTIER_CARD.md`](docs/FRONTIER_CARD.md),
+[`docs/DECODER_POSITIONING.md`](docs/DECODER_POSITIONING.md),
+`docs/ARCHITECTURE.md`, and `AGENTS.md`. Use `llms.txt` for a compact summary
+intended for LLM agents and indexing tools. Do not infer removed research
+modules, and do not fabricate benchmark values.
 
 ## Scope
 
@@ -27,13 +74,20 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
 
 ## Repository Map
 
+- `docs/FRONTIER_CARD.md`: short human/agent-readable decoder card.
+- `docs/DECODER_POSITIONING.md`: short positioning guide relative to BP+OSD,
+  beam/representative search, tensor-network decoding, and variable
+  elimination.
 - `docs/ARCHITECTURE.md`: architecture guide for humans and agents.
 - `docs/FILE_SCOPE.md`: retained-file audit and removed-file categories.
 - `docs/COMMANDS.md`: console-script command index.
 - `docs/ENVIRONMENT.md`: supported environment variables and native debug toggles.
 - `docs/REPRODUCIBILITY.md`: smoke and publication-grade reproducibility guide.
+- `docs/BENCHMARK_SCHEMA.md`: CSV/JSON schema for benchmark result summaries.
 - `docs/ASSET_PROVENANCE.md`: bundled-asset provenance status.
 - `docs/RELEASE.md`: release and archival checklist.
+- `docs/VISIBILITY_RELEASE_CHECKLIST.md`: discoverability, citation-hygiene,
+  release-note, archive, and announcement checklist.
 - `docs/ACADEMIC_METADATA.md`: declared academic metadata status.
 - `paper/plots/README.md`: paper-plot reproduction status, commands, and data
   policy.
@@ -62,22 +116,7 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
 | `frontier-replay` | `tools/frontier_sample_replay.py` |
 | `frontier-bb144-benchmark` | `tools/frontier_bb144_benchmark.py` |
 
-### For Agents
-
-- Start with `docs/ARCHITECTURE.md` and `AGENTS.md`.
-- Do not infer intended file scope from old removed modules; use
-  `docs/FILE_SCOPE.md`.
-- Run the validation commands before changing decoder internals.
-
-## Install
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -U pip setuptools wheel
-python -m pip install -e .
-python setup.py build_ext --inplace
-```
+## Environment Notes
 
 For exact reproducibility constraints, see `constraints/README.md`. Once a
 known-good constraints file exists, install with:
@@ -93,13 +132,6 @@ CI validates Ubuntu Python 3.11/3.12 and macOS Python 3.12. The Ubuntu Python
 3.12 CI environment is validated in GitHub Actions, but this checkout has not
 captured exact Ubuntu pins yet. See `constraints/py312-ubuntu-ci.TODO.md`
 before adding a Linux constraints file.
-
-## Smoke Test
-
-```bash
-python -m pytest -q
-frontier-smoke --K 16 --Delta 100 --shots 3
-```
 
 ## Paper Plot Reproduction
 
@@ -122,7 +154,7 @@ reproducibility is separate from simulation reproduction.
 
 ## Citation And Acknowledgements
 
-Use `CITATION.cff` for the software citation. The associated paper is:
+The canonical citation is recorded in `CITATION.cff`. The associated paper is:
 
 Anthony Leverrier and Rüdiger Urbanke, "Approximating optimal decoding of
 quantum LDPC codes with narrow frontiers," arXiv:2606.20513 [quant-ph],
@@ -252,6 +284,8 @@ frontier-bb144-benchmark \
 
 The benchmark path reports the accepted Gross split-sector DEM dimensions:
 `D_X = D_Z = 936 x 8784`, `O_X = O_Z = 12 x 8784`, with 12 noisy rounds.
+Use `docs/BENCHMARK_SCHEMA.md` for the documented CSV/JSON columns expected in
+human- and agent-readable benchmark summaries.
 
 ## Reproducing BB144/Gross DEM Results
 

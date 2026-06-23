@@ -1,7 +1,24 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it using the metadata in this file and cite the associated paper as arXiv:2606.20513."
-title: "frontier: C++-accelerated frontier decoder export"
+message: "If you use this software, please cite this repository and the associated paper arXiv:2606.20513."
+title: "Frontier decoder for quantum LDPC codes"
+abstract: "Frontier decoder for quantum LDPC codes and detector error models."
 type: software
+keywords:
+  - "quantum LDPC"
+  - "QLDPC"
+  - "quantum error correction"
+  - "stabilizer codes"
+  - "detector error model"
+  - "logical maximum likelihood"
+  - "coset decoding"
+  - "dynamic programming"
+  - "boundary state decoder"
+  - "frontier decoder"
+  - "bivariate bicycle code"
+  - "LDPC codes"
+  - "BB code"
+  - "Gross code"
+  - "Stim"
 authors:
   - family-names: "Leverrier"
     given-names: "Anthony"

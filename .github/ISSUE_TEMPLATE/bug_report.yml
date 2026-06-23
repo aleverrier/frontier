@@ -1,0 +1,66 @@
+name: Bug report
+description: Report a reproducible Frontier bug.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, package version or commit. Do not include private machine paths.
+      placeholder: macOS 15, Python 3.12, frontier commit abc1234
+    validations:
+      required: true
+  - type: input
+    id: installation-method
+    attributes:
+      label: Installation method
+      placeholder: pip install -e .; pip install frontier; source checkout
+    validations:
+      required: true
+  - type: textarea
+    id: command-run
+    attributes:
+      label: Command run
+      description: Paste the exact command, with private paths shortened or replaced.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: observed-behavior
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: full-traceback-log
+    attributes:
+      label: Full traceback/log
+      description: Paste the full error output. Redact private paths, tokens, or usernames if needed.
+      render: text
+    validations:
+      required: false
+  - type: dropdown
+    id: native-extension-built
+    attributes:
+      label: Whether native extension was built
+      options:
+        - "yes"
+        - "no"
+        - "not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: validation-commands-run
+    attributes:
+      label: Validation commands run
+      description: List checks such as build_ext, pytest, frontier-dem-info, or smoke commands.
+      render: shell
+    validations:
+      required: false
