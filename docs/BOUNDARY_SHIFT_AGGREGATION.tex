@@ -1,0 +1,208 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{booktabs}
+
+\newcommand{\F}{\mathbb F}
+
+\title{Boundary-Shift Aggregation of Low-Weight Frontier Polymers}
+\author{Research note}
+\date{28 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We preserve boundary-shift aggregation in the low-weight polymer relaxation
+for Frontier cap pruning.  An exact XOR dynamic program groups all subsets of
+visible size-one/two polymers by their active-detector-plus-logical shift
+before taking the fractional power.  On the retained surface distance-3
+models, this recovers up to 34 orders of magnitude at fixed fractional
+exponent.  After optimizing the exponent, however, the partial right-hand
+side remains above one at \(K=1024\) and \(K=2048\).  Quotient aggregation
+alone is therefore insufficient; compatibility or the exact comparison
+spectrum must be retained next.
+\end{abstract}
+
+\section{Nested low-weight relaxations}
+
+Fix a cut \(t\), Chernoff order \(\theta\), and let
+\(\mathcal P_t^{\le2}\) be the visible size-one/two open-prefix polymers.
+For polymer \(\gamma\), write
+\[
+ w_\gamma=\prod_{j\in\gamma}a_{\theta,j},
+ \qquad
+ s_\gamma=D_t\mathbf1_\gamma.
+\tag{1}
+\]
+Drop compatibility, but preserve the XOR boundary shift:
+\[
+ Z_t^{\le2}(\xi)
+ =
+ \sum_{\substack{
+ \mathcal F\subseteq\mathcal P_t^{\le2}\\
+ \bigoplus_{\gamma\in\mathcal F}s_\gamma=\xi}}
+ \prod_{\gamma\in\mathcal F}w_\gamma.
+\tag{2}
+\]
+For \(0<\rho<1\), define
+\[
+\begin{aligned}
+ G_{t,\rho}^{\le2}
+ &=
+ \sum_{\xi\ne0}Z_t^{\le2}(\xi)^\rho,\\
+ U_{t,\rho}^{\le2}
+ &=
+ \prod_{\gamma\in\mathcal P_t^{\le2}}(1+w_\gamma^\rho)-1,\\
+ E_{t,\rho}^{\le2}
+ &=
+ \exp\left(\sum_{\gamma\in\mathcal P_t^{\le2}}w_\gamma^\rho\right)-1.
+\end{aligned}
+\tag{3}
+\]
+Then
+\[
+\boxed{
+ G_{t,\rho}^{\le2}
+ \le U_{t,\rho}^{\le2}
+ \le E_{t,\rho}^{\le2}.}
+\tag{4}
+\]
+The first inequality groups nonempty families by shift and uses
+\((\sum_i x_i)^\rho\le\sum_i x_i^\rho\), while excluding nonempty
+zero-shift families.  The second is \(\log(1+x)\le x\).
+
+With polymers of every size, dropping compatibility from the
+bounded-hypergraph pointwise theorem gives
+\[
+ \omega_t(\xi)\le Z_t(\xi),
+\tag{5}
+\]
+and hence
+\[
+ D^{\rm cap}
+ \le K^{-1/\rho}\sum_t
+ \left[\sum_{\xi\ne0}Z_t(\xi)^\rho\right]^{1/\rho}.
+\tag{6}
+\]
+The computed \(Z_t^{\le2}\) is a nonnegative partial contribution, because
+adding activity \(w\) at shift \(s\) updates
+\[
+ Z'(\xi)=Z(\xi)+wZ(\xi+s)\ge Z(\xi).
+\tag{7}
+\]
+It is therefore a lower bound on the right-hand side of (6), not on actual
+cap loss.  Compatibility remains unenforced.
+
+\section{Exact XOR dynamic program}
+
+Encode active detector bits followed by logical bits.  Surface d3 has at
+most 11 active detectors and one logical bit, hence at most \(2^{12}=4096\)
+quotient labels.  Initialize
+\[
+ Z^{(0)}(0)=1,\qquad Z^{(0)}(\xi\ne0)=0.
+\]
+For polymer \(m\), activity \(w_m\), and shift \(s_m\), use
+\[
+\boxed{
+ Z^{(m+1)}(\xi)
+ =
+ Z^{(m)}(\xi)+w_mZ^{(m)}(\xi+s_m).}
+\tag{8}
+\]
+This exactly evaluates (2) in
+\(O(|\mathcal P_t^{\le2}|2^{|\Gamma_t|+k})\) time per cut.  Final cut
+integration is performed in the log domain.
+
+\section{Surface result}
+
+The deterministic profile uses
+\[
+ p_{\rm location}=0.001,\qquad
+ \alpha=0.8,\qquad
+ \theta=5/16,
+\]
+with \texttt{\detokenize{deadline_reorder}}.  The ratio between the old
+exponential expression and the shift-grouped expression, after rooted cut
+integration, is
+\[
+\begin{array}{lrrr}
+\toprule
+\text{scope}&\rho=0.50&\rho=0.75&\rho=0.99\\
+\midrule
+\text{memory X}&2.13\,10^{34}&3.03\,10^4&1.215\\
+\text{memory Z}&1.18\,10^{28}&7.81\,10^3&1.207\\
+\bottomrule
+\end{array}
+\tag{9}
+\]
+At \(\rho=0.5\) and \(K=1024\), X falls from
+\(1.20\,10^{35}\) to \(5.63\), and Z falls from
+\(6.12\,10^{28}\) to \(5.19\).  Aggregation removes enormous overcount,
+but the partial expression remains above one.
+
+The artifact also searches
+\(\rho=0.05,0.06,\ldots,0.99\):
+\[
+\begin{array}{rrrrr}
+\toprule
+K&\text{X minimum}&\rho_X&\text{Z minimum}&\rho_Z\\
+\midrule
+16&285.558&0.99&269.676&0.99\\
+512&8.617&0.99&8.137&0.99\\
+1024&4.183&0.85&3.859&0.80\\
+2048&1.395&0.45&1.299&0.50\\
+4096&0.0715&0.05&0.116&0.05\\
+8192&6.82\,10^{-8}&0.05&1.11\,10^{-7}&0.05\\
+\bottomrule
+\end{array}
+\tag{10}
+\]
+The grid-estimated continuous partial thresholds are
+\[
+ K_X=2346.45\quad(\rho=0.37),
+ \qquad
+ K_Z=2317.66\quad(\rho=0.45).
+\tag{11}
+\]
+These are grid diagnostics, not proofs of the continuous optimum.  The
+\(K=1024\) conclusion is nevertheless robust: every tested exponent leaves
+the size-one/two expression at least \(3.86\), and higher polymers can only
+increase it.
+
+At \(K=4096\), the literal cap cannot discard a surface-d3 boundary label
+because there are at most 4096 active-plus-logical labels.  The nonzero
+fractional expression there only shows that the fractional corollary does
+not use the finite-support endpoint sharply.
+
+\section{Conclusion and reproduction}
+
+Boundary aggregation approximately halves the grid-estimated low-weight
+threshold: from 5235 to 2346 for X and from 4914 to 2318 for Z.  It remains
+insufficient at \(K=1024\) and \(K=2048\).  Counting higher polymers cannot
+repair this.  The next audit should inspect compatibility conflicts at the
+cuts dominating the grouped \(K=1024\) expression, to decide between exact
+component/treewidth elimination and direct dominant-comparison-spectrum
+calculation.
+
+\begin{verbatim}
+frontier-overlap-profile \
+  --backend rotated_surface_d3 --p-location 0.001 \
+  --column-order deadline_reorder --score-alpha 0.8 \
+  --K-values 16,512,1024,2048,4096,8192 \
+  --aggregate-boundary-shifts --max-boundary-bits 16 \
+  --out docs/data/overlap_profiles/\
+rotated_surface_d3_p0p001_boundary_aggregated.json
+\end{verbatim}
+The two-scope run took approximately \(3.51\) seconds on one CPU.  Its
+SHA256 is
+\begin{verbatim}
+d4a5dc3a7d3aed11fe1e8e26e41cde7ed037e9e6ee7c0850ad0dabe9de08ccfb
+\end{verbatim}
+Regression tests compare (8) with brute subset enumeration and verify (4)
+cut by cut.  No decoder or Monte Carlo sampling is used.
+
+\end{document}

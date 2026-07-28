@@ -1,5 +1,56 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-07-28 Exact Boundary-Shift Aggregation}
+
+\begin{itemize}
+\item Added
+\texttt{\detokenize{docs/BOUNDARY_SHIFT_AGGREGATION.md}} and its standalone
+TeX counterpart.  The note preserves quotient boundary shifts in the
+compatibility-dropped size-one/two polymer partition instead of applying the
+fractional power to every family separately.
+\item Extended \texttt{\detokenize{frontier-overlap-profile}} with
+\texttt{\detokenize{--aggregate-boundary-shifts}}.  At each cut it compresses
+the active detector and logical shift to at most 12 surface-d3 bits and
+evaluates exactly
+\[
+ Z_{\rm new}(\xi)=Z_{\rm old}(\xi)+wZ_{\rm old}(\xi+s).
+\]
+\item Proved and checked the nested diagnostic
+\[
+ G_{t,\rho}^{\le2}
+ \le U_{t,\rho}^{\le2}
+ \le E_{t,\rho}^{\le2}.
+\]
+The grouped size-one/two result remains a lower contribution to a full
+compatibility-dropped bound; it is not an estimate or lower bound on actual
+decoder loss.
+\item On surface d3, aggregation reduces the old expression by
+\(2.13\times10^{34}\) for X and \(1.18\times10^{28}\) for Z at
+\(\rho=0.5\), and by approximately 20 percent at \(\rho=0.99\).  At
+\(\rho=0.5\), \(K=1024\), X falls from \(1.20\times10^{35}\) to \(5.63\),
+while Z falls from \(6.12\times10^{28}\) to \(5.19\).
+\item Searched the deterministic grid
+\(\rho=0.05,0.06,\ldots,0.99\).  The optimized size-one/two grouped values at
+\(K=1024\) are \(4.183\) for X at \(\rho=0.85\) and \(3.859\) for Z at
+\(\rho=0.80\).  At \(K=2048\) they remain \(1.395\) and \(1.299\).  The
+grid-estimated partial thresholds are \(K=2346.45\) and \(2317.66\).
+\item This is a stop result for boundary aggregation alone.  Higher polymers
+can only increase the partial expression.  The next audit must enforce
+polymer compatibility at the dominant cuts or compute dominant exact
+comparison-spectrum overlaps directly.
+\item Added
+\texttt{\detokenize{docs/data/overlap_profiles/rotated_surface_d3_p0p001_boundary_aggregated.json}}
+with SHA256 prefix \texttt{\detokenize{d4a5dc3a}}.  The recorded two-scope
+run took \(3.51\) seconds on one CPU with cut-count, elapsed-time, and ETA
+progress.
+\item Added brute-subset verification of the XOR recurrence and cutwise
+inequality-order coverage.  The complete suite passes
+\texttt{\detokenize{54 passed in 28.69s}}; \texttt{py\_compile} passes;
+\texttt{\detokenize{git diff --check}} is clean; the pre-existing
+non-aggregation profile remains byte-identical; and the new TeX note compiles
+twice without warnings to three pages.
+\end{itemize}
+
 \subsection*{2026-07-28 Bounded-Hypergraph Overlap Profile}
 
 \begin{itemize}

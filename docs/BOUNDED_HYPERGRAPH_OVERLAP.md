@@ -313,6 +313,13 @@ This conclusion does not contradict successful decoder runs. Equation (14)
 drops both compatibility and all cancellations between many polymers that
 map to the same boundary shift.
 
+The first target in item 4 is now tested in
+`BOUNDARY_SHIFT_AGGREGATION.md`. Exact XOR grouping recovers up to 34 orders
+of magnitude at fixed \(\rho\), but the optimized size-1/2 expression remains
+above one at \(K=1024\) and \(K=2048\). Boundary aggregation alone is
+therefore insufficient; compatibility or the exact comparison spectrum must
+be retained next.
+
 ## 6. Reproduction and artifacts
 
 From an editable installation:

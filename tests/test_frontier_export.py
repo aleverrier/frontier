@@ -245,6 +245,8 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "docs/REPRODUCIBILITY.md",
         "docs/BOUNDED_HYPERGRAPH_OVERLAP.md",
         "docs/BOUNDED_HYPERGRAPH_OVERLAP.tex",
+        "docs/BOUNDARY_SHIFT_AGGREGATION.md",
+        "docs/BOUNDARY_SHIFT_AGGREGATION.tex",
         "docs/data/overlap_profiles/*.json",
         "docs/RELEASE.md",
         "docs/ARCHITECTURE.md",

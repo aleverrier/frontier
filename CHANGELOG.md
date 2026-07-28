@@ -7,6 +7,9 @@
 - Added the deterministic `frontier-overlap-profile` CLI, exact size-1/2
   open-prefix-polymer lifetime enumeration, and committed retained-matrix
   profiles for surface d3 and BB144/Gross.
+- Added exact compatibility-dropped XOR aggregation of low-weight polymer
+  families by boundary shift, including cutwise surface-d3 profiles and
+  fractional-exponent grid optimization.
 
 ## 0.1.0 - 2026-06-18
 

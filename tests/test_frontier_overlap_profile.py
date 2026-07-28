@@ -44,7 +44,7 @@ def _toy_family() -> SimpleNamespace:
         _column(4, detector_mask=0b100, logical_mask=0, probability=0.29),
     )
     layout = progressive.build_frontier_layout(list(columns), num_detectors=3)
-    return SimpleNamespace(columns=columns, layout=layout)
+    return SimpleNamespace(columns=columns, layout=layout, logical_rows=1)
 
 
 def _brute_future_loads(family: SimpleNamespace) -> tuple[int, ...]:
@@ -149,6 +149,51 @@ def test_incremental_future_load_matches_bruteforce() -> None:
     assert overlap_profile.future_active_load_profile(family) == _brute_future_loads(family)
 
 
+def test_xor_subset_partition_matches_bruteforce() -> None:
+    shift_activities = ((0b01, 0.2), (0b10, 0.3), (0b11, 0.4))
+    observed = overlap_profile.xor_subset_partition(
+        boundary_bits=2,
+        shift_activities=shift_activities,
+    )
+    expected = [0.0, 0.0, 0.0, 0.0]
+    for subset in range(1 << len(shift_activities)):
+        shift = 0
+        weight = 1.0
+        for index, (item_shift, activity) in enumerate(shift_activities):
+            if (subset >> index) & 1:
+                shift ^= int(item_shift)
+                weight *= float(activity)
+        expected[shift] += weight
+    assert observed.tolist() == pytest.approx(expected)
+
+
+def test_boundary_shift_aggregation_preserves_expected_inequality_order() -> None:
+    family = _toy_family()
+    polymers = overlap_profile.enumerate_low_weight_polymers(family, theta=0.5)
+    assert sum(polymer.size == 1 for polymer in polymers) == 2
+    assert sum(polymer.size == 2 for polymer in polymers) == 3
+
+    profile = overlap_profile.boundary_shift_aggregation_profile(
+        family,
+        theta=0.5,
+        rhos=(0.5, 0.75),
+        K_values=(16,),
+        max_boundary_bits=4,
+        progress_every_cuts=0,
+    )
+    assert profile["polymer_universe"] == {"size_1": 2, "size_2": 3}
+    for row in profile["per_cut"]:
+        for values in row["rho"].values():
+            assert (
+                values["shift_grouped_moment"]
+                <= values["exact_ungrouped_product_moment"] + 2e-15
+            )
+            assert (
+                values["exact_ungrouped_product_moment"]
+                <= values["exponential_product_moment"] + 2e-15
+            )
+
+
 def test_low_weight_intervals_match_direct_component_reasoning() -> None:
     family = _toy_family()
     profile = overlap_profile.low_weight_polymer_profile(
@@ -194,6 +239,9 @@ def test_rotated_surface_cli_writes_reproducible_profile(
                 str(output),
                 "--progress-every-pairs",
                 "0",
+                "--aggregate-boundary-shifts",
+                "--progress-every-cuts",
+                "0",
             ]
         )
         == 0
@@ -209,3 +257,19 @@ def test_rotated_surface_cli_writes_reproducible_profile(
     assert profile["detector_column_weight"]["maximum"] == 4
     assert profile["future_active_score_load"]["maximum"] <= 4
     assert profile["low_weight_open_polymers"]["unique_visible_polymers"]["size_1"] > 0
+    aggregation = profile["low_weight_open_polymers"]["boundary_shift_aggregation"]
+    assert aggregation["max_boundary_bits"] <= 12
+    grouped = aggregation["cap_rhs_from_sizes_1_2"]["0.75"]["shift_grouped"]["512"]
+    ungrouped = aggregation["cap_rhs_from_sizes_1_2"]["0.75"][
+        "exact_ungrouped_product"
+    ]["512"]
+    assert grouped["value"] <= ungrouped["value"]
+    optimized = aggregation["rho_optimization"]["minimum_cap_rhs_by_K"][
+        "shift_grouped"
+    ]["1024"]
+    assert 0.0 < optimized["rho"] < 1.0
+    assert optimized["value"] > 1.0
+    critical = aggregation["rho_optimization"][
+        "critical_K_for_partial_rhs_below_one"
+    ]["shift_grouped"]
+    assert critical["first_integer_strictly_above"] > 1024

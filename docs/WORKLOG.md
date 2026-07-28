@@ -1,5 +1,43 @@
 # Frontier Worklog
 
+## 2026-07-28 Exact Boundary-Shift Aggregation
+
+- Added `docs/BOUNDARY_SHIFT_AGGREGATION.md` and its standalone TeX
+  counterpart. The note preserves quotient boundary shifts in the
+  compatibility-dropped size-1/2 polymer partition instead of applying the
+  fractional power to every family separately.
+- Extended `frontier-overlap-profile` with
+  `--aggregate-boundary-shifts`. At each cut it compresses the active
+  detector and logical shift to at most 12 surface-d3 bits, then evaluates
+  the exact XOR recurrence
+  `Z_new(xi)=Z_old(xi)+w Z_old(xi xor shift)`.
+- Proved and checked the nested diagnostic
+  `grouped <= exact ungrouped product <= exponential product`. The grouped
+  size-1/2 result is still a lower contribution to a full
+  compatibility-dropped bound; it is not an estimate or lower bound on
+  actual decoder loss.
+- On surface d3, boundary aggregation reduces the old expression by
+  `2.13e34` (X) and `1.18e28` (Z) at `rho=0.5`, and by about 20% at
+  `rho=0.99`. At `rho=0.5`, `K=1024`, the X value falls from `1.20e35` to
+  `5.63`, while Z falls from `6.12e28` to `5.19`.
+- Searched the deterministic grid `rho=0.05,0.06,...,0.99`. The optimized
+  size-1/2 grouped values at `K=1024` are `4.183` for X (`rho=0.85`) and
+  `3.859` for Z (`rho=0.80`). At `K=2048` they remain `1.395` and `1.299`.
+  The grid-estimated partial thresholds are `K=2346.45` and `2317.66`.
+- This is a stop result for boundary aggregation alone. Higher polymers can
+  only increase the partial expression. The next audit must enforce polymer
+  compatibility at the dominant cuts or compute dominant exact
+  comparison-spectrum overlaps directly.
+- Added the deterministic per-cut artifact
+  `docs/data/overlap_profiles/rotated_surface_d3_p0p001_boundary_aggregated.json`
+  with SHA256 `d4a5dc3a...de08ccfb`. The recorded two-scope run took `3.51s`
+  on one CPU with cut-count, elapsed-time, and ETA progress.
+- Added brute-subset verification of the XOR recurrence and cutwise
+  inequality-order regression coverage. Validation: the complete suite
+  passes `54 passed in 28.69s`; `py_compile` passes; `git diff --check` is
+  clean; the pre-existing non-aggregation profile remains byte-identical; and
+  the new TeX note compiles twice without warnings to a three-page PDF.
+
 ## 2026-07-28 Bounded-Hypergraph Overlap Profile
 
 - Added `docs/BOUNDED_HYPERGRAPH_OVERLAP.md` and its standalone

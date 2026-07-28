@@ -85,6 +85,8 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
   overlap bound, graphlike Hellinger polymer theorem, and lifetime corollary.
 - `docs/BOUNDED_HYPERGRAPH_OVERLAP.md`: arbitrary-column-weight Chernoff
   extension, exact low-weight lifetime profiler, and retained-matrix result.
+- `docs/BOUNDARY_SHIFT_AGGREGATION.md`: exact low-weight XOR aggregation by
+  quotient boundary shift and the resulting surface-d3 stop conclusion.
 - `docs/data/overlap_profiles/`: deterministic structural and size-1/2
   open-prefix-polymer profiles for the retained surface and BB144/Gross DEMs.
 - `docs/FILE_SCOPE.md`: retained-file audit and removed-file categories.

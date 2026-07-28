@@ -31,6 +31,8 @@ serving that surface were removed.
 | `docs/GRAPHLIKE_OVERLAP_PEIERLS.tex` | Standalone human-readable TeX version of the graphlike overlap-Peierls note. |
 | `docs/BOUNDED_HYPERGRAPH_OVERLAP.md` | Agent-readable bounded-column-weight Chernoff extension, exact low-weight lifetime-profile derivation, retained-matrix results, and certificate diagnosis. |
 | `docs/BOUNDED_HYPERGRAPH_OVERLAP.tex` | Standalone human-readable TeX version of the bounded-hypergraph overlap note. |
+| `docs/BOUNDARY_SHIFT_AGGREGATION.md` | Agent-readable exact low-weight XOR boundary-shift aggregation theorem, surface-d3 profile, exponent-grid optimization, and compatibility stop conclusion. |
+| `docs/BOUNDARY_SHIFT_AGGREGATION.tex` | Standalone human-readable TeX version of the boundary-shift aggregation note. |
 | `docs/data/overlap_profiles/*.json` | Deterministic retained-matrix structural, load, size-1/2 polymer-lifetime, and partial-certificate profiles with input checksums. |
 | `docs/ACADEMIC_METADATA.md` | Declared citation, funding, DOI, and provenance metadata status. |
 | `docs/ASSET_PROVENANCE.md` | Bundled Gross/BB144 asset provenance table and declared asset-license status. |
@@ -80,7 +82,7 @@ serving that surface were removed.
 | `tools/frontier_sample_rows.py` | DEM sample-row generator for `frontier-replay`, covering BB/Gross and surface-code detector matrices. |
 | `tools/frontier_sample_replay.py` | Matched sample replay CLI for BB144/Gross and related DEM rows. |
 | `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe over explicit sample rows. |
-| `tools/frontier_overlap_profile.py` | Deterministic exact cutwise Finner-load and visible size-1/2 open-prefix-polymer profiler. |
+| `tools/frontier_overlap_profile.py` | Deterministic exact cutwise Finner-load, visible size-1/2 open-prefix-polymer, and optional quotient XOR-aggregation profiler. |
 | `tools/frontier_progressive.py` | Minimal frontier column/layout/order helpers used by the public wrapper and DEM loader. |
 | `tools/asset_manifest.py` | Deterministic checksum manifest generator for bundled Gross/BB144 assets. |
 | `examples/README.md` | Short guide to runnable examples. |

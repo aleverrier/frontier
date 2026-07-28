@@ -117,6 +117,17 @@ frontier-overlap-profile \
   --column-order deadline_reorder \
   --score-alpha 0.8 \
   --out docs/data/overlap_profiles/bravyi_depth7_p0p001.json
+
+frontier-overlap-profile \
+  --backend rotated_surface_d3 \
+  --p-location 0.001 \
+  --column-order deadline_reorder \
+  --score-alpha 0.8 \
+  --K-values 16,512,1024,2048,4096,8192 \
+  --aggregate-boundary-shifts \
+  --max-boundary-bits 16 \
+  --out \
+    docs/data/overlap_profiles/rotated_surface_d3_p0p001_boundary_aggregated.json
 ```
 
 Reproduction should compare the regenerated JSON byte-for-byte or by SHA256.

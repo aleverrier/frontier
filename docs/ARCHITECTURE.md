@@ -39,7 +39,7 @@ BB144/Gross reproduction commands.
 | `tools/frontier_sample_rows.py` | Matched DEM sample-row generator used by replay workflows. |
 | `tools/frontier_sample_replay.py` | Replay CLI, CSV schema handling, shard execution, native batch paths, summaries, and reports. |
 | `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe over explicit sample rows. |
-| `tools/frontier_overlap_profile.py` | Deterministic exact future-active-load and size-1/2 open-prefix-polymer profiler. |
+| `tools/frontier_overlap_profile.py` | Deterministic exact future-active-load, size-1/2 open-prefix-polymer, and optional quotient boundary-shift XOR-aggregation profiler. |
 | `grosscode/dem/builder.py` | Split-sector detector-side DEM construction and bundled DEM snapshot loading. |
 | `grosscode/circuits/backends.py` | Backend-to-Stim circuit resolution for Gross, generalized-bicycle, and rotated-surface families. |
 | `grosscode/codes/*` | CSS code builders and loaders for Gross/BB144, generalized bicycle, rotated-surface, and standard surface-code checks. |
@@ -121,7 +121,9 @@ Bundled assets live under `grosscode/assets/gross144`:
 
 Deterministic overlap-profile outputs retained for theorem reproducibility live
 under `docs/data/overlap_profiles/`. They are derived structural summaries,
-not decoder samples or FER measurements.
+not decoder samples or FER measurements. The boundary-aggregated surface
+artifact includes per-cut quotient partitions and a fractional-exponent grid
+summary; compatibility between distinct polymers is deliberately not enforced.
 
 Important environment variables are documented in `docs/ENVIRONMENT.md`:
 

@@ -16,8 +16,11 @@ import math
 import sys
 import time
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterable, Sequence
+
+import numpy as np
 
 from tools.dem_loader import LoadedProgressiveFamily, load_dem_family
 
@@ -26,6 +29,19 @@ SCHEMA_VERSION = 1
 DEFAULT_SCOPES = ("memory_X", "memory_Z")
 DEFAULT_RHOS = (0.5, 0.75, 0.99)
 DEFAULT_K_VALUES = (16, 512, 1024, 8192)
+DEFAULT_OPTIMIZATION_RHOS = tuple(float(value) / 100.0 for value in range(5, 100))
+
+
+@dataclass(frozen=True)
+class LowWeightPolymer:
+    """A visible size-1/2 polymer and its exact half-open cut interval."""
+
+    start: int
+    stop: int
+    detector_shift_mask: int
+    logical_shift_mask: int
+    activity: float
+    size: int
 
 
 def chernoff_activity(probability: float, theta: float) -> float:
@@ -122,6 +138,32 @@ def _series_summary(values: Sequence[float]) -> dict[str, float | int]:
     }
 
 
+def _log10_series_summary(values: Sequence[float]) -> dict[str, float | int]:
+    sequence = tuple(float(value) for value in values)
+    finite = tuple(
+        (index, value) for index, value in enumerate(sequence) if math.isfinite(value)
+    )
+    if not finite:
+        return {
+            "cuts": int(len(sequence)),
+            "finite_cuts": 0,
+            "mean": float("-inf"),
+            "minimum": float("-inf"),
+            "peak": float("-inf"),
+            "peak_cut_after_column": -1,
+        }
+    peak_index, peak = max(finite, key=lambda item: item[1])
+    finite_values = tuple(value for _, value in finite)
+    return {
+        "cuts": int(len(sequence)),
+        "finite_cuts": int(len(finite)),
+        "mean": float(math.fsum(finite_values) / len(finite_values)),
+        "minimum": float(min(finite_values)),
+        "peak": float(peak),
+        "peak_cut_after_column": int(peak_index),
+    }
+
+
 def _log_expm1(value: float) -> float:
     x = float(value)
     if x <= 0.0:
@@ -156,6 +198,42 @@ def _partial_cap_rhs(
     log_sum = float(
         maximum + math.log(math.fsum(math.exp(term - maximum) for term in log_terms))
     )
+    log_rhs = float(log_sum - math.log(float(cap)) / exponent)
+    return {
+        "log10": float(log_rhs / math.log(10.0)),
+        "value": float(math.exp(log_rhs)) if log_rhs < 700.0 else None,
+    }
+
+
+def _logsumexp(log_values: Sequence[float]) -> float:
+    values = tuple(float(value) for value in log_values)
+    if not values:
+        return float("-inf")
+    maximum = max(values)
+    if maximum == float("-inf"):
+        return float("-inf")
+    return float(
+        maximum + math.log(math.fsum(math.exp(value - maximum) for value in values))
+    )
+
+
+def _cap_rhs_from_log_terms(
+    log_terms: Sequence[float],
+    *,
+    rho: float,
+    K: int,
+) -> dict[str, float | None]:
+    """Scale rooted cut terms represented in the log domain by K^(-1/rho)."""
+
+    exponent = float(rho)
+    cap = int(K)
+    if not 0.0 < exponent < 1.0:
+        raise ValueError("rho must lie strictly between zero and one")
+    if cap < 1:
+        raise ValueError("K must be positive")
+    log_sum = _logsumexp(tuple(float(value) for value in log_terms))
+    if log_sum == float("-inf"):
+        return {"log10": float("-inf"), "value": 0.0}
     log_rhs = float(log_sum - math.log(float(cap)) / exponent)
     return {
         "log10": float(log_rhs / math.log(10.0)),
@@ -233,6 +311,404 @@ def _integrate_differences(differences: Sequence[float]) -> tuple[float, ...]:
 
 def _minimum_last_touch(mask: int, detector_last_column: Sequence[int]) -> int:
     return min(int(detector_last_column[row]) for row in _iter_set_bits(mask))
+
+
+def enumerate_low_weight_polymers(
+    family: LoadedProgressiveFamily,
+    *,
+    theta: float,
+) -> tuple[LowWeightPolymer, ...]:
+    """Return every visible size-1/2 polymer with its exact cut interval."""
+
+    column_count = int(len(family.columns))
+    supports = tuple(int(column.detector_support_mask) for column in family.columns)
+    logical_masks = tuple(
+        int(_column_logical_mask(family, index)) for index in range(column_count)
+    )
+    activities = tuple(
+        chernoff_activity(_column_probability(family, index), float(theta))
+        for index in range(column_count)
+    )
+    last = tuple(int(value) for value in family.layout.detector_last_column)
+    polymers: list[LowWeightPolymer] = []
+
+    for index, support in enumerate(supports):
+        if support:
+            stop = _minimum_last_touch(support, last)
+        elif logical_masks[index]:
+            stop = int(column_count)
+        else:
+            continue
+        start = int(index)
+        if start < stop:
+            polymers.append(
+                LowWeightPolymer(
+                    start=int(start),
+                    stop=int(stop),
+                    detector_shift_mask=int(support),
+                    logical_shift_mask=int(logical_masks[index]),
+                    activity=float(activities[index]),
+                    size=1,
+                )
+            )
+
+    encoded_pairs: set[int] = set()
+    for touches in family.layout.row_touch_columns:
+        row_columns = tuple(int(value) for value in touches)
+        for left_offset, left in enumerate(row_columns):
+            for right in row_columns[left_offset + 1 :]:
+                a, b = (left, int(right)) if left < int(right) else (int(right), left)
+                encoded_pairs.add(int(a * column_count + b))
+
+    for encoded in sorted(encoded_pairs):
+        left, right = divmod(int(encoded), column_count)
+        common = int(supports[left] & supports[right])
+        if common == 0:
+            raise AssertionError("candidate pair does not share a detector row")
+        detector_shift = int(supports[left] ^ supports[right])
+        logical_shift = int(logical_masks[left] ^ logical_masks[right])
+        start = _minimum_last_touch(common, last)
+        stop = (
+            _minimum_last_touch(detector_shift, last)
+            if detector_shift
+            else int(column_count)
+        )
+        if (detector_shift or logical_shift) and start < stop:
+            polymers.append(
+                LowWeightPolymer(
+                    start=int(start),
+                    stop=int(stop),
+                    detector_shift_mask=int(detector_shift),
+                    logical_shift_mask=int(logical_shift),
+                    activity=float(activities[left] * activities[right]),
+                    size=2,
+                )
+            )
+
+    return tuple(polymers)
+
+
+def _compress_boundary_shift(
+    polymer: LowWeightPolymer,
+    *,
+    active_rows: Sequence[int],
+    logical_rows: int,
+) -> int:
+    active_mask = int(sum(1 << int(row) for row in active_rows))
+    if int(polymer.detector_shift_mask) & ~active_mask:
+        raise AssertionError("visible polymer detector shift is not active at this cut")
+    if int(polymer.logical_shift_mask) >= 1 << int(logical_rows):
+        raise AssertionError("polymer logical shift exceeds the declared logical width")
+    result = 0
+    for local_row, global_row in enumerate(active_rows):
+        if (int(polymer.detector_shift_mask) >> int(global_row)) & 1:
+            result |= 1 << int(local_row)
+    result |= int(polymer.logical_shift_mask) << len(active_rows)
+    if result == 0:
+        raise AssertionError("visible polymer has zero compressed boundary shift")
+    return int(result)
+
+
+def xor_subset_partition(
+    *,
+    boundary_bits: int,
+    shift_activities: Sequence[tuple[int, float]],
+) -> np.ndarray:
+    """Exact compatibility-dropped subset partition grouped by XOR shift."""
+
+    bit_count = int(boundary_bits)
+    if bit_count < 0:
+        raise ValueError("boundary_bits must be non-negative")
+    state_count = 1 << bit_count
+    indices = np.arange(state_count, dtype=np.int64)
+    values = np.zeros(state_count, dtype=np.float64)
+    values[0] = 1.0
+    for shift, activity in shift_activities:
+        encoded_shift = int(shift)
+        weight = float(activity)
+        if not 0 < encoded_shift < state_count:
+            raise ValueError("every shift must be nonzero and fit in boundary_bits")
+        if not math.isfinite(weight) or weight < 0.0:
+            raise ValueError("every activity must be finite and non-negative")
+        values = values + weight * values[indices ^ encoded_shift]
+    return values
+
+
+def boundary_shift_aggregation_profile(
+    family: LoadedProgressiveFamily,
+    *,
+    theta: float,
+    rhos: Sequence[float],
+    K_values: Sequence[int] = DEFAULT_K_VALUES,
+    optimization_rhos: Sequence[float] = (),
+    max_boundary_bits: int = 16,
+    progress_every_cuts: int = 25,
+    progress: Callable[[str], None] | None = None,
+) -> dict[str, object]:
+    """Group the compatibility-dropped size-1/2 partition by boundary shift."""
+
+    polymers = enumerate_low_weight_polymers(family, theta=float(theta))
+    rho_values = tuple(float(value) for value in rhos)
+    optimization_values = tuple(float(value) for value in optimization_rhos)
+    calculation_rhos = tuple(dict.fromkeys((*rho_values, *optimization_values)))
+    cap_values = tuple(int(value) for value in K_values)
+    for rho in calculation_rhos:
+        if not 0.0 < rho < 1.0:
+            raise ValueError("every rho must lie strictly between zero and one")
+
+    methods = ("exponential_product", "exact_ungrouped_product", "shift_grouped")
+    integrated_log_terms = {
+        rho: {method: [] for method in methods} for rho in calculation_rhos
+    }
+    per_cut: list[dict[str, object]] = []
+    start_time = time.monotonic()
+    column_count = int(len(family.columns))
+
+    for cut in range(column_count):
+        active_rows = tuple(
+            _iter_set_bits(int(family.layout.active_masks_after_column[cut]))
+        )
+        boundary_bits = int(len(active_rows) + int(family.logical_rows))
+        if boundary_bits > int(max_boundary_bits):
+            raise ValueError(
+                f"cut {cut} needs {boundary_bits} boundary bits, above "
+                f"--max-boundary-bits={int(max_boundary_bits)}"
+            )
+        live = tuple(
+            polymer
+            for polymer in polymers
+            if int(polymer.start) <= cut < int(polymer.stop)
+        )
+        shift_activities = tuple(
+            (
+                _compress_boundary_shift(
+                    polymer,
+                    active_rows=active_rows,
+                    logical_rows=int(family.logical_rows),
+                ),
+                float(polymer.activity),
+            )
+            for polymer in live
+        )
+        partition = xor_subset_partition(
+            boundary_bits=int(boundary_bits),
+            shift_activities=shift_activities,
+        )
+        reachable_nonzero = int(np.count_nonzero(partition[1:] > 0.0))
+        cut_rhos: dict[str, object] = {}
+
+        for rho in calculation_rhos:
+            xi_partial = float(math.fsum(activity**rho for _, activity in shift_activities))
+            exact_log_partition = float(
+                math.fsum(math.log1p(activity**rho) for _, activity in shift_activities)
+            )
+            grouped_moment = float(np.sum(np.power(partition[1:], rho), dtype=np.float64))
+            rooted_logs = {
+                "exponential_product": float(_log_expm1(xi_partial) / rho),
+                "exact_ungrouped_product": float(
+                    _log_expm1(exact_log_partition) / rho
+                ),
+                "shift_grouped": (
+                    float(math.log(grouped_moment) / rho)
+                    if grouped_moment > 0.0
+                    else float("-inf")
+                ),
+            }
+            rooted = {
+                method: (
+                    float(math.exp(rooted_logs[method]))
+                    if rooted_logs[method] < 700.0
+                    else None
+                )
+                for method in methods
+            }
+            for method in methods:
+                integrated_log_terms[rho][method].append(float(rooted_logs[method]))
+            if rho in rho_values:
+                exponential_moment = (
+                    float(math.expm1(xi_partial)) if xi_partial < 700.0 else None
+                )
+                exact_ungrouped_moment = (
+                    float(math.expm1(exact_log_partition))
+                    if exact_log_partition < 700.0
+                    else None
+                )
+                cut_rhos[f"{rho:.12g}"] = {
+                    "xi_partial": float(xi_partial),
+                    "exponential_product_moment": exponential_moment,
+                    "exact_ungrouped_product_moment": exact_ungrouped_moment,
+                    "shift_grouped_moment": float(grouped_moment),
+                    "cap_term_before_K": rooted,
+                    "log10_cap_term_before_K": {
+                        method: float(rooted_logs[method] / math.log(10.0))
+                        for method in methods
+                    },
+                }
+
+        per_cut.append(
+            {
+                "cut_after_column": int(cut),
+                "active_detector_rows": int(len(active_rows)),
+                "boundary_bits": int(boundary_bits),
+                "live_polymers": int(len(live)),
+                "reachable_nonzero_shifts": int(reachable_nonzero),
+                "partition_total": float(np.sum(partition, dtype=np.float64)),
+                "partition_zero_shift": float(partition[0]),
+                "rho": cut_rhos,
+            }
+        )
+
+        if (
+            progress is not None
+            and int(progress_every_cuts) > 0
+            and ((cut + 1) % int(progress_every_cuts) == 0 or cut + 1 == column_count)
+        ):
+            elapsed = float(time.monotonic() - start_time)
+            rate = float((cut + 1) / elapsed) if elapsed > 0.0 else float("inf")
+            remaining = int(column_count - cut - 1)
+            eta = float(remaining / rate) if rate > 0.0 else 0.0
+            progress(
+                f"cuts={cut + 1}/{column_count} "
+                f"elapsed_s={elapsed:.2f} eta_s={eta:.2f}"
+            )
+
+    cap_rhs: dict[str, object] = {}
+    reduction: dict[str, object] = {}
+    cut_term_log10_summary: dict[str, object] = {}
+    for rho in rho_values:
+        rho_key = f"{rho:.12g}"
+        cap_rhs[rho_key] = {
+            method: {
+                str(cap): _cap_rhs_from_log_terms(
+                    integrated_log_terms[rho][method],
+                    rho=float(rho),
+                    K=int(cap),
+                )
+                for cap in cap_values
+            }
+            for method in methods
+        }
+        log_totals = {
+            method: _logsumexp(integrated_log_terms[rho][method])
+            for method in methods
+        }
+        exact_log_reduction = float(
+            log_totals["exact_ungrouped_product"] - log_totals["shift_grouped"]
+        )
+        exponential_log_reduction = float(
+            log_totals["exponential_product"] - log_totals["shift_grouped"]
+        )
+        reduction[rho_key] = {
+            "exponential_over_shift_grouped": (
+                float(math.exp(exponential_log_reduction))
+                if exponential_log_reduction < 700.0
+                else None
+            ),
+            "exact_ungrouped_over_shift_grouped": (
+                float(math.exp(exact_log_reduction))
+                if exact_log_reduction < 700.0
+                else None
+            ),
+            "log10_exponential_over_shift_grouped": float(
+                exponential_log_reduction / math.log(10.0)
+            ),
+            "log10_exact_ungrouped_over_shift_grouped": float(
+                exact_log_reduction / math.log(10.0)
+            ),
+        }
+        cut_term_log10_summary[rho_key] = {
+            method: _log10_series_summary(
+                tuple(
+                    float(value / math.log(10.0))
+                    for value in integrated_log_terms[rho][method]
+                )
+            )
+            for method in methods
+        }
+
+    rho_optimization: dict[str, object] | None = None
+    if optimization_values:
+        minima: dict[str, object] = {}
+        for method in methods:
+            minima[method] = {}
+            for cap in cap_values:
+                candidates = tuple(
+                    (
+                        float(rho),
+                        _cap_rhs_from_log_terms(
+                            integrated_log_terms[rho][method],
+                            rho=float(rho),
+                            K=int(cap),
+                        ),
+                    )
+                    for rho in optimization_values
+                )
+                best_rho, best_result = min(
+                    candidates,
+                    key=lambda item: float(item[1]["log10"]),
+                )
+                minima[method][str(int(cap))] = {
+                    "rho": float(best_rho),
+                    **best_result,
+                }
+
+        critical_K: dict[str, object] = {}
+        for method in methods:
+            candidates = tuple(
+                (
+                    float(rho),
+                    float(rho * _logsumexp(integrated_log_terms[rho][method])),
+                )
+                for rho in optimization_values
+            )
+            best_rho, best_log_K = min(candidates, key=lambda item: item[1])
+            best_value = float(math.exp(best_log_K)) if best_log_K < 700.0 else None
+            critical_K[method] = {
+                "rho": float(best_rho),
+                "continuous_threshold_K": best_value,
+                "log10_continuous_threshold_K": float(
+                    best_log_K / math.log(10.0)
+                ),
+                "first_integer_strictly_above": (
+                    int(math.floor(best_value)) + 1 if best_value is not None else None
+                ),
+            }
+
+        rho_optimization = {
+            "grid": {
+                "minimum": float(min(optimization_values)),
+                "maximum": float(max(optimization_values)),
+                "count": int(len(optimization_values)),
+            },
+            "minimum_cap_rhs_by_K": minima,
+            "critical_K_for_partial_rhs_below_one": critical_K,
+        }
+
+    result = {
+        "schema_version": 1,
+        "description": (
+            "Exact XOR aggregation of the compatibility-dropped subset partition "
+            "generated by visible size-1/2 polymers."
+        ),
+        "higher_polymers_included": False,
+        "compatibility_enforced": False,
+        "zero_boundary_shift_excluded_from_fractional_moment": True,
+        "theta": float(theta),
+        "max_boundary_bits": int(
+            max((int(row["boundary_bits"]) for row in per_cut), default=0)
+        ),
+        "polymer_universe": {
+            "size_1": int(sum(polymer.size == 1 for polymer in polymers)),
+            "size_2": int(sum(polymer.size == 2 for polymer in polymers)),
+        },
+        "cap_rhs_from_sizes_1_2": cap_rhs,
+        "integrated_reduction_factors": reduction,
+        "cut_term_log10_summary": cut_term_log10_summary,
+        "per_cut": per_cut,
+    }
+    if rho_optimization is not None:
+        result["rho_optimization"] = rho_optimization
+    return result
 
 
 def low_weight_polymer_profile(
@@ -432,6 +908,9 @@ def build_family_profile(
     rhos: Sequence[float] = DEFAULT_RHOS,
     K_values: Sequence[int] = DEFAULT_K_VALUES,
     progress_every_pairs: int = 0,
+    aggregate_boundary_shifts: bool = False,
+    max_boundary_bits: int = 16,
+    progress_every_cuts: int = 25,
     progress: Callable[[str], None] | None = None,
 ) -> dict[str, object]:
     """Build the deterministic structural and low-weight profile for one scope."""
@@ -462,6 +941,20 @@ def build_family_profile(
         progress_every_pairs=int(progress_every_pairs),
         progress=progress,
     )
+    if bool(aggregate_boundary_shifts):
+        aggregation = boundary_shift_aggregation_profile(
+            family,
+            theta=float(theta_measured),
+            rhos=tuple(float(value) for value in rhos),
+            K_values=tuple(int(value) for value in K_values),
+            optimization_rhos=DEFAULT_OPTIMIZATION_RHOS,
+            max_boundary_bits=int(max_boundary_bits),
+            progress_every_cuts=int(progress_every_cuts),
+            progress=progress,
+        )
+        if aggregation["polymer_universe"] != low_weight["unique_visible_polymers"]:
+            raise AssertionError("aggregation and lifetime polymer counts disagree")
+        low_weight["boundary_shift_aggregation"] = aggregation
     return {
         "backend": str(family.backend),
         "scope": str(family.scope),
@@ -519,7 +1012,10 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
             "Profile exact cutwise Finner loads and visible size-1/2 open-prefix "
             "polymers for an ordered Frontier DEM."
         ),
-        epilog="See docs/COMMANDS.md and docs/BOUNDED_HYPERGRAPH_OVERLAP.md.",
+        epilog=(
+            "See docs/COMMANDS.md, docs/BOUNDED_HYPERGRAPH_OVERLAP.md, and "
+            "docs/BOUNDARY_SHIFT_AGGREGATION.md."
+        ),
     )
     parser.add_argument("--backend", default="rotated_surface_d3")
     parser.add_argument("--p-location", type=float, default=0.001)
@@ -530,6 +1026,9 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--K-values", default="16,512,1024,8192")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--progress-every-pairs", type=int, default=250000)
+    parser.add_argument("--aggregate-boundary-shifts", action="store_true")
+    parser.add_argument("--max-boundary-bits", type=int, default=16)
+    parser.add_argument("--progress-every-cuts", type=int, default=25)
     return parser.parse_args(argv)
 
 
@@ -567,8 +1066,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
 
             def emit_progress(message: str) -> None:
+                phase = "aggregation" if str(message).startswith("cuts=") else "pairs"
                 print(
-                    f"[overlap-profile] scope={scope} phase=pairs {message}",
+                    f"[overlap-profile] scope={scope} phase={phase} {message}",
                     file=sys.stderr,
                     flush=True,
                 )
@@ -580,6 +1080,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 rhos=rhos,
                 K_values=K_values,
                 progress_every_pairs=int(args.progress_every_pairs),
+                aggregate_boundary_shifts=bool(args.aggregate_boundary_shifts),
+                max_boundary_bits=int(args.max_boundary_bits),
+                progress_every_cuts=int(args.progress_every_cuts),
                 progress=emit_progress,
             )
             profiles.append(profile)
@@ -594,17 +1097,25 @@ def main(argv: Sequence[str] | None = None) -> int:
                 flush=True,
             )
 
+        configuration = {
+            "backend": str(args.backend),
+            "p_location": float(args.p_location),
+            "scopes": list(scopes),
+            "column_order": str(args.column_order),
+            "score_alpha": float(args.score_alpha),
+            "rhos": [float(value) for value in rhos],
+            "K_values": [int(value) for value in K_values],
+        }
+        if bool(args.aggregate_boundary_shifts):
+            configuration.update(
+                {
+                    "aggregate_boundary_shifts": True,
+                    "max_boundary_bits": int(args.max_boundary_bits),
+                }
+            )
         payload = {
             "schema_version": int(SCHEMA_VERSION),
-            "configuration": {
-                "backend": str(args.backend),
-                "p_location": float(args.p_location),
-                "scopes": list(scopes),
-                "column_order": str(args.column_order),
-                "score_alpha": float(args.score_alpha),
-                "rhos": [float(value) for value in rhos],
-                "K_values": [int(value) for value in K_values],
-            },
+            "configuration": configuration,
             "profiles": profiles,
         }
         output_path = Path(args.out)
