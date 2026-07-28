@@ -123,7 +123,9 @@ frontier-bb144-benchmark \
 
 - Purpose: deterministically audit exact future-active Finner loads and
   enumerate every visible size-1/2 open-prefix polymer with its ordering
-  lifetime.
+  lifetime. Optional aggregation also enforces exact size-1/2 compatibility,
+  computes shift-specific Chernoff orders, and enumerates an all-size
+  completed-kernel spectrum.
 - Module: `tools/frontier_overlap_profile.py`.
 - Minimal command:
 
@@ -151,8 +153,9 @@ frontier-overlap-profile \
 ```
 
 - Output files: one JSON file at `--out`, including input-family checksums,
-  structural histograms, lifetime summaries, partial polymer activities, and
-  lower bounds on the product-Peierls certificate right-hand side.
+  structural histograms, lifetime summaries, partial polymer activities,
+  exact compatibility diagnostics, all-size kernel state counts, fractional
+  certificate values, and exact trimmed-spectrum cap bounds.
 - Runtime behavior: deterministic, one CPU, no decoding, and no Monte Carlo.
   Candidate-pair progress includes elapsed time and ETA every 250,000 pairs
   by default; set `--progress-every-pairs 0` to disable it. Aggregation
@@ -165,9 +168,11 @@ frontier-overlap-profile \
   - Unsupported backend or order: inspect `frontier-dem-info --help`.
 - Interpretation: a reported partial certificate value is a lower bound on
   the Peierls **bound**, not on decoder loss. See
-  `docs/BOUNDED_HYPERGRAPH_OVERLAP.md`. With
-  `--aggregate-boundary-shifts`, polymer compatibility is still dropped; see
-  `docs/BOUNDARY_SHIFT_AGGREGATION.md`.
+  `docs/BOUNDED_HYPERGRAPH_OVERLAP.md`. The legacy `shift_grouped` method
+  still drops polymer compatibility. The
+  `adaptive_full_kernel_grouped` trimmed result is instead a rigorous
+  all-size cap-loss majorant; it is not FER and does not cover score-gap
+  pruning. See `docs/ADAPTIVE_KERNEL_SPECTRUM.md`.
 
 ## BB144/Gross Happy-Path Mini Workflow
 

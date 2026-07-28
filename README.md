@@ -87,8 +87,11 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
   extension, exact low-weight lifetime profiler, and retained-matrix result.
 - `docs/BOUNDARY_SHIFT_AGGREGATION.md`: exact low-weight XOR aggregation by
   quotient boundary shift and the resulting surface-d3 stop conclusion.
-- `docs/data/overlap_profiles/`: deterministic structural and size-1/2
-  open-prefix-polymer profiles for the retained surface and BB144/Gross DEMs.
+- `docs/ADAPTIVE_KERNEL_SPECTRUM.md`: exact low-weight compatibility,
+  shift-specific Chernoff loads, an all-size completed-kernel majorant, and
+  the non-vacuous surface-d3 trimmed-spectrum cap certificate.
+- `docs/data/overlap_profiles/`: deterministic structural, low-weight, and
+  adaptive all-size kernel-spectrum profiles for retained DEMs.
 - `docs/FILE_SCOPE.md`: retained-file audit and removed-file categories.
 - `docs/COMMANDS.md`: console-script command index.
 - `docs/ENVIRONMENT.md`: supported environment variables and native debug toggles.

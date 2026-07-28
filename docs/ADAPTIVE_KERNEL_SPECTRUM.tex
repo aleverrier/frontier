@@ -1,0 +1,229 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,array}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\F}{\mathbb F}
+\newcommand{\E}{\mathbb E}
+\newcommand{\1}{\mathbf 1}
+
+\title{Adaptive Kernel-Spectrum Certificate for Frontier Cap Pruning}
+\author{}
+\date{28 July 2026}
+
+\begin{document}
+\maketitle
+
+\paragraph{Status.}
+Rigorous finite-model majorant and deterministic distance-three surface-code
+calculation.  This completes the preceding boundary-shift investigation.
+Retaining compatibility, aggregation, shift-specific score loads, and the
+exact trimmed head gives
+\begin{align*}
+ \sum_tD_t^{\rm cap}&\le0.2519
+ &&\text{for memory X at }K=1024,\\
+ \sum_tD_t^{\rm cap}&\le0.2767
+ &&\text{for memory Z at }K=1024.
+\end{align*}
+These are bounds on syndrome-averaged exact posterior mass first removed by
+the cap.  They are not FER estimates and do not include score-gap pruning.
+
+\section{Low-weight compatibility}
+
+At a fixed cut, a live singleton has empty completed-check signature.  A
+live pair consists of two columns with the same nonempty completed-check
+signature.  Thus singletons are mutually compatible, at most one pair can be
+chosen from each signature class, and two classes are compatible exactly
+when their signatures are disjoint.
+
+Dominant surface cuts contain 392--563 live size-one/two polymers but only
+20--33 pair-signature classes.  Some classes contain 120--378 nominal pair
+choices, of which at most one is legal.  An exact row-mask set-packing
+dynamic program and Walsh transform enforce both compatibility and boundary
+XOR aggregation.  This lowers the optimized partial threshold to about 1509
+for X and 1455 for Z, but the \(K=1024\) partial right-hand sides remain
+1.819 and 1.750.
+
+\section{Shift-specific Finner order}
+
+For active-detector shift \(\delta\), define
+\[
+ \lambda_t(\delta)=
+ \max_{j\in J_t}
+ \sum_{\substack{i\in\Gamma_t\\\delta_i=1,\ H_{ij}=1}}\alpha_i.
+\]
+The Finner condition is pointwise in the relative shift, so choose
+\[
+ \theta_t^\star(\delta)=
+ \min\left\{\frac12,\frac1{\lambda_t(\delta)}\right\},
+ \qquad \theta_t^\star(0)=\frac12.
+\]
+For scalar \(\alpha=0.8\), the retained surface model uses only
+\[
+ \theta^\star\in\left\{\frac5{16},\frac5{12},\frac12\right\}.
+\]
+This changes the size-one/two grouped fractional right-hand side at
+\(K=1024\) from 1.819 to 0.254 for X and from 1.750 to 0.236 for Z.
+
+\section{All-size kernel majorant}
+
+Put
+\[
+ a_{\theta,j}=
+ (1-p_j)^{1-\theta}p_j^\theta+
+ p_j^{1-\theta}(1-p_j)^\theta
+\]
+and define
+\[
+ \mathcal Z_{t,\theta}(\xi)=
+ \sum_{\substack{
+ v\in\F_2^{I_t}\\
+ H_{C_t,I_t}v=0\\
+ D_tv=\xi}}
+ \prod_{j:v_j=1}a_{\theta,j}.
+\]
+
+\paragraph{Visible-family injection.}
+Every compatible family \(\mathcal F\) of visible open-prefix polymers maps
+injectively to its union vector
+\[
+ v_{\mathcal F}=\bigoplus_{\gamma\in\mathcal F}\1_\gamma.
+\]
+The completed-check connected components recover the family from the union,
+\(H_{C_t,I_t}v_{\mathcal F}=0\), and
+\(D_tv_{\mathcal F}=D_t\mathcal F\).  Compatibility makes the family weight
+equal to the product over the union.  Hence the compatible visible-family
+partition is bounded pointwise by \(\mathcal Z_{t,\theta}\).
+The latter may additionally count vectors containing invisible components.
+
+Combining this injection with the bounded-hypergraph pointwise theorem gives
+\[
+ \omega_t(\xi)\le z_t(\xi):=
+ \mathcal Z_{t,\theta_t^\star(\delta_t\xi)}(\xi).
+\]
+
+\section{Exact active-frontier recurrence}
+
+For each fixed \(\theta\), maintain a weighted state on the active detector
+residual \(r\) and logical prefix \(\ell\).  Before row closure at column
+\(j\), update
+\[
+ P_j(r,\ell)\leftarrow
+ P_{j-1}(r,\ell)+
+ a_{\theta,j}P_{j-1}(r+H_j,\ell+L_j).
+\]
+Discard states with nonzero residual on a closing row, remove the closed
+coordinates, and record the remaining boundary spectrum.  This exactly
+enumerates every vector in \(\mathcal Z_{t,\theta}\).
+
+The retained surface models have at most eleven active detectors and one
+logical bit, so each of the three fixed-\(\theta\) recurrences has at most
+4096 states.
+
+\section{Exact trimmed head}
+
+Let \(z_{t,(1)}\ge z_{t,(2)}\ge\cdots\) be the ordered nonzero-shift
+majorant.  Pointwise monotonicity in the recursive cap theorem gives
+\[
+ \boxed{
+ D_t^{\rm cap}\le
+ \inf_{0\le q<K}
+ \frac{\sum_{j>q}z_{t,(j)}}{K-q}.}
+\]
+This also captures the finite-support endpoint: fewer than \(K\) nonzero
+relative shifts cannot supply \(K\) outrankers.
+
+The best sampled fractional corollary for the same all-size spectrum is
+still vacuous at \(K=1024\): 1.927 for X and 2.068 for Z.  The exact trimmed
+calculation gives 0.2519 and 0.2767.
+
+\section{Results}
+
+\begin{center}
+\small
+\begin{tabular}{llrrr}
+\toprule
+Majorant & Scope & \(K=512\) & \(K=1024\) & \(K=2048\)\\
+\midrule
+size-1/2 compat.+shift, fractional & X & 4.110 & 1.819 & 0.543\\
+size-1/2 compat.+shift, fractional & Z & 4.118 & 1.750 & 0.506\\
+size-1/2 adaptive, fractional & X & 0.711 & 0.254 & 0.0558\\
+size-1/2 adaptive, fractional & Z & 0.693 & 0.236 & 0.0500\\
+all-size kernel adaptive, fractional & X & 5.852 & 1.927 & 0.361\\
+all-size kernel adaptive, fractional & Z & 6.330 & 2.068 & 0.404\\
+all-size kernel adaptive, trimmed & X & 1.787 & \textbf{0.2519} & 0.01524\\
+all-size kernel adaptive, trimmed & Z & 1.840 & \textbf{0.2767} & 0.01586\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At \(K=4096\), the trimmed bound is exactly zero because at most 4095
+nonzero relative shifts exist.  At \(K=1024\), only 78 X cuts and 77 Z cuts
+have formal support large enough for the cap to act.  The largest individual
+contributions are about 0.0207 and 0.0179.
+
+\section{Interpretation}
+
+The finite surface certificate needs four mechanisms:
+\begin{enumerate}
+\item compatibility of connected components;
+\item aggregation by boundary XOR shift;
+\item shift-specific Finner load;
+\item exact dominant-head trimming and finite support.
+\end{enumerate}
+Worst-case width controls the cost of an exact proof computation but does
+not determine cap-induced error.  The relevant object is the ordered,
+score-calibrated comparison spectrum.
+
+The result does not yet give a scalable BB144/Gross certificate: a split
+sector has up to 134 active detectors.  It also does not address score-gap
+loss.
+
+\section{Terminal ranking is a separate question}
+
+The public Gross \(p=0.001,\Delta=20,K=16384\) summary has three logical
+failures in \(10^8\) trials, zero truth-missing cases, and three
+truth-present-but-not-selected cases.  In the replay code, this means the
+sampled logical sector retained nonzero mass but another retained sector had
+larger mass.
+
+That classification excludes empty logical support, but it does not prove
+that pruning caused the wrong ranking.  Exact logical ML also fails when the
+sampled true sector is not posterior-maximal.  Separating algorithmic
+distortion from intrinsic Bayes error requires an exact logical-ML
+comparator or exact sector survival fractions
+\[
+ a_\ell(s)=\frac{\widehat Z_\ell(s)}{Z_\ell(s)}.
+\]
+If \(\ell_*\) is the exact logical-ML sector, Frontier agrees whenever
+\[
+ \max_{\ell\ne\ell_*}\log\frac{a_\ell}{a_{\ell_*}}
+ <
+ \min_{\ell\ne\ell_*}\log\frac{Z_{\ell_*}}{Z_\ell}.
+\]
+
+\section{Reproduction}
+
+\begin{verbatim}
+frontier-overlap-profile \
+  --backend rotated_surface_d3 \
+  --p-location 0.001 \
+  --column-order deadline_reorder \
+  --score-alpha 0.8 \
+  --K-values 16,512,1024,2048,4096,8192 \
+  --aggregate-boundary-shifts \
+  --max-boundary-bits 16 \
+  --out docs/data/overlap_profiles/\
+rotated_surface_d3_p0p001_boundary_aggregated.json
+\end{verbatim}
+
+The two-scope deterministic calculation uses one CPU and prints progress and
+ETA.  Two byte-identical runs took \(27.53\) and \(27.63\) seconds.  The
+committed artifact SHA256 is
+\begin{verbatim}
+44134ed72038d29292efd092ba9e35091d1ff7508a704caf64f1d43f4e819f1e
+\end{verbatim}
+
+\end{document}

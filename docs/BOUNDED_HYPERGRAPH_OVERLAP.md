@@ -320,6 +320,12 @@ above one at \(K=1024\) and \(K=2048\). Boundary aggregation alone is
 therefore insufficient; compatibility or the exact comparison spectrum must
 be retained next.
 
+That second target is completed for the finite surface-d3 model in
+`ADAPTIVE_KERNEL_SPECTRUM.md`. Exact low-weight compatibility,
+shift-specific Chernoff orders, an all-size completed-kernel majorant, and
+exact head trimming yield cap bounds below one at \(K=1024\). The scalable
+BB144/Gross problem and score-gap loss remain open.
+
 ## 6. Reproduction and artifacts
 
 From an editable installation:

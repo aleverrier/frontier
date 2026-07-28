@@ -97,11 +97,11 @@ Regenerate paper-data checksums with:
 python -m tools.asset_manifest --root paper/plots/data --title "Paper Plot Data Manifest" > paper/plots/data/MANIFEST.md
 ```
 
-## Deterministic Overlap Profiles
+## Deterministic Overlap and Kernel-Spectrum Profiles
 
-The structural and size-1/2 open-prefix-polymer profiles used by
-`docs/BOUNDED_HYPERGRAPH_OVERLAP.md` are deterministic and require no sampled
-decoder corpus:
+The structural, size-1/2 open-prefix-polymer, and surface all-size
+kernel-spectrum profiles used by the overlap theorem notes are deterministic
+and require no sampled decoder corpus:
 
 ```bash
 frontier-overlap-profile \
@@ -131,7 +131,10 @@ frontier-overlap-profile \
 ```
 
 Reproduction should compare the regenerated JSON byte-for-byte or by SHA256.
-The files record their own exact ordered-family input checksums.
+The files record their own exact ordered-family input checksums. The
+boundary-aggregated surface artifact contains the rigorous trimmed-spectrum
+cap certificate from `docs/ADAPTIVE_KERNEL_SPECTRUM.md`; it is not an FER
+measurement and does not cover score-gap pruning.
 
 ## Reporting Results
 

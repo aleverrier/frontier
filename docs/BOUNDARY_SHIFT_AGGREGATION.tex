@@ -181,12 +181,16 @@ not use the finite-support endpoint sharply.
 \section{Conclusion and reproduction}
 
 Boundary aggregation approximately halves the grid-estimated low-weight
-threshold: from 5235 to 2346 for X and from 4914 to 2318 for Z.  It remains
-insufficient at \(K=1024\) and \(K=2048\).  Counting higher polymers cannot
-repair this.  The next audit should inspect compatibility conflicts at the
-cuts dominating the grouped \(K=1024\) expression, to decide between exact
-component/treewidth elimination and direct dominant-comparison-spectrum
-calculation.
+threshold: from 5235 to 2346 for X and from 4914 to 2318 for Z.  By itself it
+remains insufficient at \(K=1024\) and \(K=2048\).
+
+The subsequent audit is completed in
+\texttt{\detokenize{ADAPTIVE_KERNEL_SPECTRUM.tex}}.  Exact compatibility,
+shift-specific Chernoff orders, an all-size completed-kernel recurrence, and
+exact head trimming give rigorous surface-d3 cap bounds of \(0.2519\) for X
+and \(0.2767\) for Z at \(K=1024\).  The result is not FER and does not cover
+score-gap pruning or terminal logical ranking.  BB144/Gross remains beyond
+the dense exact-spectrum calculation.
 
 \begin{verbatim}
 frontier-overlap-profile \
@@ -197,12 +201,11 @@ frontier-overlap-profile \
   --out docs/data/overlap_profiles/\
 rotated_surface_d3_p0p001_boundary_aggregated.json
 \end{verbatim}
-The two-scope run took approximately \(3.51\) seconds on one CPU.  Its
-SHA256 is
-\begin{verbatim}
-d4a5dc3a7d3aed11fe1e8e26e41cde7ed037e9e6ee7c0850ad0dabe9de08ccfb
-\end{verbatim}
-Regression tests compare (8) with brute subset enumeration and verify (4)
-cut by cut.  No decoder or Monte Carlo sampling is used.
+The expanded artifact remains deterministic, uses one CPU, and prints
+cut-count, elapsed-time, and ETA progress.  The current runtime and SHA256
+are recorded in \texttt{\detokenize{WORKLOG.tex}}.  Regression tests compare
+(8) with brute subset enumeration, verify (4) cut by cut, and independently
+check the later compatibility and kernel recurrences.  No decoder or Monte
+Carlo sampling is used.
 
 \end{document}

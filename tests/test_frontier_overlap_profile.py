@@ -47,6 +47,21 @@ def _toy_family() -> SimpleNamespace:
     return SimpleNamespace(columns=columns, layout=layout, logical_rows=1)
 
 
+def _multi_signature_family() -> SimpleNamespace:
+    columns = (
+        _column(0, detector_mask=0b0101, probability=0.08),
+        _column(1, detector_mask=0b1001, probability=0.09),
+        _column(2, detector_mask=0b0110, probability=0.10),
+        _column(3, detector_mask=0b1010, probability=0.11),
+        _column(4, detector_mask=0b0111, probability=0.12),
+        _column(5, detector_mask=0b1011, probability=0.13),
+        _column(6, detector_mask=0b0100, probability=0.14),
+        _column(7, detector_mask=0b1000, probability=0.15),
+    )
+    layout = progressive.build_frontier_layout(list(columns), num_detectors=4)
+    return SimpleNamespace(columns=columns, layout=layout, logical_rows=1)
+
+
 def _brute_future_loads(family: SimpleNamespace) -> tuple[int, ...]:
     result: list[int] = []
     for cut, active_mask in enumerate(family.layout.active_masks_after_column):
@@ -149,6 +164,45 @@ def test_incremental_future_load_matches_bruteforce() -> None:
     assert overlap_profile.future_active_load_profile(family) == _brute_future_loads(family)
 
 
+def test_shift_specific_orders_match_direct_future_overlap() -> None:
+    family = _toy_family()
+    cut = 1
+    active_rows = tuple(
+        overlap_profile._iter_set_bits(family.layout.active_masks_after_column[cut])
+    )
+    observed = overlap_profile.shift_specific_chernoff_orders(
+        family,
+        cut=cut,
+        active_rows=active_rows,
+        score_alpha=0.8,
+    )
+    active_mask = int(sum(1 << row for row in active_rows))
+    expected = []
+    for local_shift in range(1 << len(active_rows)):
+        global_shift = int(
+            sum(
+                1 << global_row
+                for local_row, global_row in enumerate(active_rows)
+                if (local_shift >> local_row) & 1
+            )
+        )
+        load = max(
+            (
+                int(
+                    global_shift
+                    & active_mask
+                    & int(column.detector_support_mask)
+                ).bit_count()
+                for column in family.columns[cut + 1 :]
+            ),
+            default=0,
+        )
+        expected.append(
+            overlap_profile.safe_chernoff_order(score_alpha=0.8, load=load)
+        )
+    assert observed == pytest.approx(expected)
+
+
 def test_xor_subset_partition_matches_bruteforce() -> None:
     shift_activities = ((0b01, 0.2), (0b10, 0.3), (0b11, 0.4))
     observed = overlap_profile.xor_subset_partition(
@@ -165,6 +219,12 @@ def test_xor_subset_partition_matches_bruteforce() -> None:
                 weight *= float(activity)
         expected[shift] += weight
     assert observed.tolist() == pytest.approx(expected)
+
+
+def test_trimmed_spectrum_bound_removes_a_dominant_head() -> None:
+    assert overlap_profile.trimmed_spectrum_bound([100.0, 1.0, 1.0], K=2) == 2.0
+    assert overlap_profile.trimmed_spectrum_bound([5.0, 4.0, 1.0], K=3) == 1.0
+    assert overlap_profile.trimmed_spectrum_bound([5.0, 4.0, 1.0], K=4) == 0.0
 
 
 def test_boundary_shift_aggregation_preserves_expected_inequality_order() -> None:
@@ -192,6 +252,196 @@ def test_boundary_shift_aggregation_preserves_expected_inequality_order() -> Non
                 values["exact_ungrouped_product_moment"]
                 <= values["exponential_product_moment"] + 2e-15
             )
+            assert (
+                values["compatibility_ungrouped_moment"]
+                <= values["exact_ungrouped_product_moment"] + 2e-15
+            )
+            assert (
+                values["compatibility_shift_grouped_moment"]
+                <= values["compatibility_ungrouped_moment"] + 2e-15
+            )
+            assert (
+                values["compatibility_shift_grouped_moment"]
+                <= values["shift_grouped_moment"] + 2e-15
+            )
+            assert (
+                values["adaptive_compatibility_shift_grouped_moment"]
+                <= values["compatibility_shift_grouped_moment"] + 2e-15
+            )
+            assert (
+                values["adaptive_compatibility_shift_grouped_moment"]
+                <= values["adaptive_full_kernel_grouped_moment"] + 2e-15
+            )
+
+
+def test_low_weight_compatibility_reduces_to_signature_set_packing() -> None:
+    family = _toy_family()
+    polymers = overlap_profile.enumerate_low_weight_polymers(family, theta=0.5)
+
+    before_closure = overlap_profile.low_weight_compatibility_structure(
+        family,
+        polymers=polymers,
+        cut=1,
+    )
+    assert before_closure["live_singletons"] == 2
+    assert before_closure["live_pairs"] == 0
+
+    first_closure = overlap_profile.low_weight_compatibility_structure(
+        family,
+        polymers=polymers,
+        cut=2,
+    )
+    assert first_closure["live_singletons"] == 0
+    assert first_closure["live_pairs"] == 3
+    assert first_closure["pair_signature_classes"] == 1
+    assert first_closure["maximum_pair_options_per_class"] == 3
+    assert first_closure["maximum_component_classes"] == 1
+    rho = 0.5
+    expected_moment = sum(
+        polymer.activity**rho
+        for polymer in polymers
+        if polymer.start <= 2 < polymer.stop
+    )
+    assert overlap_profile.compatible_ungrouped_moment(
+        family,
+        polymers=polymers,
+        cut=2,
+        rho=rho,
+    ) == pytest.approx(expected_moment)
+
+    active_rows = tuple(
+        overlap_profile._iter_set_bits(family.layout.active_masks_after_column[2])
+    )
+    partition, metadata = overlap_profile.compatible_boundary_partition(
+        family,
+        polymers=polymers,
+        cut=2,
+        active_rows=active_rows,
+        logical_rows=family.logical_rows,
+    )
+    expected_partition = [0.0 for _ in partition]
+    expected_partition[0] = 1.0
+    for polymer in polymers:
+        if polymer.start <= 2 < polymer.stop:
+            shift = overlap_profile._compress_boundary_shift(
+                polymer,
+                active_rows=active_rows,
+                logical_rows=family.logical_rows,
+            )
+            expected_partition[shift] += polymer.activity
+    assert partition.tolist() == pytest.approx(expected_partition)
+    assert metadata["reachable_row_masks"] == 2
+    kernel_partitions, state_counts = overlap_profile.kernel_boundary_partition_profile(
+        family,
+        theta=0.5,
+    )
+    assert kernel_partitions[2].tolist() == pytest.approx(expected_partition)
+    assert state_counts[2] == sum(value > 0.0 for value in expected_partition)
+
+
+def test_compatible_partition_matches_multiclass_bruteforce() -> None:
+    family = _multi_signature_family()
+    theta = 0.5
+    cut = 5
+    polymers = overlap_profile.enumerate_low_weight_polymers(family, theta=theta)
+    live = tuple(
+        polymer for polymer in polymers if polymer.start <= cut < polymer.stop
+    )
+    structure = overlap_profile.low_weight_compatibility_structure(
+        family,
+        polymers=polymers,
+        cut=cut,
+    )
+    assert structure["live_singletons"] == 0
+    assert structure["live_pairs"] == 3
+    assert structure["pair_signature_classes"] == 3
+    assert structure["signature_interaction_edges"] == 2
+
+    active_rows = tuple(
+        overlap_profile._iter_set_bits(family.layout.active_masks_after_column[cut])
+    )
+    observed, _ = overlap_profile.compatible_boundary_partition(
+        family,
+        polymers=polymers,
+        cut=cut,
+        active_rows=active_rows,
+        logical_rows=family.logical_rows,
+    )
+    completed_mask = int(
+        sum(
+            1 << row
+            for row, last_touch in enumerate(family.layout.detector_last_column)
+            if last_touch <= cut
+        )
+    )
+    expected = [0.0 for _ in observed]
+    for subset in range(1 << len(live)):
+        used_columns: set[int] = set()
+        used_completed_rows = 0
+        shift = 0
+        weight = 1.0
+        compatible = True
+        for index, polymer in enumerate(live):
+            if not (subset >> index) & 1:
+                continue
+            signature = int(
+                family.columns[polymer.column_indices[0]].detector_support_mask
+            ) & completed_mask
+            if used_columns.intersection(polymer.column_indices):
+                compatible = False
+                break
+            if used_completed_rows & signature:
+                compatible = False
+                break
+            used_columns.update(polymer.column_indices)
+            used_completed_rows |= signature
+            shift ^= overlap_profile._compress_boundary_shift(
+                polymer,
+                active_rows=active_rows,
+                logical_rows=family.logical_rows,
+            )
+            weight *= polymer.activity
+        if compatible:
+            expected[shift] += weight
+    assert observed.tolist() == pytest.approx(expected)
+
+
+def test_kernel_boundary_recurrence_matches_all_toy_subsets() -> None:
+    family = _toy_family()
+    theta = 0.5
+    observed, _ = overlap_profile.kernel_boundary_partition_profile(
+        family,
+        theta=theta,
+    )
+    activities = tuple(
+        overlap_profile.chernoff_activity(
+            overlap_profile._column_probability(family, index),
+            theta,
+        )
+        for index in range(len(family.columns))
+    )
+
+    for cut, partition in enumerate(observed):
+        active_mask = int(family.layout.active_masks_after_column[cut])
+        active_rows = tuple(overlap_profile._iter_set_bits(active_mask))
+        expected = [0.0 for _ in partition]
+        for subset in range(1 << (cut + 1)):
+            detector = 0
+            logical = 0
+            weight = 1.0
+            for index in range(cut + 1):
+                if (subset >> index) & 1:
+                    detector ^= int(family.columns[index].detector_support_mask)
+                    logical ^= int(family.columns[index].logical_response_masks[1])
+                    weight *= float(activities[index])
+            if detector & ~active_mask:
+                continue
+            encoded = int(logical) << len(active_rows)
+            for local_row, global_row in enumerate(active_rows):
+                if (detector >> global_row) & 1:
+                    encoded |= 1 << local_row
+            expected[encoded] += weight
+        assert partition.tolist() == pytest.approx(expected)
 
 
 def test_low_weight_intervals_match_direct_component_reasoning() -> None:
@@ -258,6 +508,7 @@ def test_rotated_surface_cli_writes_reproducible_profile(
     assert profile["future_active_score_load"]["maximum"] <= 4
     assert profile["low_weight_open_polymers"]["unique_visible_polymers"]["size_1"] > 0
     aggregation = profile["low_weight_open_polymers"]["boundary_shift_aggregation"]
+    assert aggregation["schema_version"] == 2
     assert aggregation["max_boundary_bits"] <= 12
     grouped = aggregation["cap_rhs_from_sizes_1_2"]["0.75"]["shift_grouped"]["512"]
     ungrouped = aggregation["cap_rhs_from_sizes_1_2"]["0.75"][
@@ -273,3 +524,13 @@ def test_rotated_surface_cli_writes_reproducible_profile(
         "critical_K_for_partial_rhs_below_one"
     ]["shift_grouped"]
     assert critical["first_integer_strictly_above"] > 1024
+    assert (
+        aggregation["trimmed_cap_rhs_by_K"]["adaptive_full_kernel_grouped"]["1024"]
+        < 1.0
+    )
+    assert (
+        aggregation["rho_optimization"]["minimum_cap_rhs_by_K"][
+            "adaptive_full_kernel_grouped"
+        ]["1024"]["value"]
+        > 1.0
+    )

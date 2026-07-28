@@ -39,7 +39,7 @@ BB144/Gross reproduction commands.
 | `tools/frontier_sample_rows.py` | Matched DEM sample-row generator used by replay workflows. |
 | `tools/frontier_sample_replay.py` | Replay CLI, CSV schema handling, shard execution, native batch paths, summaries, and reports. |
 | `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe over explicit sample rows. |
-| `tools/frontier_overlap_profile.py` | Deterministic exact future-active-load, size-1/2 open-prefix-polymer, and optional quotient boundary-shift XOR-aggregation profiler. |
+| `tools/frontier_overlap_profile.py` | Deterministic future-load and open-prefix profiler, with exact size-1/2 compatibility, quotient XOR aggregation, adaptive Chernoff orders, and an all-size completed-kernel spectrum recurrence. |
 | `grosscode/dem/builder.py` | Split-sector detector-side DEM construction and bundled DEM snapshot loading. |
 | `grosscode/circuits/backends.py` | Backend-to-Stim circuit resolution for Gross, generalized-bicycle, and rotated-surface families. |
 | `grosscode/codes/*` | CSS code builders and loaders for Gross/BB144, generalized bicycle, rotated-surface, and standard surface-code checks. |
@@ -122,8 +122,9 @@ Bundled assets live under `grosscode/assets/gross144`:
 Deterministic overlap-profile outputs retained for theorem reproducibility live
 under `docs/data/overlap_profiles/`. They are derived structural summaries,
 not decoder samples or FER measurements. The boundary-aggregated surface
-artifact includes per-cut quotient partitions and a fractional-exponent grid
-summary; compatibility between distinct polymers is deliberately not enforced.
+artifact includes per-cut exact size-1/2 compatibility partitions,
+shift-specific Chernoff orders, all-size completed-kernel majorants,
+fractional-exponent summaries, and exact trimmed-spectrum cap bounds.
 
 Important environment variables are documented in `docs/ENVIRONMENT.md`:
 

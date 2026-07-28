@@ -247,7 +247,21 @@ determine whether exact compatibility can be enforced by component
 factorization or bounded-treewidth elimination, or whether a direct
 comparison-spectrum calculation is the better route.
 
-## 7. Reproduction
+## 7. Follow-up: compatibility and the exact spectrum head
+
+That next audit is completed in `ADAPTIVE_KERNEL_SPECTRUM.md`. Exact
+signature-class compatibility, shift-specific Chernoff orders, and an
+all-size completed-kernel recurrence reduce the surface-d3 cap certificate
+to 0.2519 for memory X and 0.2767 for memory Z at \(K=1024\). The decisive
+last step is the exact trimmed-head functional from the recursive cap
+theorem; the fractional corollary remains vacuous even on the improved
+all-size majorant.
+
+The follow-up changes the stop conclusion for this finite surface model, but
+not for BB144/Gross. It is a cap-loss certificate, not FER, and does not
+cover score-gap pruning or terminal logical-sector ranking.
+
+## 8. Reproduction
 
 ```bash
 frontier-overlap-profile \
@@ -262,14 +276,12 @@ frontier-overlap-profile \
     docs/data/overlap_profiles/rotated_surface_d3_p0p001_boundary_aggregated.json
 ```
 
-The two-scope calculation took approximately 3.51 seconds on one CPU and
-printed cut counts, elapsed time, and ETA every 25 cuts. The committed
-artifact SHA256 is
-
-```text
-d4a5dc3a7d3aed11fe1e8e26e41cde7ed037e9e6ee7c0850ad0dabe9de08ccfb
-```
+The expanded two-scope calculation remains deterministic, uses one CPU, and
+prints cut counts, elapsed time, and ETA every 25 cuts. Its current artifact
+also contains the follow-up compatibility and kernel-spectrum fields; see
+`ADAPTIVE_KERNEL_SPECTRUM.md` and `WORKLOG.md` for the current runtime and
+SHA256.
 
 The profiler's regression tests compare the XOR dynamic program with brute
-subset enumeration on a finite toy model and verify
-\(G\le U\le E\) cut by cut.
+subset enumeration on a finite toy model, verify \(G\le U\le E\) cut by cut,
+and check the later compatibility and kernel recurrences independently.

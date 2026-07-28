@@ -10,6 +10,9 @@
 - Added exact compatibility-dropped XOR aggregation of low-weight polymer
   families by boundary shift, including cutwise surface-d3 profiles and
   fractional-exponent grid optimization.
+- Added exact size-1/2 compatibility, shift-specific Chernoff orders, an
+  all-size completed-kernel spectrum recurrence, and exact head trimming. The
+  resulting rigorous surface-d3 cap bound is non-vacuous at `K=1024`.
 
 ## 0.1.0 - 2026-06-18
 

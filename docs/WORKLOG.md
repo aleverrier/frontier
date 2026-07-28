@@ -1,5 +1,55 @@
 # Frontier Worklog
 
+## 2026-07-28 Adaptive All-Size Kernel-Spectrum Certificate
+
+- Added `docs/ADAPTIVE_KERNEL_SPECTRUM.md` and its standalone TeX
+  counterpart. This completes the finite surface-d3 cap investigation by
+  retaining exact low-weight compatibility, boundary-shift aggregation,
+  shift-specific score loads, and the exact trimmed comparison-spectrum
+  head.
+- Proved the exact size-1/2 compatibility structure: live singletons have
+  empty completed-row signature; pair polymers form signature classes with
+  at most one legal choice per class; and classes conflict exactly when
+  their completed-row masks intersect. A row-mask set-packing recurrence
+  plus Walsh-Hadamard XOR convolution evaluates this partition exactly.
+- Added the pointwise adaptive order
+  `theta_t(delta)=min(1/2,1/lambda_t(delta))`. For the retained surface
+  model, the only orders are `5/16`, `5/12`, and `1/2`. This lowers the
+  size-1/2 fractional `K=1024` values from `1.819` to `0.254` for X and from
+  `1.750` to `0.236` for Z.
+- Proved that every compatible visible polymer family injects into a vector
+  in the completed-check kernel. Added an exact active-frontier recurrence
+  for the resulting all-size weighted kernel spectrum. The kernel may
+  overcount invisible connected components, so it is a rigorous pointwise
+  majorant.
+- Applied the exact cap theorem's trimmed-head functional instead of only
+  its fractional corollary. The all-size surface-d3 cap totals are `1.786529`
+  and `1.840419` at `K=512`, **`0.251858` and `0.276703` at `K=1024`**, and
+  `0.015245` and `0.015858` at `K=2048`, for X and Z respectively. They are
+  exactly zero at `K=4096` because there are at most 4095 nonzero relative
+  boundary shifts.
+- The all-size fractional corollary remains vacuous at `K=1024` (`1.926650`
+  for X and `2.068309` for Z), demonstrating that compatibility and adaptive
+  activities are not sufficient without head trimming and finite support.
+- Clarified terminal diagnostics: Gross truth-present-but-not-selected
+  failures exclude empty retained logical support but do not prove a
+  pruning-induced ranking error. Exact logical ML can also reject the
+  sampled truth; an exact same-sample comparator or exact sector survival
+  fractions are required.
+- Regenerated
+  `docs/data/overlap_profiles/rotated_surface_d3_p0p001_boundary_aggregated.json`.
+  Two one-CPU runs took `27.53s` and `27.63s`, were byte-identical, and have
+  SHA256
+  `44134ed72038d29292efd092ba9e35091d1ff7508a704caf64f1d43f4e819f1e`.
+  The pre-existing non-aggregation surface artifact also remains
+  byte-identical.
+- Validation: the profiler/export subset passes `37 passed in 16.05s`; the
+  complete suite passes `59 passed in 25.57s`; `py_compile` and
+  `git diff --check` pass. The adaptive note compiles twice without warnings
+  to four pages, both predecessor notes still compile without warnings, the
+  TeX worklog compiles through a temporary wrapper, and the 163-page root
+  status TeX compiles successfully.
+
 ## 2026-07-28 Exact Boundary-Shift Aggregation
 
 - Added `docs/BOUNDARY_SHIFT_AGGREGATION.md` and its standalone TeX

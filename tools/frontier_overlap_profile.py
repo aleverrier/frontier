@@ -36,6 +36,7 @@ DEFAULT_OPTIMIZATION_RHOS = tuple(float(value) / 100.0 for value in range(5, 100
 class LowWeightPolymer:
     """A visible size-1/2 polymer and its exact half-open cut interval."""
 
+    column_indices: tuple[int, ...]
     start: int
     stop: int
     detector_shift_mask: int
@@ -241,6 +242,28 @@ def _cap_rhs_from_log_terms(
     }
 
 
+def trimmed_spectrum_bound(values: Sequence[float], *, K: int) -> float:
+    """Evaluate the exact threshold-head functional on a majorant spectrum."""
+
+    cap = int(K)
+    if cap < 1:
+        raise ValueError("K must be positive")
+    ordered = tuple(
+        sorted(
+            (float(value) for value in values if float(value) > 0.0),
+            reverse=True,
+        )
+    )
+    if len(ordered) < cap:
+        return 0.0
+    tail = float(math.fsum(ordered))
+    best = float(tail / cap)
+    for head_size in range(1, cap):
+        tail -= float(ordered[head_size - 1])
+        best = min(best, float(tail / (cap - head_size)))
+    return float(best)
+
+
 def future_active_load_profile(family: LoadedProgressiveFamily) -> tuple[int, ...]:
     """Exact worst affected-row load of a future column at every cut."""
 
@@ -282,6 +305,45 @@ def future_active_load_profile(family: LoadedProgressiveFamily) -> tuple[int, ..
         if sum(load_histogram.values()) != count - cut - 1:
             raise AssertionError("future-column load accounting is inconsistent")
 
+    return tuple(result)
+
+
+def shift_specific_chernoff_orders(
+    family: LoadedProgressiveFamily,
+    *,
+    cut: int,
+    active_rows: Sequence[int],
+    score_alpha: float,
+) -> tuple[float, ...]:
+    """Return the largest safe theta for every active-detector shift."""
+
+    active = tuple(int(row) for row in active_rows)
+    active_mask = int(sum(1 << row for row in active))
+    future_masks: set[int] = set()
+    for column in family.columns[int(cut) + 1 :]:
+        support = int(column.detector_support_mask) & active_mask
+        local_support = 0
+        for local_row, global_row in enumerate(active):
+            if (support >> global_row) & 1:
+                local_support |= 1 << local_row
+        if local_support:
+            future_masks.add(int(local_support))
+
+    result: list[float] = []
+    for detector_shift in range(1 << len(active)):
+        load = max(
+            (
+                int(detector_shift & future_mask).bit_count()
+                for future_mask in future_masks
+            ),
+            default=0,
+        )
+        result.append(
+            safe_chernoff_order(
+                score_alpha=float(score_alpha),
+                load=int(load),
+            )
+        )
     return tuple(result)
 
 
@@ -343,6 +405,7 @@ def enumerate_low_weight_polymers(
         if start < stop:
             polymers.append(
                 LowWeightPolymer(
+                    column_indices=(int(index),),
                     start=int(start),
                     stop=int(stop),
                     detector_shift_mask=int(support),
@@ -376,6 +439,7 @@ def enumerate_low_weight_polymers(
         if (detector_shift or logical_shift) and start < stop:
             polymers.append(
                 LowWeightPolymer(
+                    column_indices=(int(left), int(right)),
                     start=int(start),
                     stop=int(stop),
                     detector_shift_mask=int(detector_shift),
@@ -386,6 +450,192 @@ def enumerate_low_weight_polymers(
             )
 
     return tuple(polymers)
+
+
+def _low_weight_compatibility_groups(
+    family: LoadedProgressiveFamily,
+    *,
+    polymers: Sequence[LowWeightPolymer],
+    cut: int,
+) -> tuple[int, tuple[LowWeightPolymer, ...], dict[int, tuple[LowWeightPolymer, ...]]]:
+    """Group live size-1/2 polymers by completed-row signature."""
+
+    cut_index = int(cut)
+    completed_mask = int(
+        sum(
+            1 << int(row)
+            for row, last_touch in enumerate(family.layout.detector_last_column)
+            if int(last_touch) <= cut_index
+        )
+    )
+    live = tuple(
+        polymer
+        for polymer in polymers
+        if int(polymer.start) <= cut_index < int(polymer.stop)
+    )
+    signature_groups: dict[int, list[LowWeightPolymer]] = {}
+    singletons: list[LowWeightPolymer] = []
+    for polymer in live:
+        signatures = tuple(
+            int(family.columns[int(column)].detector_support_mask) & completed_mask
+            for column in polymer.column_indices
+        )
+        if len(set(signatures)) != 1:
+            raise AssertionError("polymer columns disagree on completed-row signature")
+        signature = int(signatures[0])
+        if int(polymer.size) == 1:
+            if signature != 0:
+                raise AssertionError("live singleton touches a completed detector")
+            singletons.append(polymer)
+            continue
+        if int(polymer.size) != 2 or len(polymer.column_indices) != 2:
+            raise AssertionError("compatibility audit only supports size-1/2 polymers")
+        if signature == 0:
+            raise AssertionError("live pair is disconnected in the completed-row graph")
+        signature_groups.setdefault(signature, []).append(polymer)
+    return (
+        int(completed_mask),
+        tuple(singletons),
+        {
+            int(signature): tuple(group)
+            for signature, group in signature_groups.items()
+        },
+    )
+
+
+def low_weight_compatibility_structure(
+    family: LoadedProgressiveFamily,
+    *,
+    polymers: Sequence[LowWeightPolymer],
+    cut: int,
+) -> dict[str, object]:
+    """Summarize the exact compatibility structure of live size-1/2 polymers.
+
+    At a fixed cut, a live singleton has empty completed-row signature. A
+    live pair has two columns with the same nonempty completed-row signature.
+    Pair polymers in one signature class form a clique, and two classes
+    conflict exactly when their signatures intersect.
+    """
+
+    completed_mask, singletons, signature_groups = _low_weight_compatibility_groups(
+        family,
+        polymers=polymers,
+        cut=int(cut),
+    )
+
+    signatures = tuple(sorted(signature_groups))
+    adjacency = [0 for _ in signatures]
+    interaction_edges = 0
+    for left, left_signature in enumerate(signatures):
+        for right in range(left + 1, len(signatures)):
+            if int(left_signature) & int(signatures[right]):
+                adjacency[left] |= 1 << right
+                adjacency[right] |= 1 << left
+                interaction_edges += 1
+
+    unseen = (1 << len(signatures)) - 1
+    component_class_counts: list[int] = []
+    component_pair_counts: list[int] = []
+    while unseen:
+        seed = int(unseen & -unseen)
+        frontier = int(seed)
+        component = 0
+        while frontier:
+            vertex_bit = int(frontier & -frontier)
+            frontier ^= vertex_bit
+            vertex = int(vertex_bit.bit_length() - 1)
+            component |= vertex_bit
+            frontier |= int(adjacency[vertex]) & ~component
+        unseen &= ~component
+        component_vertices = tuple(_iter_set_bits(component))
+        component_class_counts.append(int(len(component_vertices)))
+        component_pair_counts.append(
+            int(
+                sum(
+                    len(signature_groups[signatures[vertex]])
+                    for vertex in component_vertices
+                )
+            )
+        )
+
+    class_option_counts = tuple(
+        int(len(signature_groups[signature])) for signature in signatures
+    )
+    signature_weights = tuple(int(signature.bit_count()) for signature in signatures)
+    used_completed_mask = 0
+    for signature in signatures:
+        used_completed_mask |= int(signature)
+    return {
+        "completed_detector_rows": int(completed_mask.bit_count()),
+        "used_completed_detector_rows": int(used_completed_mask.bit_count()),
+        "live_singletons": int(len(singletons)),
+        "live_pairs": int(sum(class_option_counts)),
+        "pair_signature_classes": int(len(signatures)),
+        "pair_signature_weight_histogram": _integer_histogram(signature_weights),
+        "pair_options_per_class_histogram": _integer_histogram(class_option_counts),
+        "maximum_pair_options_per_class": int(max(class_option_counts, default=0)),
+        "signature_interaction_edges": int(interaction_edges),
+        "signature_interaction_components": int(len(component_class_counts)),
+        "component_class_count_histogram": _integer_histogram(component_class_counts),
+        "component_pair_count_histogram": _integer_histogram(component_pair_counts),
+        "maximum_component_classes": int(max(component_class_counts, default=0)),
+        "maximum_component_pair_options": int(max(component_pair_counts, default=0)),
+    }
+
+
+def compatible_ungrouped_moment(
+    family: LoadedProgressiveFamily,
+    *,
+    polymers: Sequence[LowWeightPolymer],
+    cut: int,
+    rho: float,
+) -> float:
+    """Exact compatible-family moment before grouping by boundary shift.
+
+    Singleton polymers are mutually compatible. Pair polymers are grouped by
+    their common nonempty completed-row signature; at most one pair may be
+    selected from a class, and selected class signatures must be disjoint.
+    """
+
+    exponent = float(rho)
+    if not 0.0 < exponent < 1.0:
+        raise ValueError("rho must lie strictly between zero and one")
+    _, singletons, signature_groups = _low_weight_compatibility_groups(
+        family,
+        polymers=polymers,
+        cut=int(cut),
+    )
+    singleton_factor = float(
+        math.prod(1.0 + float(polymer.activity) ** exponent for polymer in singletons)
+    )
+
+    used_global_rows = 0
+    for signature in signature_groups:
+        used_global_rows |= int(signature)
+    global_rows = tuple(_iter_set_bits(used_global_rows))
+    local_signatures: list[tuple[int, float]] = []
+    for signature, group in sorted(signature_groups.items()):
+        local_signature = 0
+        for local_row, global_row in enumerate(global_rows):
+            if (int(signature) >> int(global_row)) & 1:
+                local_signature |= 1 << int(local_row)
+        class_weight = float(
+            math.fsum(float(polymer.activity) ** exponent for polymer in group)
+        )
+        local_signatures.append((int(local_signature), float(class_weight)))
+
+    state_count = 1 << len(global_rows)
+    partition = np.zeros(state_count, dtype=np.float64)
+    partition[0] = 1.0
+    row_states = np.arange(state_count, dtype=np.int64)
+    for signature, class_weight in local_signatures:
+        compatible = row_states[(row_states & int(signature)) == 0]
+        updated = partition.copy()
+        updated[compatible | int(signature)] += (
+            partition[compatible] * float(class_weight)
+        )
+        partition = updated
+    return float(singleton_factor * np.sum(partition, dtype=np.float64) - 1.0)
 
 
 def _compress_boundary_shift(
@@ -434,20 +684,244 @@ def xor_subset_partition(
     return values
 
 
+def _walsh_hadamard(values: np.ndarray) -> np.ndarray:
+    """Return the unnormalized Walsh-Hadamard transform of a 1D vector."""
+
+    transformed = np.array(values, dtype=np.float64, copy=True)
+    if transformed.ndim != 1:
+        raise ValueError("Walsh-Hadamard input must be one-dimensional")
+    count = int(transformed.size)
+    if count < 1 or count & (count - 1):
+        raise ValueError("Walsh-Hadamard input length must be a positive power of two")
+    block = 1
+    while block < count:
+        view = transformed.reshape(-1, 2 * block)
+        left = view[:, :block].copy()
+        right = view[:, block:].copy()
+        view[:, :block] = left + right
+        view[:, block:] = left - right
+        block *= 2
+    return transformed
+
+
+def compatible_boundary_partition(
+    family: LoadedProgressiveFamily,
+    *,
+    polymers: Sequence[LowWeightPolymer],
+    cut: int,
+    active_rows: Sequence[int],
+    logical_rows: int,
+) -> tuple[np.ndarray, dict[str, int]]:
+    """Exact size-1/2 compatible-family partition grouped by boundary shift.
+
+    A Walsh-Hadamard transform diagonalizes XOR convolution. For each Fourier
+    character, the remaining scalar partition is an exact set-packing dynamic
+    program over the completed-row signatures of pair polymers.
+    """
+
+    active = tuple(int(row) for row in active_rows)
+    boundary_bits = int(len(active) + int(logical_rows))
+    boundary_states = 1 << boundary_bits
+    _, singletons, signature_groups = _low_weight_compatibility_groups(
+        family,
+        polymers=polymers,
+        cut=int(cut),
+    )
+
+    used_global_rows = 0
+    for signature in signature_groups:
+        used_global_rows |= int(signature)
+    global_rows = tuple(_iter_set_bits(used_global_rows))
+    row_states = 1 << len(global_rows)
+    transformed_partition = np.zeros(
+        (row_states, boundary_states),
+        dtype=np.float64,
+    )
+    transformed_partition[0, :] = 1.0
+    reachable_rows: set[int] = {0}
+
+    for signature, group in sorted(signature_groups.items()):
+        local_signature = 0
+        for local_row, global_row in enumerate(global_rows):
+            if (int(signature) >> int(global_row)) & 1:
+                local_signature |= 1 << int(local_row)
+        option_partition = np.zeros(boundary_states, dtype=np.float64)
+        for polymer in group:
+            shift = _compress_boundary_shift(
+                polymer,
+                active_rows=active,
+                logical_rows=int(logical_rows),
+            )
+            option_partition[int(shift)] += float(polymer.activity)
+        option_transform = _walsh_hadamard(option_partition)
+
+        sources = np.fromiter(
+            (
+                int(state)
+                for state in sorted(reachable_rows)
+                if int(state) & int(local_signature) == 0
+            ),
+            dtype=np.int64,
+        )
+        if sources.size:
+            targets = sources | int(local_signature)
+            transformed_partition[targets, :] += (
+                transformed_partition[sources, :] * option_transform[np.newaxis, :]
+            )
+            reachable_rows.update(int(target) for target in targets)
+
+    pair_transform = np.sum(
+        transformed_partition[np.fromiter(sorted(reachable_rows), dtype=np.int64), :],
+        axis=0,
+        dtype=np.float64,
+    )
+    singleton_partition = xor_subset_partition(
+        boundary_bits=int(boundary_bits),
+        shift_activities=tuple(
+            (
+                _compress_boundary_shift(
+                    polymer,
+                    active_rows=active,
+                    logical_rows=int(logical_rows),
+                ),
+                float(polymer.activity),
+            )
+            for polymer in singletons
+        ),
+    )
+    total_transform = pair_transform * _walsh_hadamard(singleton_partition)
+    partition = _walsh_hadamard(total_transform) / float(boundary_states)
+    tolerance = float(
+        1e-10 * max(1.0, float(np.max(np.abs(partition), initial=0.0)))
+    )
+    if float(np.min(partition, initial=0.0)) < -tolerance:
+        raise AssertionError("compatible partition has a significant negative entry")
+    partition[partition < 0.0] = 0.0
+    return partition, {
+        "used_completed_rows": int(len(global_rows)),
+        "row_mask_states": int(row_states),
+        "reachable_row_masks": int(len(reachable_rows)),
+        "boundary_states": int(boundary_states),
+        "pair_signature_classes": int(len(signature_groups)),
+        "live_singletons": int(len(singletons)),
+        "live_pairs": int(sum(len(group) for group in signature_groups.values())),
+    }
+
+
+def kernel_boundary_partition_profile(
+    family: LoadedProgressiveFamily,
+    *,
+    theta: float,
+) -> tuple[tuple[np.ndarray, ...], tuple[int, ...]]:
+    """Enumerate every completed-check kernel vector at every ordered cut.
+
+    The weight of a vector is the product of its column Chernoff activities.
+    The state is stored on global detector-row masks while updating, then
+    compressed to the active-detector-plus-logical boundary at each cut.
+    """
+
+    activities = tuple(
+        chernoff_activity(_column_probability(family, index), float(theta))
+        for index in range(len(family.columns))
+    )
+    states: dict[tuple[int, int], float] = {(0, 0): 1.0}
+    partitions: list[np.ndarray] = []
+    state_counts: list[int] = []
+    for cut, column in enumerate(family.columns):
+        support = int(column.detector_support_mask)
+        logical = int(_column_logical_mask(family, cut))
+        activity = float(activities[cut])
+        updated: dict[tuple[int, int], float] = {}
+        for (detector_mask, logical_mask), weight in states.items():
+            key = (int(detector_mask), int(logical_mask))
+            updated[key] = float(updated.get(key, 0.0) + float(weight))
+            shifted = (
+                int(detector_mask) ^ support,
+                int(logical_mask) ^ logical,
+            )
+            updated[shifted] = float(
+                updated.get(shifted, 0.0) + float(weight) * activity
+            )
+
+        active_mask = int(family.layout.active_masks_after_column[cut])
+        states = {
+            (int(detector_mask), int(logical_mask)): float(weight)
+            for (detector_mask, logical_mask), weight in updated.items()
+            if int(detector_mask) & ~active_mask == 0
+        }
+        active_rows = tuple(_iter_set_bits(active_mask))
+        boundary_states = 1 << (len(active_rows) + int(family.logical_rows))
+        partition = np.zeros(boundary_states, dtype=np.float64)
+        for (detector_mask, logical_mask), weight in states.items():
+            compressed = 0
+            for local_row, global_row in enumerate(active_rows):
+                if (int(detector_mask) >> int(global_row)) & 1:
+                    compressed |= 1 << int(local_row)
+            compressed |= int(logical_mask) << len(active_rows)
+            partition[int(compressed)] += float(weight)
+        partitions.append(partition)
+        state_counts.append(int(len(states)))
+    return tuple(partitions), tuple(state_counts)
+
+
 def boundary_shift_aggregation_profile(
     family: LoadedProgressiveFamily,
     *,
     theta: float,
     rhos: Sequence[float],
+    score_alpha: float = 0.8,
     K_values: Sequence[int] = DEFAULT_K_VALUES,
     optimization_rhos: Sequence[float] = (),
     max_boundary_bits: int = 16,
     progress_every_cuts: int = 25,
     progress: Callable[[str], None] | None = None,
 ) -> dict[str, object]:
-    """Group the compatibility-dropped size-1/2 partition by boundary shift."""
+    """Profile grouped low-weight partitions and an all-size kernel majorant."""
 
     polymers = enumerate_low_weight_polymers(family, theta=float(theta))
+    max_future_load = int(max(future_active_load_profile(family), default=0))
+    adaptive_thetas = tuple(
+        sorted(
+            {
+                safe_chernoff_order(
+                    score_alpha=float(score_alpha),
+                    load=int(load),
+                )
+                for load in range(max_future_load + 1)
+            }
+        )
+    )
+    adaptive_polymers = {
+        float(adaptive_theta): enumerate_low_weight_polymers(
+            family,
+            theta=float(adaptive_theta),
+        )
+        for adaptive_theta in adaptive_thetas
+    }
+    kernel_profiles = {
+        float(adaptive_theta): kernel_boundary_partition_profile(
+            family,
+            theta=float(adaptive_theta),
+        )
+        for adaptive_theta in adaptive_thetas
+    }
+
+    def topology(polymer: LowWeightPolymer) -> tuple[object, ...]:
+        return (
+            polymer.column_indices,
+            int(polymer.start),
+            int(polymer.stop),
+            int(polymer.detector_shift_mask),
+            int(polymer.logical_shift_mask),
+            int(polymer.size),
+        )
+
+    expected_topology = tuple(topology(polymer) for polymer in polymers)
+    for adaptive_theta, theta_polymers in adaptive_polymers.items():
+        if tuple(topology(polymer) for polymer in theta_polymers) != expected_topology:
+            raise AssertionError(
+                f"polymer topology changed with theta={adaptive_theta:.12g}"
+            )
     rho_values = tuple(float(value) for value in rhos)
     optimization_values = tuple(float(value) for value in optimization_rhos)
     calculation_rhos = tuple(dict.fromkeys((*rho_values, *optimization_values)))
@@ -456,9 +930,24 @@ def boundary_shift_aggregation_profile(
         if not 0.0 < rho < 1.0:
             raise ValueError("every rho must lie strictly between zero and one")
 
-    methods = ("exponential_product", "exact_ungrouped_product", "shift_grouped")
+    methods = (
+        "exponential_product",
+        "exact_ungrouped_product",
+        "compatibility_ungrouped",
+        "shift_grouped",
+        "compatibility_shift_grouped",
+        "adaptive_compatibility_shift_grouped",
+        "adaptive_full_kernel_grouped",
+    )
     integrated_log_terms = {
         rho: {method: [] for method in methods} for rho in calculation_rhos
+    }
+    trimmed_methods = (
+        "adaptive_compatibility_shift_grouped",
+        "adaptive_full_kernel_grouped",
+    )
+    trimmed_cap_totals = {
+        method: {int(cap): 0.0 for cap in cap_values} for method in trimmed_methods
     }
     per_cut: list[dict[str, object]] = []
     start_time = time.monotonic()
@@ -479,6 +968,17 @@ def boundary_shift_aggregation_profile(
             for polymer in polymers
             if int(polymer.start) <= cut < int(polymer.stop)
         )
+        compatibility_structure = low_weight_compatibility_structure(
+            family,
+            polymers=polymers,
+            cut=int(cut),
+        )
+        if (
+            int(compatibility_structure["live_singletons"])
+            + int(compatibility_structure["live_pairs"])
+            != len(live)
+        ):
+            raise AssertionError("compatibility audit and live-polymer count disagree")
         shift_activities = tuple(
             (
                 _compress_boundary_shift(
@@ -494,7 +994,96 @@ def boundary_shift_aggregation_profile(
             boundary_bits=int(boundary_bits),
             shift_activities=shift_activities,
         )
+        compatible_partition, compatible_partition_metadata = (
+            compatible_boundary_partition(
+                family,
+                polymers=polymers,
+                cut=int(cut),
+                active_rows=active_rows,
+                logical_rows=int(family.logical_rows),
+            )
+        )
+        detector_shift_thetas = shift_specific_chernoff_orders(
+            family,
+            cut=int(cut),
+            active_rows=active_rows,
+            score_alpha=float(score_alpha),
+        )
+        theta_partitions: dict[float, np.ndarray] = {}
+        for adaptive_theta in sorted(set(detector_shift_thetas)):
+            if math.isclose(
+                float(adaptive_theta),
+                float(theta),
+                rel_tol=0.0,
+                abs_tol=1e-15,
+            ):
+                theta_partitions[float(adaptive_theta)] = compatible_partition
+            else:
+                theta_partitions[float(adaptive_theta)] = (
+                    compatible_boundary_partition(
+                        family,
+                        polymers=adaptive_polymers[float(adaptive_theta)],
+                        cut=int(cut),
+                        active_rows=active_rows,
+                        logical_rows=int(family.logical_rows),
+                    )[0]
+                )
+        adaptive_partition = np.zeros_like(compatible_partition)
+        detector_state_count = 1 << len(active_rows)
+        logical_state_count = 1 << int(family.logical_rows)
+        for detector_shift, adaptive_theta in enumerate(detector_shift_thetas):
+            source = theta_partitions[float(adaptive_theta)]
+            for logical_shift in range(logical_state_count):
+                encoded = int(detector_shift | (logical_shift * detector_state_count))
+                adaptive_partition[encoded] = source[encoded]
+        adaptive_kernel_partition = np.zeros_like(compatible_partition)
+        for detector_shift, adaptive_theta in enumerate(detector_shift_thetas):
+            source = kernel_profiles[float(adaptive_theta)][0][cut]
+            if source.shape != adaptive_kernel_partition.shape:
+                raise AssertionError("kernel and polymer boundary spaces disagree")
+            for logical_shift in range(logical_state_count):
+                encoded = int(detector_shift | (logical_shift * detector_state_count))
+                adaptive_kernel_partition[encoded] = source[encoded]
+        adaptive_tolerance = float(
+            1e-10
+            * max(
+                1.0,
+                float(np.max(np.abs(compatible_partition), initial=0.0)),
+            )
+        )
+        if np.any(adaptive_partition > compatible_partition + adaptive_tolerance):
+            raise AssertionError("shift-specific theta increased the partition majorant")
+        if np.any(adaptive_partition > adaptive_kernel_partition + adaptive_tolerance):
+            raise AssertionError("full kernel partition missed a low-weight family")
+        cut_trimmed_bounds = {
+            "adaptive_compatibility_shift_grouped": {
+                str(int(cap)): trimmed_spectrum_bound(
+                    adaptive_partition[1:],
+                    K=int(cap),
+                )
+                for cap in cap_values
+            },
+            "adaptive_full_kernel_grouped": {
+                str(int(cap)): trimmed_spectrum_bound(
+                    adaptive_kernel_partition[1:],
+                    K=int(cap),
+                )
+                for cap in cap_values
+            },
+        }
+        for method in trimmed_methods:
+            for cap in cap_values:
+                trimmed_cap_totals[method][int(cap)] += float(
+                    cut_trimmed_bounds[method][str(int(cap))]
+                )
+        if float(np.sum(compatible_partition, dtype=np.float64)) > float(
+            np.sum(partition, dtype=np.float64)
+        ) + 1e-9:
+            raise AssertionError("compatibility increased the subset partition")
         reachable_nonzero = int(np.count_nonzero(partition[1:] > 0.0))
+        compatible_reachable_nonzero = int(
+            np.count_nonzero(compatible_partition[1:] > 0.0)
+        )
         cut_rhos: dict[str, object] = {}
 
         for rho in calculation_rhos:
@@ -502,15 +1091,53 @@ def boundary_shift_aggregation_profile(
             exact_log_partition = float(
                 math.fsum(math.log1p(activity**rho) for _, activity in shift_activities)
             )
+            compatible_moment = compatible_ungrouped_moment(
+                family,
+                polymers=polymers,
+                cut=int(cut),
+                rho=float(rho),
+            )
             grouped_moment = float(np.sum(np.power(partition[1:], rho), dtype=np.float64))
+            compatible_grouped_moment = float(
+                np.sum(np.power(compatible_partition[1:], rho), dtype=np.float64)
+            )
+            adaptive_grouped_moment = float(
+                np.sum(np.power(adaptive_partition[1:], rho), dtype=np.float64)
+            )
+            adaptive_kernel_moment = float(
+                np.sum(
+                    np.power(adaptive_kernel_partition[1:], rho),
+                    dtype=np.float64,
+                )
+            )
             rooted_logs = {
                 "exponential_product": float(_log_expm1(xi_partial) / rho),
                 "exact_ungrouped_product": float(
                     _log_expm1(exact_log_partition) / rho
                 ),
+                "compatibility_ungrouped": (
+                    float(math.log(compatible_moment) / rho)
+                    if compatible_moment > 0.0
+                    else float("-inf")
+                ),
                 "shift_grouped": (
                     float(math.log(grouped_moment) / rho)
                     if grouped_moment > 0.0
+                    else float("-inf")
+                ),
+                "compatibility_shift_grouped": (
+                    float(math.log(compatible_grouped_moment) / rho)
+                    if compatible_grouped_moment > 0.0
+                    else float("-inf")
+                ),
+                "adaptive_compatibility_shift_grouped": (
+                    float(math.log(adaptive_grouped_moment) / rho)
+                    if adaptive_grouped_moment > 0.0
+                    else float("-inf")
+                ),
+                "adaptive_full_kernel_grouped": (
+                    float(math.log(adaptive_kernel_moment) / rho)
+                    if adaptive_kernel_moment > 0.0
                     else float("-inf")
                 ),
             }
@@ -537,7 +1164,17 @@ def boundary_shift_aggregation_profile(
                     "xi_partial": float(xi_partial),
                     "exponential_product_moment": exponential_moment,
                     "exact_ungrouped_product_moment": exact_ungrouped_moment,
+                    "compatibility_ungrouped_moment": float(compatible_moment),
                     "shift_grouped_moment": float(grouped_moment),
+                    "compatibility_shift_grouped_moment": float(
+                        compatible_grouped_moment
+                    ),
+                    "adaptive_compatibility_shift_grouped_moment": float(
+                        adaptive_grouped_moment
+                    ),
+                    "adaptive_full_kernel_grouped_moment": float(
+                        adaptive_kernel_moment
+                    ),
                     "cap_term_before_K": rooted,
                     "log10_cap_term_before_K": {
                         method: float(rooted_logs[method] / math.log(10.0))
@@ -554,6 +1191,34 @@ def boundary_shift_aggregation_profile(
                 "reachable_nonzero_shifts": int(reachable_nonzero),
                 "partition_total": float(np.sum(partition, dtype=np.float64)),
                 "partition_zero_shift": float(partition[0]),
+                "compatible_partition_total": float(
+                    np.sum(compatible_partition, dtype=np.float64)
+                ),
+                "compatible_partition_zero_shift": float(compatible_partition[0]),
+                "compatible_reachable_nonzero_shifts": int(
+                    compatible_reachable_nonzero
+                ),
+                "compatible_partition_metadata": compatible_partition_metadata,
+                "shift_specific_theta_histogram": {
+                    f"{adaptive_theta:.12g}": int(count)
+                    for adaptive_theta, count in sorted(
+                        Counter(detector_shift_thetas).items()
+                    )
+                },
+                "adaptive_full_kernel_partition_total": float(
+                    np.sum(adaptive_kernel_partition, dtype=np.float64)
+                ),
+                "adaptive_full_kernel_partition_zero_shift": float(
+                    adaptive_kernel_partition[0]
+                ),
+                "kernel_state_counts_by_theta": {
+                    f"{adaptive_theta:.12g}": int(
+                        kernel_profiles[float(adaptive_theta)][1][cut]
+                    )
+                    for adaptive_theta in adaptive_thetas
+                },
+                "trimmed_cap_bound_by_K": cut_trimmed_bounds,
+                "compatibility_structure": compatibility_structure,
                 "rho": cut_rhos,
             }
         )
@@ -595,6 +1260,22 @@ def boundary_shift_aggregation_profile(
         exact_log_reduction = float(
             log_totals["exact_ungrouped_product"] - log_totals["shift_grouped"]
         )
+        compatibility_log_reduction = float(
+            log_totals["exact_ungrouped_product"]
+            - log_totals["compatibility_ungrouped"]
+        )
+        combined_log_reduction = float(
+            log_totals["shift_grouped"]
+            - log_totals["compatibility_shift_grouped"]
+        )
+        adaptive_log_reduction = float(
+            log_totals["compatibility_shift_grouped"]
+            - log_totals["adaptive_compatibility_shift_grouped"]
+        )
+        higher_order_log_factor = float(
+            log_totals["adaptive_full_kernel_grouped"]
+            - log_totals["adaptive_compatibility_shift_grouped"]
+        )
         exponential_log_reduction = float(
             log_totals["exponential_product"] - log_totals["shift_grouped"]
         )
@@ -614,6 +1295,38 @@ def boundary_shift_aggregation_profile(
             ),
             "log10_exact_ungrouped_over_shift_grouped": float(
                 exact_log_reduction / math.log(10.0)
+            ),
+            "exact_ungrouped_over_compatibility_ungrouped": (
+                float(math.exp(compatibility_log_reduction))
+                if compatibility_log_reduction < 700.0
+                else None
+            ),
+            "log10_exact_ungrouped_over_compatibility_ungrouped": float(
+                compatibility_log_reduction / math.log(10.0)
+            ),
+            "shift_grouped_over_compatibility_shift_grouped": (
+                float(math.exp(combined_log_reduction))
+                if combined_log_reduction < 700.0
+                else None
+            ),
+            "log10_shift_grouped_over_compatibility_shift_grouped": float(
+                combined_log_reduction / math.log(10.0)
+            ),
+            "compatibility_shift_grouped_over_adaptive": (
+                float(math.exp(adaptive_log_reduction))
+                if adaptive_log_reduction < 700.0
+                else None
+            ),
+            "log10_compatibility_shift_grouped_over_adaptive": float(
+                adaptive_log_reduction / math.log(10.0)
+            ),
+            "adaptive_full_kernel_over_size_1_2": (
+                float(math.exp(higher_order_log_factor))
+                if higher_order_log_factor < 700.0
+                else None
+            ),
+            "log10_adaptive_full_kernel_over_size_1_2": float(
+                higher_order_log_factor / math.log(10.0)
             ),
         }
         cut_term_log10_summary[rho_key] = {
@@ -681,19 +1394,34 @@ def boundary_shift_aggregation_profile(
                 "count": int(len(optimization_values)),
             },
             "minimum_cap_rhs_by_K": minima,
-            "critical_K_for_partial_rhs_below_one": critical_K,
+            "critical_K_for_fractional_rhs_below_one": critical_K,
+            "critical_K_for_partial_rhs_below_one": {
+                method: values
+                for method, values in critical_K.items()
+                if method != "adaptive_full_kernel_grouped"
+            },
         }
 
+    size_1_2_methods = tuple(
+        method for method in methods if method != "adaptive_full_kernel_grouped"
+    )
     result = {
-        "schema_version": 1,
+        "schema_version": 2,
         "description": (
-            "Exact XOR aggregation of the compatibility-dropped subset partition "
-            "generated by visible size-1/2 polymers."
+            "Exact size-1/2 compatibility/shift partitions and an all-size "
+            "completed-kernel majorant for visible polymer families."
         ),
-        "higher_polymers_included": False,
-        "compatibility_enforced": False,
+        "size_1_2_methods_include_higher_polymers": False,
+        "adaptive_full_kernel_method_includes_all_vector_weights": True,
+        "adaptive_full_kernel_method_overcounts_invisible_components": True,
+        "compatibility_enforced_for_ungrouped_method": True,
+        "compatibility_enforced_for_shift_grouped_method": False,
+        "compatibility_enforced_for_compatibility_shift_grouped_method": True,
+        "shift_specific_chernoff_order_used_for_adaptive_method": True,
         "zero_boundary_shift_excluded_from_fractional_moment": True,
         "theta": float(theta),
+        "score_alpha": float(score_alpha),
+        "shift_specific_thetas": [float(value) for value in adaptive_thetas],
         "max_boundary_bits": int(
             max((int(row["boundary_bits"]) for row in per_cut), default=0)
         ),
@@ -701,7 +1429,20 @@ def boundary_shift_aggregation_profile(
             "size_1": int(sum(polymer.size == 1 for polymer in polymers)),
             "size_2": int(sum(polymer.size == 2 for polymer in polymers)),
         },
-        "cap_rhs_from_sizes_1_2": cap_rhs,
+        "fractional_cap_rhs_by_method": cap_rhs,
+        "cap_rhs_from_sizes_1_2": {
+            rho_key: {
+                method: values[method] for method in size_1_2_methods
+            }
+            for rho_key, values in cap_rhs.items()
+        },
+        "trimmed_cap_rhs_by_K": {
+            method: {
+                str(int(cap)): float(trimmed_cap_totals[method][int(cap)])
+                for cap in cap_values
+            }
+            for method in trimmed_methods
+        },
         "integrated_reduction_factors": reduction,
         "cut_term_log10_summary": cut_term_log10_summary,
         "per_cut": per_cut,
@@ -946,6 +1687,7 @@ def build_family_profile(
             family,
             theta=float(theta_measured),
             rhos=tuple(float(value) for value in rhos),
+            score_alpha=float(score_alpha),
             K_values=tuple(int(value) for value in K_values),
             optimization_rhos=DEFAULT_OPTIMIZATION_RHOS,
             max_boundary_bits=int(max_boundary_bits),
@@ -1009,12 +1751,12 @@ def _parse_csv_values(text: str, *, cast: Callable[[str], object]) -> tuple[obje
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Profile exact cutwise Finner loads and visible size-1/2 open-prefix "
-            "polymers for an ordered Frontier DEM."
+            "Profile cutwise Finner loads, visible size-1/2 polymers, exact "
+            "compatibility, and optional all-size kernel spectra."
         ),
         epilog=(
             "See docs/COMMANDS.md, docs/BOUNDED_HYPERGRAPH_OVERLAP.md, and "
-            "docs/BOUNDARY_SHIFT_AGGREGATION.md."
+            "docs/ADAPTIVE_KERNEL_SPECTRUM.md."
         ),
     )
     parser.add_argument("--backend", default="rotated_surface_d3")

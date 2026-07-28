@@ -1,5 +1,52 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-07-28 Adaptive All-Size Kernel-Spectrum Certificate}
+
+\begin{itemize}
+\item Added \texttt{\detokenize{docs/ADAPTIVE_KERNEL_SPECTRUM.md}} and its
+standalone TeX counterpart.  This completes the finite surface-d3 cap audit
+by retaining exact low-weight compatibility, boundary aggregation,
+shift-specific score loads, and the exact trimmed spectrum head.
+\item Proved that live singletons have empty completed-row signature, pair
+polymers form signature classes with at most one legal option per class, and
+classes conflict exactly when their row masks intersect.  A row-mask
+set-packing recurrence and Walsh-Hadamard XOR convolution evaluate this
+partition exactly.
+\item Added the pointwise order
+\[
+\theta_t(\delta)=\min\{1/2,1/\lambda_t(\delta)\}.
+\]
+The retained surface model uses only \(5/16,5/12,1/2\).  This lowers the
+size-one/two fractional \(K=1024\) values from \(1.819\) to \(0.254\) for X
+and from \(1.750\) to \(0.236\) for Z.
+\item Proved a compatible-family injection into the completed-check kernel
+and added an exact active-frontier recurrence for the all-size weighted
+kernel spectrum.  The kernel can count invisible components, so it is a
+rigorous pointwise majorant.
+\item Applied the exact cap theorem's trimmed-head functional.  The all-size
+surface-d3 totals are \(1.786529,0.251858,0.015245\) for X and
+\(1.840419,0.276703,0.015858\) for Z at \(K=512,1024,2048\).
+They vanish at \(K=4096\) because at most 4095 nonzero relative shifts
+exist.  The corresponding optimized fractional values at \(K=1024\) remain
+vacuous at \(1.926650\) and \(2.068309\).
+\item Clarified that Gross truth-present-but-not-selected failures exclude
+empty retained logical support but do not identify pruning as the ranking
+error.  Exact logical ML or exact sector survival fractions are required.
+\item Regenerated
+\texttt{\detokenize{docs/data/overlap_profiles/rotated_surface_d3_p0p001_boundary_aggregated.json}}.
+Two one-CPU runs took \(27.53\) and \(27.63\) seconds and were byte-identical.
+The SHA256 is
+\texttt{\detokenize{44134ed72038d29292efd092ba9e35091d1ff7508a704caf64f1d43f4e819f1e}}.
+The non-aggregation surface artifact also remains byte-identical.
+\item Validation: the profiler/export subset passes
+\texttt{\detokenize{37 passed in 16.05s}}; the complete suite passes
+\texttt{\detokenize{59 passed in 25.57s}}; \texttt{py\_compile} and
+\texttt{\detokenize{git diff --check}} pass.  The adaptive note compiles
+twice without warnings to four pages, both predecessor notes still compile
+without warnings, the TeX worklog compiles through a temporary wrapper, and
+the 163-page root status TeX compiles successfully.
+\end{itemize}
+
 \subsection*{2026-07-28 Exact Boundary-Shift Aggregation}
 
 \begin{itemize}
@@ -193,7 +240,7 @@ trimmed cap inequality, sharp fractional bound, and exact gap inequality.
 0.01s}; the TeX note compiles twice with \texttt{pdflatex} to a six-page PDF
 in a temporary output directory. The complete repository suite passes with
 \texttt{32 passed in 8.85s} after rebasing onto the concurrent
-release/documentation updates; \texttt{py_compile} passes for the verifier;
+release/documentation updates; \texttt{py\_compile} passes for the verifier;
 and \texttt{git diff --check} reports no whitespace errors. The project
 virtual environment does not include the optional \texttt{ruff} executable,
 so no \texttt{ruff} result is claimed.
