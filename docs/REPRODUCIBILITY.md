@@ -97,6 +97,31 @@ Regenerate paper-data checksums with:
 python -m tools.asset_manifest --root paper/plots/data --title "Paper Plot Data Manifest" > paper/plots/data/MANIFEST.md
 ```
 
+## Deterministic Overlap Profiles
+
+The structural and size-1/2 open-prefix-polymer profiles used by
+`docs/BOUNDED_HYPERGRAPH_OVERLAP.md` are deterministic and require no sampled
+decoder corpus:
+
+```bash
+frontier-overlap-profile \
+  --backend rotated_surface_d3 \
+  --p-location 0.001 \
+  --column-order deadline_reorder \
+  --score-alpha 0.8 \
+  --out docs/data/overlap_profiles/rotated_surface_d3_p0p001.json
+
+frontier-overlap-profile \
+  --backend bravyi_depth7 \
+  --p-location 0.001 \
+  --column-order deadline_reorder \
+  --score-alpha 0.8 \
+  --out docs/data/overlap_profiles/bravyi_depth7_p0p001.json
+```
+
+Reproduction should compare the regenerated JSON byte-for-byte or by SHA256.
+The files record their own exact ordered-family input checksums.
+
 ## Reporting Results
 
 Every reported decoder result should include the fields in

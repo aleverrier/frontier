@@ -1,5 +1,53 @@
 # Frontier Worklog
 
+## 2026-07-28 Bounded-Hypergraph Overlap Profile
+
+- Added `docs/BOUNDED_HYPERGRAPH_OVERLAP.md` and its standalone
+  human-readable TeX counterpart. The graphlike Hellinger half-moment now
+  extends to arbitrary bounded detector-column weight through the Chernoff
+  activity
+  `a_theta(p)=(1-p)^(1-theta)p^theta+p^(1-theta)(1-p)^theta`.
+  Finner non-amplification holds whenever each future variable has total
+  affected active-row score load at most `1/theta`.
+- Added the deterministic `frontier-overlap-profile` CLI. It computes the
+  exact future-active load at every ordered cut and enumerates all visible
+  open-prefix polymers of sizes one and two with exact lifetime intervals,
+  activity sums, and log-stable partial product-Peierls right-hand sides. It
+  performs no decoding or Monte Carlo.
+- Profiled both memory sectors of the retained `rotated_surface_d3` and
+  `bravyi_depth7` DEMs at `p_location=0.001`, `deadline_reorder`, and
+  `score_alpha=0.8`. The maximum detector-column/future-active loads are four
+  and six, certifying global Chernoff orders `5/16` and `5/24`. Thus neither
+  retained model is graphlike, and exact cutwise loading does not improve the
+  globally safe order.
+- The exact size-1/2 enumeration found 55,642 and 57,722 polymer-cut
+  incidences for surface X/Z, and 11,377,694 and 8,759,425 for BB144 X/Z.
+  At the most favorable sampled `rho=0.99`, the size-1/2 contribution alone
+  makes the product-Peierls right-hand side exceed one for surface caps
+  through `K=1024` and remain between `7.98e35` and `1.49e51` for the sampled
+  BB144 caps `K=16..8192`.
+- This is a rigorous stop result for that certificate, not evidence of large
+  decoder loss. Higher polymers can only worsen the product relaxation. The
+  next mathematical target is boundary-shift aggregation, quotient
+  cancellation, or direct exact-comparison-spectrum measurement before
+  terminal logical-sector ranking.
+- Committed reproducibility artifacts:
+  `docs/data/overlap_profiles/rotated_surface_d3_p0p001.json`
+  (`0f6ce11b...d159678`) and
+  `docs/data/overlap_profiles/bravyi_depth7_p0p001.json`
+  (`e0b51b27...57bc25`). Independent reruns were byte-identical. Recorded
+  runtimes were about `0.15s` and `2.29s` on one CPU, with pair-count,
+  elapsed-time, and ETA progress.
+- Added six focused profiler test functions (14 pytest cases), including
+  exhaustive Chernoff-majorant and correlated weight-four Finner checks, and
+  integrated the CLI into package, command, architecture, reproducibility,
+  README, and retained-file documentation. Validation: the focused
+  theorem/CLI set passes `44 passed in 1.76s`; the complete suite passes
+  `52 passed in 9.10s`;
+  `py_compile` passes; `git diff --check` is clean; and the new TeX note
+  compiles twice without warnings to a four-page PDF. The optional `ruff`
+  executable is not installed, so no `ruff` result is claimed.
+
 ## 2026-07-28 Graphlike Overlap--Peierls Theorem
 
 - Added `docs/GRAPHLIKE_OVERLAP_PEIERLS.md` and its standalone

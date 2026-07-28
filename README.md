@@ -83,6 +83,10 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
   theorem, sharp fractional corollary, and Peierls reduction.
 - `docs/GRAPHLIKE_OVERLAP_PEIERLS.md`: quotient coupling lift, exact-family
   overlap bound, graphlike Hellinger polymer theorem, and lifetime corollary.
+- `docs/BOUNDED_HYPERGRAPH_OVERLAP.md`: arbitrary-column-weight Chernoff
+  extension, exact low-weight lifetime profiler, and retained-matrix result.
+- `docs/data/overlap_profiles/`: deterministic structural and size-1/2
+  open-prefix-polymer profiles for the retained surface and BB144/Gross DEMs.
 - `docs/FILE_SCOPE.md`: retained-file audit and removed-file categories.
 - `docs/COMMANDS.md`: console-script command index.
 - `docs/ENVIRONMENT.md`: supported environment variables and native debug toggles.
@@ -119,6 +123,7 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
 | `frontier-sample-rows` | `tools/frontier_sample_rows.py` |
 | `frontier-replay` | `tools/frontier_sample_replay.py` |
 | `frontier-bb144-benchmark` | `tools/frontier_bb144_benchmark.py` |
+| `frontier-overlap-profile` | `tools/frontier_overlap_profile.py` |
 
 ## Environment Notes
 

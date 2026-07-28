@@ -1,0 +1,345 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{booktabs}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\F}{\mathbb F}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Prb}{\mathop{\rm Pr}}
+\newcommand{\1}{\mathbf 1}
+
+\title{Bounded-Hypergraph Overlap--Peierls Extension}
+\author{Research note}
+\date{28 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We extend the graphlike overlap--Peierls theorem for Frontier pruning to
+arbitrary bounded detector-column weight by replacing the Hellinger
+half-moment with a load-adapted Chernoff moment.  A deterministic profiler
+computes the exact future-active load and enumerates every visible
+open-prefix polymer of sizes one and two with its ordering lifetime.  On the
+retained rotated-surface distance-3 and BB144/Gross detector error models,
+the theorem applies with Chernoff orders \(5/16\) and \(5/24\).  However, the
+size-one/two contribution alone makes the product-Peierls right-hand side
+vacuous at practical caps.  This diagnoses the relaxation, not the decoder's
+actual cap loss.
+\end{abstract}
+
+\section{Chernoff overlap activity}
+
+Use the ordered prefix quotient, open-prefix polymers, and coupling lift of
+the graphlike companion note.  For processed Bernoulli variable \(j\), set
+\[
+ a_{\theta,j}
+ =
+ (1-p_j)^{1-\theta}p_j^\theta
+ +
+ p_j^{1-\theta}(1-p_j)^\theta,
+ \qquad 0\le\theta\le1.
+\tag{1}
+\]
+For a support \(S\) and tilt \(r>0\), recall
+\[
+ \kappa_{t,r}(S)
+ =
+ \sum_{x\in\F_2^S}
+ \min\{P_{t,S}(x),rP_{t,S}(x+\1_S)\}.
+\tag{2}
+\]
+
+\begin{lemma}[tilted Chernoff majorant]
+For every \(S\), \(r>0\), and \(0\le\theta\le1\),
+\[
+\boxed{
+ \kappa_{t,r}(S)
+ \le r^\theta\prod_{j\in S}a_{\theta,j}.}
+\tag{3}
+\]
+\end{lemma}
+
+\begin{proof}
+Apply
+\(\min\{a,rb\}\le a^{1-\theta}(rb)^\theta\) term by term.  The
+remaining sum factorizes over the product marginal, with one-coordinate
+factor (1).
+\end{proof}
+
+Define
+\[
+ R_{t,\theta}(\delta)
+ =
+ \E_{Q_t}
+ \left[
+ \frac{g_t(Q_t+\delta)}{g_t(Q_t)}
+ \right]^\theta.
+\tag{4}
+\]
+For the row-factorized score
+\[
+ g_t(q)
+ =
+ \prod_{i\in\Gamma_t}
+ \rho_{i,t}(q_i)^{\alpha_{i,t}},
+ \qquad
+ \rho_{i,t}(b)=\Prb[(Q_t)_i=b],
+\tag{5}
+\]
+Finner's inequality gives
+\[
+\boxed{
+ \theta
+ \max_{j\in J_t}
+ \sum_{\substack{i\in\Gamma_t:\ \delta_i=1\\H_{ij}=1}}
+ \alpha_{i,t}
+ \le1
+ \quad\Longrightarrow\quad
+ R_{t,\theta}(\delta)\le1.}
+\tag{6}
+\]
+Indeed, assign active factor \(i\) exponent
+\((\theta\alpha_{i,t})^{-1}\).  Its powered expectation is one, while
+(6) is the fractional-cover condition at every independent future
+variable.
+
+\section{Bounded-hypergraph theorem}
+
+Let
+\[
+ b_t
+ =
+ \max_{j\in J_t}
+ |\operatorname{supp}H_j\cap\Gamma_t|
+\tag{7}
+\]
+be the exact future-active load.  For a common score exponent \(\alpha\),
+choose
+\[
+ \theta_t
+ =
+ \min\left\{\frac12,\frac{1}{\alpha b_t}\right\},
+\tag{8}
+\]
+with \(\theta_t=1/2\) if \(b_t=0\) or \(\alpha=0\).  For a visible polymer
+\(\gamma\), put
+\[
+ w_{t,\theta_t}(\gamma)
+ =
+ \prod_{j\in\gamma}a_{\theta_t,j}.
+\tag{9}
+\]
+
+\begin{theorem}[bounded-hypergraph pointwise domination]
+Suppose the score has form (5), and choose \(0<\theta_t\le1\) such that
+\[
+ \theta_t
+ \max_{j\in J_t}
+ \sum_{\substack{i\in\Gamma_t\\H_{ij}=1}}\alpha_{i,t}
+ \le1.
+\tag{10}
+\]
+For every nonzero relative boundary shift \(\xi\),
+\[
+\boxed{
+ \omega_t(\xi)
+ \le
+ \sum_{\substack{
+ \mathcal F\ {\rm compatible\ visible}\\
+ D_t\mathcal F=\xi}}
+ \prod_{\gamma\in\mathcal F}w_{t,\theta_t}(\gamma).}
+\tag{11}
+\]
+\end{theorem}
+
+\begin{proof}
+The quotient subcoupling theorem bounds a family by one tilted product
+overlap on its union.  Lemma 1 bounds that overlap by (4) times the product
+of (1) over the union.  Condition (10) and (6) bound the moment by one.
+Compatible components are disjoint, so the union product factorizes by
+component.
+\end{proof}
+
+For \(0<\rho<1\), define
+\[
+ \Xi_{t,\rho,\theta_t}
+ =
+ \sum_{\gamma\in\mathcal P_t^{\rm vis}}
+ w_{t,\theta_t}(\gamma)^\rho.
+\tag{12}
+\]
+Subadditivity and dropping compatibility give
+\[
+ \sum_{\xi\ne0}\omega_t(\xi)^\rho
+ \le e^{\Xi_{t,\rho,\theta_t}}-1.
+\tag{13}
+\]
+The comparison-spectrum cap theorem therefore yields
+\[
+\boxed{
+ D^{\rm cap}
+ \le
+ K^{-1/\rho}\sum_t
+ (e^{\Xi_{t,\rho,\theta_t}}-1)^{1/\rho}.}
+\tag{14}
+\]
+For score-gap pruning, the corresponding bound is
+\[
+ D_t^{\rm gap}
+ \le
+ e^{-\theta_t\Delta}
+ (e^{\Xi_{t,1,\theta_t}}-1).
+\tag{15}
+\]
+These inequalities control removed posterior mass, not truth-present
+terminal ranking error.
+
+\section{Exact low-weight lifetime profile}
+
+Number columns \(0,\ldots,N-1\), let \(\ell_i\) be the last column touching
+detector row \(i\), and take cut \(t\) immediately after column \(t\).  A
+singleton \(j\), with detector support \(B_j\), is visible exactly on
+\[
+ j\le t<\min_{i\in B_j}\ell_i.
+\tag{16}
+\]
+A logical-only singleton extends through the last cut.
+
+For a pair \(j<k\), set
+\[
+ C=B_j\cap B_k,\qquad B=B_j\mathbin\triangle B_k.
+\]
+It can be connected only if \(C\ne\varnothing\), and its exact connected,
+completed-parity-compatible interval is
+\[
+ \min_{i\in C}\ell_i
+ \le t<
+ \min_{i\in B}\ell_i.
+\tag{17}
+\]
+If \(B=\varnothing\), the upper endpoint is \(N\), provided the logical
+masks differ.  A shared row must have completed to connect the pair, whereas
+every odd-parity row must remain active.
+
+Let \(\Xi^{\le2}_{t,\rho,\theta}\) restrict (12) to these polymers.  Then
+\[
+ B^{\le2}_\rho(K)
+ =
+ K^{-1/\rho}
+ \sum_t
+ (e^{\Xi^{\le2}_{t,\rho,\theta}}-1)^{1/\rho}
+\tag{18}
+\]
+is a lower bound on the \emph{right-hand side} of (14), not on cap loss.
+Thus a value above one proves that this product-Peierls certificate is
+vacuous even before higher polymers are added.
+
+\section{Retained-matrix audit}
+
+The deterministic profile uses \(p_{\rm location}=0.001\),
+\texttt{deadline\_reorder}, \(\alpha=0.8\), and both memory sectors.
+\[
+\begin{array}{lrrrrrr}
+\toprule
+\text{scope} & \text{rows} & \text{columns} & w_{\max} & d_{\rm row}
+& |\Gamma|_{\max} & (b_{\max},\theta)\\
+\midrule
+\text{surface d3 X} &24&221&4&47&11&(4,5/16)\\
+\text{surface d3 Z} &24&219&4&48&11&(4,5/16)\\
+\text{BB144 X} &936&8784&6&35&134&(6,5/24)\\
+\text{BB144 Z} &936&8784&6&35&134&(6,5/24)\\
+\bottomrule
+\end{array}
+\tag{19}
+\]
+Surface detector-column histograms are
+\[
+ X:\{1:24,2:84,3:76,4:37\},\qquad
+ Z:\{1:24,2:82,3:76,4:37\}.
+\]
+Each BB144 sector has
+\[
+ \{2:864,3:5328,4:864,5:864,6:864\}.
+\]
+These retained DEMs are not graphlike.  Moreover, the future-active load
+reaches its full maximum on 169/221 and 154/219 surface cuts, and on
+8318/8784 and 8719/8784 BB144 cuts.  Exact cutwise loading therefore does
+not improve the globally safe order.
+
+\section{Low-weight result}
+
+\[
+\begin{array}{lrrrrrr}
+\toprule
+\text{scope} & N_1 & N_2 & \text{cut incidences} & \text{peak live}
+& \sum_t\Xi^{\le2}_{t,1} & \max_t\Xi^{\le2}_{t,1}\\
+\midrule
+\text{surface d3 X}&197&1514&55{,}642&563&557.108&4.734\\
+\text{surface d3 Z}&195&1405&57{,}722&477&561.531&4.377\\
+\text{BB144 X}&7872&57{,}195&11{,}377{,}694&1885&677{,}410.997&111.738\\
+\text{BB144 Z}&7872&47{,}757&8{,}759{,}425&1364&534{,}743.023&83.744\\
+\bottomrule
+\end{array}
+\tag{20}
+\]
+At the most favorable sampled exponent, \(\rho=0.99\), (18) is
+\[
+\begin{array}{lrrrr}
+\toprule
+\text{scope} & K=16 & K=512 & K=1024 & K=8192\\
+\midrule
+\text{surface d3 X}&346.924&10.468&5.198&0.636\\
+\text{surface d3 Z}&325.405&9.819&4.875&0.597\\
+\text{BB144 X}&1.49\,10^{51}&4.49\,10^{49}&2.23\,10^{49}&2.73\,10^{48}\\
+\text{BB144 Z}&4.35\,10^{38}&1.31\,10^{37}&6.52\,10^{36}&7.98\,10^{35}\\
+\bottomrule
+\end{array}
+\tag{21}
+\]
+The \(\rho=0.5\) and \(0.75\) values are larger.  For BB144 X at
+\(K=512\), their base-10 logarithms are \(390.85\) and \(128.14\).
+Adding higher polymers can only increase (18).
+
+The theorem's applicability gap is closed, but the product-Peierls
+relaxation is far too loose for practical BB144/Gross caps.  The next
+mathematical target is boundary-shift aggregation and quotient cancellation,
+or direct measurement of the exact comparison spectrum.  This result does
+not imply large actual cap loss: (14) has discarded both compatibility and
+cancellation among polymers with the same boundary shift.
+
+\section{Reproduction}
+
+\begin{verbatim}
+frontier-overlap-profile \
+  --backend rotated_surface_d3 --p-location 0.001 \
+  --column-order deadline_reorder --score-alpha 0.8 \
+  --out docs/data/overlap_profiles/rotated_surface_d3_p0p001.json
+
+frontier-overlap-profile \
+  --backend bravyi_depth7 --p-location 0.001 \
+  --column-order deadline_reorder --score-alpha 0.8 \
+  --out docs/data/overlap_profiles/bravyi_depth7_p0p001.json
+\end{verbatim}
+The surface and BB144 profiles took approximately \(0.14\) and \(2.28\)
+seconds on one CPU.  They perform no decoding or Monte Carlo sampling.
+Pair enumeration reports elapsed time and ETA every 250,000 candidates.
+The committed SHA256 checksums are
+\begin{verbatim}
+0f6ce11b3ee55a68283ac40b0bf4caff7e312fa0a56ff3e5c5ca3e981d159678
+e0b51b2782f7978bc5026d190aea32fa9dd62312bb9ad701d525abc21357bc25
+\end{verbatim}
+for the surface and BB144 JSON artifacts, respectively.
+
+\texttt{\detokenize{tests/test_frontier_overlap_profile.py}} exhaustively
+checks the tilted Chernoff majorant on a small product law, Finner
+non-amplification for a correlated weight-four future hypergraph,
+incremental load accounting against brute force, the exact singleton/pair
+intervals on a toy family, and the surface CLI output.
+
+\end{document}

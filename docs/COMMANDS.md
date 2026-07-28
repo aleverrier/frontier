@@ -119,6 +119,37 @@ frontier-bb144-benchmark \
   - Native extension not built.
   - Running this without an explicit sample corpus is unsupported by design.
 
+## `frontier-overlap-profile`
+
+- Purpose: deterministically audit exact future-active Finner loads and
+  enumerate every visible size-1/2 open-prefix polymer with its ordering
+  lifetime.
+- Module: `tools/frontier_overlap_profile.py`.
+- Minimal command:
+
+```bash
+frontier-overlap-profile \
+  --backend rotated_surface_d3 \
+  --p-location 0.001 \
+  --column-order deadline_reorder \
+  --score-alpha 0.8 \
+  --out overlap_profile.json
+```
+
+- Output files: one JSON file at `--out`, including input-family checksums,
+  structural histograms, lifetime summaries, partial polymer activities, and
+  lower bounds on the product-Peierls certificate right-hand side.
+- Runtime behavior: deterministic, one CPU, no decoding, and no Monte Carlo.
+  Candidate-pair progress includes elapsed time and ETA every 250,000 pairs
+  by default; set `--progress-every-pairs 0` to disable it.
+- Common failures:
+  - A nonbinary DEM column: the current profiler requires binary columns with
+    outcome zero as the identity.
+  - Unsupported backend or order: inspect `frontier-dem-info --help`.
+- Interpretation: a reported partial certificate value is a lower bound on
+  the Peierls **bound**, not on decoder loss. See
+  `docs/BOUNDED_HYPERGRAPH_OVERLAP.md`.
+
 ## BB144/Gross Happy-Path Mini Workflow
 
 For full details and interpretation guidance, use the README reproduction

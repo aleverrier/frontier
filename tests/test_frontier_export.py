@@ -183,6 +183,7 @@ def test_console_script_modules_have_main() -> None:
         "frontier-sample-rows": "tools.frontier_sample_rows",
         "frontier-replay": "tools.frontier_sample_replay",
         "frontier-bb144-benchmark": "tools.frontier_bb144_benchmark",
+        "frontier-overlap-profile": "tools.frontier_overlap_profile",
     }
     for script, module_name in script_modules.items():
         module = importlib.import_module(module_name)
@@ -201,6 +202,7 @@ def test_architecture_docs_reference_key_files() -> None:
         "tools/frontier_sample_rows.py",
         "tools/frontier_sample_replay.py",
         "tools/frontier_bb144_benchmark.py",
+        "tools/frontier_overlap_profile.py",
         "grosscode/dem/builder.py",
         "grosscode/circuits/backends.py",
         "tests/test_frontier_export.py",
@@ -216,6 +218,7 @@ def test_commands_docs_reference_all_console_scripts() -> None:
         "frontier-sample-rows",
         "frontier-replay",
         "frontier-bb144-benchmark",
+        "frontier-overlap-profile",
     ):
         assert script in text
 
@@ -240,6 +243,9 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "docs/ASSET_PROVENANCE.md",
         "docs/ASSET_MANIFEST.md",
         "docs/REPRODUCIBILITY.md",
+        "docs/BOUNDED_HYPERGRAPH_OVERLAP.md",
+        "docs/BOUNDED_HYPERGRAPH_OVERLAP.tex",
+        "docs/data/overlap_profiles/*.json",
         "docs/RELEASE.md",
         "docs/ARCHITECTURE.md",
         "docs/COMMANDS.md",
@@ -275,7 +281,9 @@ def test_file_scope_mentions_new_docs_and_examples() -> None:
         "examples/replay_rotated_surface_d3.sh",
         "tests/test_examples_and_cli.py",
         "tests/test_paper_plots.py",
+        "tests/test_frontier_overlap_profile.py",
         "tools/asset_manifest.py",
+        "tools/frontier_overlap_profile.py",
     ):
         assert path in text
 

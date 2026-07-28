@@ -29,6 +29,9 @@ serving that surface were removed.
 | `docs/COMPARISON_SPECTRUM_THEOREM.tex` | Standalone human-readable TeX version of the comparison-spectrum theorem note. |
 | `docs/GRAPHLIKE_OVERLAP_PEIERLS.md` | Agent-readable quotient-coupling proof, exact-family overlap bound, counterexample to exact component factorization, and complete graphlike Hellinger Peierls theorem. |
 | `docs/GRAPHLIKE_OVERLAP_PEIERLS.tex` | Standalone human-readable TeX version of the graphlike overlap-Peierls note. |
+| `docs/BOUNDED_HYPERGRAPH_OVERLAP.md` | Agent-readable bounded-column-weight Chernoff extension, exact low-weight lifetime-profile derivation, retained-matrix results, and certificate diagnosis. |
+| `docs/BOUNDED_HYPERGRAPH_OVERLAP.tex` | Standalone human-readable TeX version of the bounded-hypergraph overlap note. |
+| `docs/data/overlap_profiles/*.json` | Deterministic retained-matrix structural, load, size-1/2 polymer-lifetime, and partial-certificate profiles with input checksums. |
 | `docs/ACADEMIC_METADATA.md` | Declared citation, funding, DOI, and provenance metadata status. |
 | `docs/ASSET_PROVENANCE.md` | Bundled Gross/BB144 asset provenance table and declared asset-license status. |
 | `docs/ASSET_MANIFEST.md` | Generated SHA256 checksum manifest for bundled Gross/BB144 assets. |
@@ -77,6 +80,7 @@ serving that surface were removed.
 | `tools/frontier_sample_rows.py` | DEM sample-row generator for `frontier-replay`, covering BB/Gross and surface-code detector matrices. |
 | `tools/frontier_sample_replay.py` | Matched sample replay CLI for BB144/Gross and related DEM rows. |
 | `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe over explicit sample rows. |
+| `tools/frontier_overlap_profile.py` | Deterministic exact cutwise Finner-load and visible size-1/2 open-prefix-polymer profiler. |
 | `tools/frontier_progressive.py` | Minimal frontier column/layout/order helpers used by the public wrapper and DEM loader. |
 | `tools/asset_manifest.py` | Deterministic checksum manifest generator for bundled Gross/BB144 assets. |
 | `examples/README.md` | Short guide to runnable examples. |
@@ -86,6 +90,7 @@ serving that surface were removed.
 | `tests/test_frontier_export.py` | Regression coverage for the exported frontier wrapper/replay behavior. |
 | `tests/test_comparison_spectrum_theorem.py` | Exhaustive finite-model verification of syndrome-fiber factorization and the recursive cap/gap inequalities. |
 | `tests/test_graphlike_overlap_peierls.py` | Exhaustive finite-model verification of the exact-overlap counterexample, quotient family lift, Hellinger factorization, and graphlike score moment. |
+| `tests/test_frontier_overlap_profile.py` | Unit and CLI verification for Chernoff activities, exact incremental loads, size-1/2 lifetime intervals, and deterministic surface profile output. |
 | `tests/test_examples_and_cli.py` | Subprocess smoke coverage for examples, CLI help, and tiny rotated-surface replay outputs. |
 | `tests/test_paper_plots.py` | Paper-plot manifest, support-data, renderer dispatch, output reproduction, sidecar, and data-checksum regression tests. |
 | `grosscode/__init__.py` | Small top-level export for split-sector DEM construction. |

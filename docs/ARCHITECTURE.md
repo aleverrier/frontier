@@ -20,6 +20,8 @@ benchmark harnesses. `docs/FILE_SCOPE.md` is the retained-file audit.
 4. Generate matched detector-side sample rows with `frontier-sample-rows`.
 5. Replay or benchmark sample rows with `frontier-replay` and
    `frontier-bb144-benchmark`.
+6. Audit ordered-matrix overlap loads and low-weight polymer lifetimes with
+   `frontier-overlap-profile`.
 
 See `docs/COMMANDS.md` for command details and `README.md` for the complete
 BB144/Gross reproduction commands.
@@ -37,6 +39,7 @@ BB144/Gross reproduction commands.
 | `tools/frontier_sample_rows.py` | Matched DEM sample-row generator used by replay workflows. |
 | `tools/frontier_sample_replay.py` | Replay CLI, CSV schema handling, shard execution, native batch paths, summaries, and reports. |
 | `tools/frontier_bb144_benchmark.py` | Focused BB144/Gross native timing probe over explicit sample rows. |
+| `tools/frontier_overlap_profile.py` | Deterministic exact future-active-load and size-1/2 open-prefix-polymer profiler. |
 | `grosscode/dem/builder.py` | Split-sector detector-side DEM construction and bundled DEM snapshot loading. |
 | `grosscode/circuits/backends.py` | Backend-to-Stim circuit resolution for Gross, generalized-bicycle, and rotated-surface families. |
 | `grosscode/codes/*` | CSS code builders and loaders for Gross/BB144, generalized bicycle, rotated-surface, and standard surface-code checks. |
@@ -56,6 +59,7 @@ User-facing command APIs are the console scripts from `pyproject.toml`:
 - `frontier-sample-rows`
 - `frontier-replay`
 - `frontier-bb144-benchmark`
+- `frontier-overlap-profile`
 
 ### Preferred Public API
 
@@ -114,6 +118,10 @@ Bundled assets live under `grosscode/assets/gross144`:
 - BB144/Gross memory X/Z Stim circuits for the public rates documented in
   `README.md`.
 - A prebuilt `bravyi_depth7`, `p=0.001` detector-side DEM snapshot.
+
+Deterministic overlap-profile outputs retained for theorem reproducibility live
+under `docs/data/overlap_profiles/`. They are derived structural summaries,
+not decoder samples or FER measurements.
 
 Important environment variables are documented in `docs/ENVIRONMENT.md`:
 

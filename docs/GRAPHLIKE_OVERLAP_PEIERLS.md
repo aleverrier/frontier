@@ -16,6 +16,9 @@ This note completes the graphlike family step left open in
 5. explicit fractional cap, score-gap, connected-set, and integrated-lifetime
    corollaries.
 
+The arbitrary detector-column-weight extension and its exact retained-matrix
+profile are in `BOUNDED_HYPERGRAPH_OVERLAP.md`.
+
 The correction in item 3 matters.  The low-weight exact overlap
 \(\Omega_m(p)\) remains useful for finite-size family counting, but it cannot
 be assigned independently to connected components.  The rigorous
@@ -597,14 +600,14 @@ The graphlike overlap--Peierls step is complete at the following level.
 - The resulting pointwise theorem implies explicit fractional cap, score-gap,
   connected-count, and integrated-lifetime bounds.
 
-The remaining improvements are family- and ordering-specific:
-
-1. replace the coarse connected-set count by parity-compatible open-defect
-   counts;
-2. measure or prove short visible lifetimes under the chosen ordering;
-3. use the exact family bound (23) for finite-size low-weight improvements;
-4. analyze terminal logical ranking separately through charged/projective
-   sector distortion.
+The retained surface and BB144/Gross DEMs have detector-column weights four
+and six, respectively, so this graphlike theorem does not apply to them
+directly. The bounded-hypergraph companion closes that applicability gap,
+computes exact size-1/2 ordering lifetimes, and shows that the resulting
+product-Peierls certificate is already vacuous at practical caps. The next
+improvement must preserve boundary-shift aggregation or quotient
+cancellation, rather than merely count larger polymers. Terminal logical
+ranking through charged/projective sector distortion remains separate.
 
 In particular, the overlap improvement does not automatically improve the
 asymptotic single-polymer surface tension after unconditional productization:

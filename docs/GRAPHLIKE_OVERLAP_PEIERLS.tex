@@ -34,6 +34,10 @@ and yields fractional top-\(K\), score-gap, connected-count, and integrated
 ordering-lifetime bounds.
 \end{abstract}
 
+The extension to arbitrary bounded detector-column weight, together with an
+exact retained-matrix profile, is given in
+\texttt{\detokenize{BOUNDED_HYPERGRAPH_OVERLAP.tex}}.
+
 \section{Prefix quotient and open components}
 
 Fix a cut \(t\), let \(I_t\) be the processed variables, and write
@@ -451,11 +455,15 @@ survives in the nonmultiplicative family bound (15), whereas the unconditional
 componentwise theorem uses
 \(\beta(p)=2\sqrt{p(1-p)}\sim2\sqrt p\).
 
-The remaining improvements are to count only parity-compatible visible
-families, control their actual ordering lifetimes, exploit (15) at finite
-size, and analyze terminal logical ranking through charged/projective sector
-distortion.  None of the present bounds equates raw frontier width with
-logical error.
+The retained surface and BB144/Gross DEMs have detector-column weights four
+and six, so this graphlike theorem does not apply to them directly.  The
+bounded-hypergraph companion closes that applicability gap, computes exact
+size-one/two ordering lifetimes, and shows that the resulting product-Peierls
+certificate is already vacuous at practical caps.  The next improvement must
+preserve boundary-shift aggregation or quotient cancellation, rather than
+merely count larger polymers.  Terminal logical ranking through
+charged/projective sector distortion remains separate.  None of the present
+bounds equates raw frontier width with logical error.
 
 \section*{References}
 

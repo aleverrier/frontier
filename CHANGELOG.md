@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-- No post-0.1.0 changes yet.
+- Added rigorous comparison-spectrum, graphlike overlap--Peierls, and
+  bounded-hypergraph Chernoff theorem notes for Frontier cap/gap pruning.
+- Added the deterministic `frontier-overlap-profile` CLI, exact size-1/2
+  open-prefix-polymer lifetime enumeration, and committed retained-matrix
+  profiles for surface d3 and BB144/Gross.
 
 ## 0.1.0 - 2026-06-18
 

@@ -43,6 +43,7 @@ def test_cli_help_commands_succeed() -> None:
         "tools.frontier_sample_rows",
         "tools.frontier_sample_replay",
         "tools.frontier_bb144_benchmark",
+        "tools.frontier_overlap_profile",
     )
     for module in modules:
         result = _run_command([sys.executable, "-m", module, "--help"])

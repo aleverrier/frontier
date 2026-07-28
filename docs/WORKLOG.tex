@@ -1,5 +1,64 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-07-28 Bounded-Hypergraph Overlap Profile}
+
+\begin{itemize}
+\item Added
+\texttt{\detokenize{docs/BOUNDED_HYPERGRAPH_OVERLAP.md}} and its standalone
+human-readable TeX counterpart.  The graphlike Hellinger half-moment now
+extends to arbitrary bounded detector-column weight through
+\[
+ a_\theta(p)
+ =
+ (1-p)^{1-\theta}p^\theta+
+ p^{1-\theta}(1-p)^\theta.
+\]
+Finner non-amplification holds whenever each future variable has total
+affected active-row score load at most \(1/\theta\).
+\item Added the deterministic
+\texttt{\detokenize{frontier-overlap-profile}} CLI.  It computes the exact
+future-active load at every ordered cut and enumerates every visible
+open-prefix polymer of sizes one and two with exact lifetime intervals,
+activity sums, and log-stable partial product-Peierls right-hand sides.  It
+performs no decoding or Monte Carlo.
+\item Profiled both memory sectors of the retained
+\texttt{\detokenize{rotated_surface_d3}} and
+\texttt{\detokenize{bravyi_depth7}} DEMs at
+\(p_{\rm location}=0.001\), \texttt{\detokenize{deadline_reorder}}, and
+\(\alpha=0.8\).  The maximum detector-column/future-active loads are four
+and six, certifying global Chernoff orders \(5/16\) and \(5/24\).
+Neither retained model is graphlike, and exact cutwise loading does not
+improve the globally safe order.
+\item The exact size-one/two enumeration found \(55{,}642\) and \(57{,}722\)
+polymer-cut incidences for surface X/Z, and \(11{,}377{,}694\) and
+\(8{,}759{,}425\) for BB144 X/Z.  At the most favorable sampled
+\(\rho=0.99\), this contribution alone makes the product-Peierls right-hand
+side exceed one for surface caps through \(K=1024\) and remain between
+\(7.98\times10^{35}\) and \(1.49\times10^{51}\) for sampled BB144 caps
+\(K=16,\ldots,8192\).
+\item This is a rigorous stop result for that certificate, not evidence of
+large decoder loss.  Higher polymers can only worsen the product relaxation.
+The next target is boundary-shift aggregation, quotient cancellation, or
+direct exact-comparison-spectrum measurement before terminal logical-sector
+ranking.
+\item Committed deterministic profiles are
+\texttt{\detokenize{docs/data/overlap_profiles/rotated_surface_d3_p0p001.json}}
+with SHA256 prefix \texttt{\detokenize{0f6ce11b}} and
+\texttt{\detokenize{docs/data/overlap_profiles/bravyi_depth7_p0p001.json}}
+with prefix \texttt{\detokenize{e0b51b27}}.  Independent reruns were
+byte-identical.  Recorded runtimes were approximately \(0.15\) and \(2.29\)
+seconds on one CPU, with pair-count, elapsed-time, and ETA progress.
+\item Added six focused profiler test functions (14 pytest cases), including
+exhaustive Chernoff-majorant and correlated weight-four Finner checks, and
+integrated the CLI into package, command, architecture, reproducibility,
+README, and retained-file documentation.  The focused theorem/CLI set passes
+\texttt{\detokenize{44 passed in 1.76s}}; the complete suite passes
+\texttt{\detokenize{52 passed in 9.10s}}; \texttt{py\_compile} passes;
+\texttt{\detokenize{git diff --check}} is clean; and the new TeX note compiles
+twice without warnings to four pages.  The optional \texttt{ruff} executable
+is not installed, so no \texttt{ruff} result is claimed.
+\end{itemize}
+
 \subsection*{2026-07-28 Graphlike Overlap--Peierls Theorem}
 
 \begin{itemize}
