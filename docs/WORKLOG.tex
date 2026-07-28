@@ -1,5 +1,42 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-07-28 Exact Comparison-Spectrum Pruning Theorem}
+
+\begin{itemize}
+\item Added \texttt{\detokenize{docs/COMPARISON_SPECTRUM_THEOREM.md}} and its
+standalone human-readable TeX counterpart. The note proves the exact
+syndrome-averaged top-\(K\) cap theorem after arbitrary earlier recursive
+pruning, with the completed-syndrome fiber kept explicit.
+\item Sharpened the fractional consequence from the earlier
+\((1-\rho)^{-1/\rho}\|\omega\|_\rho K^{-1/\rho}\) estimate to
+\(\|\omega\|_\rho K^{-1/\rho}\). The proof chooses the head at the threshold
+\(\omega(\xi)>\|\omega\|_\rho K^{-1/\rho}\).
+\item Derived the exact minimum-overlap score-gap spectrum with
+\(e^{-\Delta}\) inside the minimum, together with the Chernoff relaxation and
+the Finner local-load condition for the row-factorized score.
+\item Added an end-to-end excess logical-Bayes-risk corollary. It controls
+exact mass removed by gap/cap pruning and does not conflate support loss with
+truth-present terminal ranking failure.
+\item Recorded the fractional overlap-Peierls result only as a conditional
+corollary. The missing family theorem is isolated precisely: prove pointwise
+polymer domination of the quotient minimum-overlap spectrum. Detector-column
+weight two simplifies Finner and defect geometry but is not by itself enough
+for that domination.
+\item Added
+\texttt{\detokenize{tests/test_comparison_spectrum_theorem.py}}. Its exhaustive
+five-fault model includes completed, active, and unopened checks and verifies
+the syndrome-fiber identity, arbitrary pointwise recursive attenuation,
+trimmed cap inequality, sharp fractional bound, and exact gap inequality.
+\item Validation: the focused theorem tests pass with \texttt{4 passed in
+0.01s}; the TeX note compiles twice with \texttt{pdflatex} to a six-page PDF
+in a temporary output directory. The complete repository suite passes with
+\texttt{32 passed in 8.85s} after rebasing onto the concurrent
+release/documentation updates; \texttt{py_compile} passes for the verifier;
+and \texttt{git diff --check} reports no whitespace errors. The project
+virtual environment does not include the optional \texttt{ruff} executable,
+so no \texttt{ruff} result is claimed.
+\end{itemize}
+
 \subsection*{2026-06-23 v0.1.0 GitHub Release Prep}
 
 \begin{itemize}

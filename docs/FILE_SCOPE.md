@@ -25,6 +25,8 @@ serving that surface were removed.
 | `docs/WORKLOG.tex` | Human-readable TeX change log matching `docs/WORKLOG.md`. |
 | `docs/FRONTIER_CARD.md` | Short human/agent-readable decoder card with classification labels, inputs, outputs, use cases, limitations, minimal commands, and citation pointers. |
 | `docs/DECODER_POSITIONING.md` | Short qualitative guide for positioning Frontier relative to BP+OSD, beam/representative search, tensor-network decoding, and variable elimination. |
+| `docs/COMPARISON_SPECTRUM_THEOREM.md` | Agent-readable proof of the exact syndrome-averaged recursive cap/gap bounds, sharp fractional corollary, and conditional overlap-Peierls reduction. |
+| `docs/COMPARISON_SPECTRUM_THEOREM.tex` | Standalone human-readable TeX version of the comparison-spectrum theorem note. |
 | `docs/ACADEMIC_METADATA.md` | Declared citation, funding, DOI, and provenance metadata status. |
 | `docs/ASSET_PROVENANCE.md` | Bundled Gross/BB144 asset provenance table and declared asset-license status. |
 | `docs/ASSET_MANIFEST.md` | Generated SHA256 checksum manifest for bundled Gross/BB144 assets. |
@@ -80,6 +82,7 @@ serving that surface were removed.
 | `examples/inspect_dem.py` | Minimal DEM loader example for `rotated_surface_d3`. |
 | `examples/replay_rotated_surface_d3.sh` | Tiny temp-directory sample-row and replay workflow. |
 | `tests/test_frontier_export.py` | Regression coverage for the exported frontier wrapper/replay behavior. |
+| `tests/test_comparison_spectrum_theorem.py` | Exhaustive finite-model verification of syndrome-fiber factorization and the recursive cap/gap inequalities. |
 | `tests/test_examples_and_cli.py` | Subprocess smoke coverage for examples, CLI help, and tiny rotated-surface replay outputs. |
 | `tests/test_paper_plots.py` | Paper-plot manifest, support-data, renderer dispatch, output reproduction, sidecar, and data-checksum regression tests. |
 | `grosscode/__init__.py` | Small top-level export for split-sector DEM construction. |

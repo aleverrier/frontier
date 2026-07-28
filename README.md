@@ -79,6 +79,8 @@ See `docs/FILE_SCOPE.md` for the file-by-file audit.
   beam/representative search, tensor-network decoding, and variable
   elimination.
 - `docs/ARCHITECTURE.md`: architecture guide for humans and agents.
+- `docs/COMPARISON_SPECTRUM_THEOREM.md`: rigorous recursive cap/gap pruning
+  theorem, sharp fractional corollary, and remaining Peierls proof boundary.
 - `docs/FILE_SCOPE.md`: retained-file audit and removed-file categories.
 - `docs/COMMANDS.md`: console-script command index.
 - `docs/ENVIRONMENT.md`: supported environment variables and native debug toggles.

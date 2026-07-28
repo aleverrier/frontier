@@ -1,5 +1,38 @@
 # Frontier Worklog
 
+## 2026-07-28 Exact Comparison-Spectrum Pruning Theorem
+
+- Added `docs/COMPARISON_SPECTRUM_THEOREM.md` and its standalone
+  human-readable TeX counterpart. The note proves the exact
+  syndrome-averaged top-`K` cap theorem after arbitrary earlier recursive
+  pruning, with the completed-syndrome fiber kept explicit.
+- Sharpened the fractional consequence from the earlier
+  `(1-rho)^(-1/rho) ||omega||_rho K^(-1/rho)` estimate to
+  `||omega||_rho K^(-1/rho)`. The proof chooses the head by the threshold
+  `omega(xi) > ||omega||_rho K^(-1/rho)`.
+- Derived the exact minimum-overlap score-gap spectrum with `exp(-Delta)`
+  inside the minimum, plus the Chernoff relaxation and the Finner local-load
+  condition for the row-factorized score.
+- Added an end-to-end excess logical-Bayes-risk corollary. It controls exact
+  mass removed by gap/cap pruning and deliberately does not conflate support
+  loss with truth-present terminal ranking failure.
+- Recorded the fractional overlap-Peierls result only as a conditional
+  corollary. The missing family theorem is now isolated precisely: prove
+  pointwise polymer domination of the quotient minimum-overlap spectrum.
+  Detector-column weight two simplifies Finner and defect geometry but is not
+  by itself enough for that domination.
+- Added `tests/test_comparison_spectrum_theorem.py`. Its exhaustive
+  five-fault model contains completed, active, and unopened checks and checks
+  the syndrome-fiber identity, arbitrary pointwise recursive attenuation,
+  trimmed cap inequality, sharp fractional bound, and exact gap inequality.
+- Validation: the focused theorem tests pass (`4 passed in 0.01s`), and the
+  TeX note compiles twice with `pdflatex` to a six-page PDF in a temporary
+  output directory. After rebasing onto the concurrent release/documentation
+  updates, the complete repository suite passes (`32 passed in 8.85s`),
+  `py_compile` passes for the verifier, and `git diff --check`
+  reports no whitespace errors. The project virtualenv does not include the
+  optional `ruff` executable, so no `ruff` result is claimed.
+
 ## 2026-06-23 v0.1.0 GitHub Release Prep
 
 - Moved current release-prep bullets from `CHANGELOG.md` `Unreleased` into the

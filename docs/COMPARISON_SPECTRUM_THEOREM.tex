@@ -1,0 +1,473 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{definition}[theorem]{Definition}
+\newcommand{\F}{\mathbb F}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Prb}{\mathop{\rm Pr}}
+\newcommand{\1}{\mathbf 1}
+\newcommand{\wt}{\operatorname{wt}}
+\newcommand{\caploss}{D_t^{\rm cap}}
+\newcommand{\gaploss}{D_t^{\rm gap}}
+
+\title{Comparison-Spectrum Control of Frontier Pruning}
+\author{Research note}
+\date{28 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We prove a finite-model, syndrome-averaged bound on the exact posterior mass
+removed by the Frontier decoder's score-gap and top-\(K\) pruning rules.  The
+top-\(K\) theorem is expressed through a score-calibrated minimum-overlap
+spectrum.  It remains valid after arbitrary earlier recursive pruning and
+implies the sharp fractional bound
+\[
+  D_t^{\rm cap}\le K^{-1/\rho}\|\omega_t\|_\rho,\qquad 0<\rho<1.
+\]
+The completed-syndrome fiber, which is necessary for a correct conditioning
+argument, is kept explicit.  We also derive the exact minimum-overlap gap
+bound and its Finner-compatible Chernoff relaxation.  A conditional fractional
+Peierls corollary isolates the remaining graphlike/qLDPC lemma: pointwise
+polymer domination of the quotient minimum-overlap spectrum.
+\end{abstract}
+
+\section{Finite ordered model}
+
+Let \(X=(X_1,\ldots,X_N)\in\F_2^N\) have independent coordinates with
+strictly positive probabilities, and let
+\[
+  S=HX,\qquad \Lambda=LX.
+\]
+Fix an ordering and a cut \(t\).  Write \(I_t,J_t\) for the processed and
+future variables and \(C_t,\Gamma_t,U_t\) for the completed, active, and
+unopened detector rows.
+
+For \(u\in\F_2^{I_t}\), define
+\[
+  c(u)=H_{C_t,I_t}u,\qquad
+  b(u)=(r(u),\lambda(u))
+      =(H_{\Gamma_t,I_t}u,L_{I_t}u).
+\]
+The relative boundary group is
+\[
+  G_t=D_t(\ker H_{C_t,I_t}),\qquad
+  D_tv=(H_{\Gamma_t,I_t}v,L_{I_t}v).
+\]
+For \(\xi\in G_t\), let \(\delta_t\xi\) be its active-detector component.
+For each completed syndrome, reachable labels lie in a torsor for \(G_t\);
+all masses below are extended by zero to the whole torsor.
+
+The unpruned prefix-fiber mass is
+\[
+  A_t(c,b)=
+  \sum_{\substack{u:c(u)=c\\b(u)=b}}\Prb[X_{I_t}=u].
+  \tag{1}
+\]
+Given full syndrome \(s\), let \(a_{t,s}(b)\) be the merged prefix mass
+present immediately before pruning at cut \(t\).  Earlier pruning only removes
+paths, hence
+\[
+  0\le a_{t,s}(b)\le A_t(s_{C_t},b).
+  \tag{2}
+\]
+This is the only property of the recursive history used in the proof.
+
+Let \(g_t(q)>0\) be the exponentiated future-score factor, so the decoder
+ranks boundary state \(b=(r,\lambda)\) using
+\[
+  h_{t,s}(b)=a_{t,s}(b)g_t(s_{\Gamma_t}-r).
+  \tag{3}
+\]
+The exact suffix-completion mass and full mass through \(b\) are
+\[
+\begin{split}
+  z_{t,s}(b)
+  &=
+  \sum_{\substack{v:\,
+    H_{\Gamma_t,J_t}v=s_{\Gamma_t}-r\\
+    H_{U_t,J_t}v=s_{U_t}}}
+  \Prb[X_{J_t}=v],\\
+  m_{t,s}(b)&=a_{t,s}(b)z_{t,s}(b).
+\end{split}
+\tag{4}
+\]
+All suffix logical labels contribute to (4).  Finally, define the independent
+future active parity
+\[
+  Q_t=H_{\Gamma_t,J_t}X_{J_t}.
+  \tag{5}
+\]
+
+\section{Pair envelope and syndrome-fiber identity}
+
+If \(b+\xi\) outranks \(b\), then, with
+\(q=s_{\Gamma_t}-r(b)\),
+\[
+ a_{t,s}(b+\xi)g_t(q+\delta_t\xi)
+ \ge a_{t,s}(b)g_t(q).
+\]
+Consequently,
+\[
+ m_{t,s}(b)
+ \le z_{t,s}(b)
+ \min\left\{
+ a_{t,s}(b),
+ a_{t,s}(b+\xi)
+ \frac{g_t(q+\delta_t\xi)}{g_t(q)}
+ \right\}.
+ \tag{6}
+\]
+The right side is coordinatewise nondecreasing in the two prefix masses, so
+(2) removes all dependence on earlier pruning.
+
+\begin{definition}
+For \(\xi\ne0\), define the score-calibrated minimum-overlap activity
+\[
+\boxed{
+ \omega_t(\xi)=
+ \sum_{c,b}\E_{Q_t}
+ \min\left\{
+ A_t(c,b),
+ A_t(c,b+\xi)
+ \frac{g_t(Q_t+\delta_t\xi)}{g_t(Q_t)}
+ \right\}.}
+ \tag{7}
+\]
+\end{definition}
+
+The completed-syndrome fiber \(c\) in (7) cannot in general be suppressed.
+The exact averaging identity is
+\[
+\begin{split}
+&\sum_s\sum_b z_{t,s}(b)
+\min\left\{
+A_t(s_{C_t},b),
+A_t(s_{C_t},b+\xi)
+\frac{g_t(s_{\Gamma_t}-r(b+\xi))}
+     {g_t(s_{\Gamma_t}-r(b))}
+\right\}\\
+&\hspace{35mm}=\omega_t(\xi).
+\end{split}
+\tag{8}
+\]
+Indeed, expand \(z_{t,s}(b)\), then parameterize every compatible triple by
+\[
+ s_{C_t}=c,\quad
+ s_{\Gamma_t}=r(b)+H_{\Gamma_t,J_t}v,\quad
+ s_{U_t}=H_{U_t,J_t}v.
+\]
+The two residuals in the score ratio become \(Q_t\) and
+\(Q_t+\delta_t\xi\), while the unopened syndrome is marginalized.
+
+\section{Exact recursive cap theorem}
+
+The implementation applies the score gap and then retains the \(K\)
+highest-ranked gap survivors, using a fixed total order for ties.  Let
+\(\caploss\) be the total syndrome-averaged exact mass removed by this cap at
+cut \(t\), excluding mass already removed by the gap.  Let
+\[
+  \omega_{t,(1)}\ge\omega_{t,(2)}\ge\cdots
+\]
+be the decreasing rearrangement of (7).
+
+\begin{theorem}[recursive trimmed-spectrum cap bound]
+For every integer \(K\ge1\),
+\[
+\boxed{
+ \caploss\le
+ \inf_{0\le q<K}
+ \frac{\sum_{j>q}\omega_{t,(j)}}{K-q}.}
+ \tag{9}
+\]
+The bound remains valid after arbitrary earlier recursive pruning.
+\end{theorem}
+
+\begin{proof}
+Fix a head \(E\subseteq G_t\setminus\{0\}\) with \(|E|=q<K\).  If \(b\)
+is cap-discarded, at least \(K\) distinct gap survivors rank ahead of it.  At
+least \(K-q\) of their relative shifts lie outside \(E\).  Apply (6) to every
+such outranker:
+\[
+\begin{split}
+ (K-q)m_{t,s}(b)
+ \le\sum_{\xi\notin E}z_{t,s}(b)
+ \min\left\{
+ a_{t,s}(b),
+ a_{t,s}(b+\xi)
+ \frac{g_t(q_b+\delta_t\xi)}{g_t(q_b)}
+ \right\}.
+\end{split}
+\tag{10}
+\]
+Absent states have prefix mass zero.  Sum over cap-discarded \(b\), enlarge
+the right side to all \(b\), use (2) and monotonicity, sum over \(s\), and
+invoke (8).  This gives
+\[
+  (K-q)\caploss\le\sum_{\xi\notin E}\omega_t(\xi).
+\]
+Take \(E\) to be the \(q\) largest activities and minimize over \(q\).
+\end{proof}
+
+\begin{corollary}[sharp fractional bound]
+For \(0<\rho<1\),
+\[
+\boxed{
+  \caploss\le K^{-1/\rho}\|\omega_t\|_\rho,\qquad
+  \|\omega_t\|_\rho=
+  \left(\sum_{\xi\ne0}\omega_t(\xi)^\rho\right)^{1/\rho}.}
+  \tag{11}
+\]
+\end{corollary}
+
+\begin{proof}
+Set \(R=K^{-1/\rho}\|\omega_t\|_\rho\) and choose
+\[
+  E=\{\xi:\omega_t(\xi)>R\},\qquad q=|E|.
+\]
+Since \(\sum_\xi\omega_t(\xi)^\rho=KR^\rho\), strict inequality in the
+definition of \(E\) gives \(q<K\).  Moreover,
+\[
+\begin{split}
+ \sum_{\xi\notin E}\omega_t(\xi)
+ &\le R^{1-\rho}
+       \sum_{\xi\notin E}\omega_t(\xi)^\rho\\
+ &<R^{1-\rho}(KR^\rho-qR^\rho)
+  =(K-q)R.
+\end{split}
+\]
+Insert this head in (9).
+\end{proof}
+
+\begin{remark}
+The factor \((1-\rho)^{-1/\rho}\) produced by a generic integral-tail
+estimate is therefore unnecessary.  Summing over cuts gives
+\[
+  D^{\rm cap}\le K^{-1/\rho}\sum_t\|\omega_t\|_\rho.
+  \tag{12}
+\]
+\end{remark}
+
+\section{Exact score-gap theorem}
+
+Let \(\gaploss\) be the syndrome-averaged exact mass removed by
+\[
+ h_{t,s}(b)<e^{-\Delta}\max_{b'}h_{t,s}(b').
+\]
+Define
+\[
+\boxed{
+ \gamma_{t,\Delta}(\xi)=
+ \sum_{c,b}\E_{Q_t}
+ \min\left\{
+ A_t(c,b),
+ e^{-\Delta}A_t(c,b+\xi)
+ \frac{g_t(Q_t+\delta_t\xi)}{g_t(Q_t)}
+ \right\}.}
+ \tag{13}
+\]
+
+\begin{theorem}[recursive gap-overlap bound]
+\[
+\boxed{
+  \gaploss\le\sum_{\xi\ne0}\gamma_{t,\Delta}(\xi).}
+  \tag{14}
+\]
+\end{theorem}
+
+\begin{proof}
+For every gap-discarded \(b\), choose a best-scoring state \(b+\xi\).  The
+gap inequality bounds \(a_{t,s}(b)\) by both itself and
+\[
+ e^{-\Delta}a_{t,s}(b+\xi)
+ \frac{g_t(q_b+\delta_t\xi)}{g_t(q_b)}.
+\]
+Multiply their minimum by \(z_{t,s}(b)\), sum over discarded states, enlarge
+to all nonzero shifts, use (2), and apply (8) with the factor
+\(e^{-\Delta}\) inside the second argument of the minimum.
+\end{proof}
+
+For \(0\le\theta\le1\),
+\[
+  \min\{x,e^{-\Delta}y\}
+  \le e^{-\theta\Delta}x^{1-\theta}y^\theta.
+  \tag{15}
+\]
+Let
+\[
+\begin{split}
+ C_{t,\theta}(\xi)
+ &=\sum_{c,b}
+ A_t(c,b)^{1-\theta}A_t(c,b+\xi)^\theta,\\
+ R_{t,\theta}(\delta)
+ &=\E_{Q_t}
+ \left[\frac{g_t(Q_t+\delta)}{g_t(Q_t)}\right]^\theta.
+\end{split}
+\tag{16}
+\]
+Then
+\[
+\boxed{
+ \gaploss\le
+ e^{-\theta\Delta}\sum_{\xi\ne0}
+ C_{t,\theta}(\xi)R_{t,\theta}(\delta_t\xi).}
+ \tag{17}
+\]
+The minimum form (13) is never weaker than (17).
+
+For the row-factorized score
+\[
+ g_t(q)=\prod_{i\in\Gamma_t}\rho_{i,t}(q_i)^{\alpha_{i,t}},
+ \qquad
+ \rho_{i,t}(b)=\Prb[(Q_t)_i=b],
+ \tag{18}
+\]
+Finner's hypergraph inequality gives
+\[
+\boxed{
+ \theta\max_{j\in J_t}
+ \sum_{\substack{i:(\delta_t\xi)_i=1\\H_{ij}=1}}
+ \alpha_{i,t}\le1
+ \quad\Longrightarrow\quad
+ R_{t,\theta}(\delta_t\xi)\le1.}
+ \tag{19}
+\]
+Each row factor is normalized because
+\[
+ \sum_{b\in\F_2}\rho_{i,t}(b)
+ \frac{\rho_{i,t}(b+1)}{\rho_{i,t}(b)}=1.
+\]
+For scalar \(\alpha=0.8\) and detector-column weight at most two, every
+\(\theta\le0.625\) is admissible.  Increasing \(\theta\) improves the explicit
+gap factor but can worsen the prefix Chernoff coefficient, so the tradeoff
+must be optimized.
+
+\section{End-to-end Bayes risk}
+
+Let \(D_t=\gaploss+\caploss\).  Since \(a_{t,s}\) contains only paths that
+survived previous cuts, masses removed at their first pruning event are
+disjoint.  Hence their total probability is at most \(\sum_tD_t\).
+
+For exact and retained logical-sector masses \(Z_\ell(s)\) and
+\(\widehat Z_\ell(s)\), let \(\ell_*\) maximize \(Z_\ell\) and let Frontier
+return a maximizer \(\widehat\ell\) of \(\widehat Z_\ell\).  Then
+\[
+\begin{split}
+ Z_{\ell_*}(s)-Z_{\widehat\ell}(s)
+ &\le Z_{\ell_*}(s)-\widehat Z_{\ell_*}(s)\\
+ &\le\sum_\ell\bigl(Z_\ell(s)-\widehat Z_\ell(s)\bigr).
+\end{split}
+\]
+After syndrome averaging,
+\[
+\boxed{
+ R_{\rm Frontier}-R_{\rm logical\ ML}
+ \le\sum_t\left[
+ \sum_{\xi\ne0}\gamma_{t,\Delta}(\xi)
+ +K^{-1/\rho}\|\omega_t\|_\rho
+ \right].}
+ \tag{20}
+\]
+This is an excess-risk statement, not a bound on total Frontier FER or on
+truth-present terminal ranking failures.
+
+\section{Bernoulli overlap and conditional Peierls corollary}
+
+For an unmerged product Bernoulli-\(p\) law translated by a vector of weight
+\(m\), let
+\[
+  \Omega_m(p)=\sum_x\min\{P(x),P(x+z)\}.
+\]
+If \(J\sim{\rm Bin}(m,p)\), pairing each string with its translate gives
+\[
+\boxed{
+  \Omega_m(p)=2\Prb[J>m/2]+\Prb[J=m/2].}
+  \tag{21}
+\]
+Thus
+\[
+  \Omega_1=\Omega_2=2p,\qquad
+  \Omega_3=\Omega_4=6p^2-4p^3.
+\]
+This verifies the \(p\)-scale, rather than \(\sqrt p\)-scale, activity before
+quotient merging.
+
+Suppose visible compatible polymer families satisfy the pointwise domination
+\[
+ \omega_t(\xi)
+ \le
+ \sum_{\substack{\mathcal F\ {\rm compatible}\\D_t\mathcal F=\xi}}
+ \prod_{\gamma\in\mathcal F}w_t(\gamma).
+ \tag{22}
+\]
+Since \(x^\rho\) is subadditive for \(0<\rho<1\),
+\[
+ \sum_{\xi\ne0}\omega_t(\xi)^\rho
+ \le
+ \exp\left(
+ \sum_{\gamma\in\mathcal P_t^{\rm vis}}w_t(\gamma)^\rho
+ \right)-1.
+ \tag{23}
+\]
+Writing
+\[
+ \Xi_{t,\rho}=
+ \sum_{\gamma\in\mathcal P_t^{\rm vis}}w_t(\gamma)^\rho,
+\]
+we obtain the conditional fractional Peierls bound
+\[
+\boxed{
+ D^{\rm cap}
+ \le
+ K^{-1/\rho}\sum_t
+ \left[e^{\Xi_{t,\rho}}-1\right]^{1/\rho}.}
+ \tag{24}
+\]
+If size-\(m\) open polymers grow as at most \(\mu^m\) and
+\(w_t(\gamma)\le a(p)^m\), convergence holds when
+\[
+ \mu a(p)^\rho<1,
+\]
+giving every cap exponent
+\[
+ \gamma=\rho^{-1}
+ <\frac{\log(1/a(p))}{\log\mu},
+\]
+subject to the integrated ordering-lifetime factor in (24).
+
+\section{Verified scope and remaining obligations}
+
+The exhaustive finite-model test
+\texttt{tests/test\_comparison\_spectrum\_theorem.py} includes completed,
+active, and unopened checks and verifies:
+\begin{itemize}
+\item the exact syndrome-fiber identity (8);
+\item recursive domination under arbitrary pointwise attenuations
+      \(a_{t,s}\le A_t\);
+\item the trimmed cap theorem and sharp fractional corollary;
+\item the exact gap-overlap theorem.
+\end{itemize}
+This is an algebraic verification, not evidence for a graphlike Peierls
+constant.
+
+The next obligations are:
+\begin{enumerate}
+\item prove (22) for the quotient minimum-overlap spectrum, first for
+      graphlike DEMs;
+\item count parity-compatible open defects with ordering lifetimes rather than
+      raw connected subgraphs;
+\item estimate or bound the corresponding \(\mu_{\rm open}\);
+\item treat terminal ranking separately through sectorwise survival bias or
+      charged pruning susceptibility.
+\end{enumerate}
+
+\end{document}
