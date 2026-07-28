@@ -37,8 +37,10 @@ implies the sharp fractional bound
 The completed-syndrome fiber, which is necessary for a correct conditioning
 argument, is kept explicit.  We also derive the exact minimum-overlap gap
 bound and its Finner-compatible Chernoff relaxation.  A conditional fractional
-Peierls corollary isolates the remaining graphlike/qLDPC lemma: pointwise
-polymer domination of the quotient minimum-overlap spectrum.
+Peierls corollary isolates the extra graphlike/qLDPC lemma: pointwise polymer
+domination of the quotient minimum-overlap spectrum.  The graphlike case is
+proved in the companion note
+\texttt{\detokenize{GRAPHLIKE_OVERLAP_PEIERLS.tex}}.
 \end{abstract}
 
 \section{Finite ordered model}
@@ -399,7 +401,9 @@ Thus
   \Omega_3=\Omega_4=6p^2-4p^3.
 \]
 This verifies the \(p\)-scale, rather than \(\sqrt p\)-scale, activity before
-quotient merging.
+quotient merging.  The companion graphlike note turns this into an exact
+family-union bound and gives a two-bit counterexample to multiplying exact
+\(\Omega_m\) activities componentwise.
 
 Suppose visible compatible polymer families satisfy the pointwise domination
 \[
@@ -459,13 +463,22 @@ active, and unopened checks and verifies:
 This is an algebraic verification, not evidence for a graphlike Peierls
 constant.
 
-The next obligations are:
+The graphlike pointwise domination (22) is proved in the companion note for
+detector-column weight at most two, row-score exponents at most one, and
+Hellinger polymer weights
+\[
+ w_t(\gamma)=
+ \prod_{j\in\gamma}2\sqrt{p_j(1-p_j)}.
+\]
+The proof uses an explicit quotient subcoupling and Finner
+non-amplification, while retaining a sharper nonmultiplicative exact-family
+bound.  The remaining obligations are:
 \begin{enumerate}
-\item prove (22) for the quotient minimum-overlap spectrum, first for
-      graphlike DEMs;
-\item count parity-compatible open defects with ordering lifetimes rather than
-      raw connected subgraphs;
-\item estimate or bound the corresponding \(\mu_{\rm open}\);
+\item replace the coarse connected-set estimate by parity-compatible
+      open-defect counts with ordering lifetimes;
+\item estimate or bound the corresponding \(\mu_{\rm open}\) and integrated
+      activity;
+\item exploit the exact nonmultiplicative family overlap at finite size;
 \item treat terminal ranking separately through sectorwise survival bias or
       charged pruning susceptibility.
 \end{enumerate}

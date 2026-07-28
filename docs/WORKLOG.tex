@@ -1,5 +1,57 @@
 \section*{Frontier Worklog}
 
+\subsection*{2026-07-28 Graphlike Overlap--Peierls Theorem}
+
+\begin{itemize}
+\item Added \texttt{\detokenize{docs/GRAPHLIKE_OVERLAP_PEIERLS.md}} and its
+standalone human-readable TeX counterpart. The note supplies the graphlike
+family theorem left open by the comparison-spectrum note.
+\item Proved an explicit quotient subcoupling lift. It pulls each merged
+boundary overlap back to prefix assignments, partitions assignment
+differences into visible connected completed-check components, and bounds
+each class by one tilted product-law overlap on the union of those
+components. Invisible kernel components are allowed and cancel after
+projection.
+\item Found a decisive correction to the proposed exact product ansatz. Two
+disconnected visible singleton defects have exact union overlap
+\(\Omega_2(p)=2p\), while multiplying singleton overlaps gives
+\(\Omega_1(p)^2=4p^2\). Exact overlap therefore does not multiply across
+components.
+\item Retained the exact low-noise advantage through the nonmultiplicative
+finite-size family bound
+\[
+ \sum_{\xi\ne0}\omega_t(\xi)^\rho
+ \le \sum_m M_t(m)\Omega_m(p)^\rho.
+\]
+\item Proved the required pointwise graphlike polymer domination with
+Hellinger activities
+\[
+ w_t(\gamma)=
+ \prod_{j\in\gamma}2\sqrt{p_j(1-p_j)}.
+\]
+For detector-column weight at most two and row-score exponents at most one,
+the Finner half-moment load is automatic, so the score does not amplify these
+activities.
+\item Derived the fractional cap bound, an \(e^{-\Delta/2}\) score-gap bound,
+the combined excess logical-Bayes-risk bound, a self-contained connected-set
+estimate with line-graph degree \(2(d-1)\), and an integrated
+ordering-lifetime form.
+\item Updated the comparison-spectrum Markdown/TeX notes, README map, and
+retained-file audit so the graphlike lemma is no longer listed as missing.
+\item Added
+\texttt{\detokenize{tests/test_graphlike_overlap_peierls.py}}. Its six
+exhaustive cases check the exact-product counterexample, tilted union overlap,
+quotient merging with alternative visible representatives and an invisible
+coordinate, a correlated graphlike Finner score moment, and the fractional
+family bounds.
+\item Validation: the focused verifier passes with \texttt{6 passed in
+0.01s}; the full repository suite passes with \texttt{38 passed in 8.73s};
+both theorem verifiers pass \texttt{py\_compile};
+\texttt{\detokenize{git diff --check}} is clean; and the comparison-spectrum
+and graphlike TeX notes compile twice to six-page and five-page PDFs,
+respectively. No simulation was launched.
+\end{itemize}
+
 \subsection*{2026-07-28 Exact Comparison-Spectrum Pruning Theorem}
 
 \begin{itemize}

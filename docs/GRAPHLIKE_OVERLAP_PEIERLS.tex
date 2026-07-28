@@ -1,0 +1,472 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\F}{\mathbb F}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Prb}{\mathop{\rm Pr}}
+\newcommand{\1}{\mathbf 1}
+
+\title{Graphlike Overlap--Peierls Reduction for Frontier}
+\author{Research note}
+\date{28 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We complete the graphlike family step in the comparison-spectrum analysis of
+Frontier pruning.  An explicit subcoupling lifts quotient boundary overlaps
+back to prefix assignments and bounds each comparison by one product-law
+overlap on the union of its visible connected components.  A two-bit
+counterexample shows that exact overlap weights cannot in general be
+multiplied componentwise.  The Hellinger majorant does factorize.  Combined
+with Finner's inequality, detector-column weight at most two, and score
+exponents at most one, it proves the required pointwise polymer domination
+and yields fractional top-\(K\), score-gap, connected-count, and integrated
+ordering-lifetime bounds.
+\end{abstract}
+
+\section{Prefix quotient and open components}
+
+Fix a cut \(t\), let \(I_t\) be the processed variables, and write
+\[
+ P_t(u)=\Prb[X_{I_t}=u].
+\]
+Define the linear quotient map and its pushforward mass by
+\[
+\begin{split}
+ F_t(u)
+ &=
+ \left(
+ H_{C_t,I_t}u,\,
+ H_{\Gamma_t,I_t}u,\,
+ L_{I_t}u
+ \right)
+ =(c(u),b(u)),\\
+ A_t(y)&=\sum_{u:F_t(u)=y}P_t(u).
+\end{split}
+\tag{1}
+\]
+For a nonzero relative boundary shift
+\[
+ \xi\in G_t=D_t(\ker H_{C_t,I_t}),\qquad
+ D_tv=(H_{\Gamma_t,I_t}v,L_{I_t}v),
+\]
+let \(\delta_t\xi\) be its active-detector component.  At fixed future
+active parity \(q\), set
+\[
+ r_t(q,\xi)=\frac{g_t(q+\delta_t\xi)}{g_t(q)}
+\tag{2}
+\]
+and
+\[
+ O_{t,q}(\xi)
+ =
+ \sum_y\min\{A_t(y),r_t(q,\xi)A_t(y+\xi)\}.
+\tag{3}
+\]
+The comparison spectrum of the companion note is
+\[
+ \omega_t(\xi)=\E_{Q_t}O_{t,Q_t}(\xi).
+\tag{4}
+\]
+
+Let \(\mathcal G_t\) be the graph on \(I_t\) in which two variables are
+adjacent when they both occur in a completed detector row.  A nonempty
+connected set \(\gamma\) is an open-prefix polymer when
+\[
+ H_{C_t,I_t}\1_\gamma=0.
+\tag{5}
+\]
+It is visible when \(D_t\1_\gamma\ne0\).  Polymers are compatible when no
+graph edge joins them.  For a compatible family \(\mathcal F\), define
+\[
+ S_{\mathcal F}=\bigcup_{\gamma\in\mathcal F}\gamma,\qquad
+ D_t\mathcal F
+ =
+ \bigoplus_{\gamma\in\mathcal F}D_t\1_\gamma.
+\tag{6}
+\]
+
+\begin{lemma}[componentwise completed parity]
+If \(v\in\ker H_{C_t,I_t}\), every connected component \(\gamma\) of
+\(\operatorname{supp}v\) in \(\mathcal G_t\) satisfies
+\(H_{C_t,I_t}\1_\gamma=0\).
+\end{lemma}
+
+\begin{proof}
+A completed row cannot meet two different support components, because any
+two support variables in that row are adjacent.  The row has even parity on
+\(v\), hence even parity on the unique component it meets.
+\end{proof}
+
+\section{Exact coupling lift}
+
+For \(S\subseteq I_t\) and \(r>0\), define
+\[
+ \kappa_{t,r}(S)
+ =
+ \sum_{x\in\F_2^S}
+ \min\{P_{t,S}(x),rP_{t,S}(x+\1_S)\},
+\tag{7}
+\]
+where \(P_{t,S}\) is the product marginal.  Put
+\[
+ \overline\kappa_t(\mathcal F)
+ =
+ \E_{Q_t}
+ \kappa_{t,r_t(Q_t,D_t\mathcal F)}(S_{\mathcal F}).
+\tag{8}
+\]
+
+\begin{theorem}[quotient coupling lift]
+For every nonzero \(\xi\in G_t\),
+\[
+\boxed{
+ \omega_t(\xi)
+ \le
+ \sum_{\substack{
+ \mathcal F\ {\rm compatible\ visible}\\
+ D_t\mathcal F=\xi}}
+ \overline\kappa_t(\mathcal F).}
+\tag{9}
+\]
+\end{theorem}
+
+\begin{proof}
+Fix \(q\), abbreviate \(r=r_t(q,\xi)\), and let
+\[
+ \nu_y=\min\{A_t(y),rA_t(y+\xi)\}.
+\]
+For nonzero fibers, define a flow between prefix assignments:
+\[
+ \lambda_y(u,u')
+ =
+ \nu_y
+ \frac{P_t(u)}{A_t(y)}
+ \frac{P_t(u')}{A_t(y+\xi)},
+ \qquad F_t(u)=y,\quad F_t(u')=y+\xi.
+\tag{10}
+\]
+Its total mass is \(O_{t,q}(\xi)\), its first marginal is at most \(P_t\),
+and its second marginal is at most \(rP_t\).
+
+Every pair carrying flow has
+\[
+ v=u+u'\in\ker H_{C_t,I_t},\qquad D_tv=\xi.
+\tag{11}
+\]
+Partition the flow by the compatible family \(\mathcal F\) of visible
+connected components of \(\operatorname{supp}v\), ignoring invisible
+components.  For \(S=S_{\mathcal F}\), every pair in that class satisfies
+\[
+ u'_S=u_S+\1_S.
+\]
+After projection to \(S\), the flow from \(x\) is at most both
+\(P_{t,S}(x)\) and \(rP_{t,S}(x+\1_S)\).  The class therefore has mass at
+most \(\kappa_{t,r}(S)\).  Sum over families and average over \(Q_t\).
+\end{proof}
+
+\begin{remark}
+The lift handles arbitrary quotient merging and arbitrary invisible kernel
+components.  It does not choose one representative for a boundary shift.
+\end{remark}
+
+\section{Exact overlap does not factorize}
+
+Consider two independent Bernoulli-\(p\) processed variables, no completed
+constraints, the identity boundary map, and \(g_t\equiv1\).  The shift that
+flips both variables consists of two compatible visible singleton polymers.
+For \(0<p<1/2\),
+\[
+ \Omega_2(p)=2p,
+ \qquad
+ \Omega_1(p)^2=(2p)^2=4p^2<2p.
+\tag{12}
+\]
+Thus exact componentwise overlap activities do not multiply, even before
+quotient merging.  The correct exact activity in Theorem 2 is one overlap on
+the family union.  In the homogeneous unscored model,
+\[
+\boxed{
+ \overline\kappa_t(\mathcal F)
+ =
+ \Omega_{|S_{\mathcal F}|}(p),}
+\tag{13}
+\]
+where, for \(J\sim{\rm Bin}(m,p)\),
+\[
+ \Omega_m(p)
+ =
+ 2\Prb[J>m/2]+\Prb[J=m/2].
+\tag{14}
+\]
+
+Let \(M_t(m)\) count compatible visible families with nonzero total boundary
+shift and union size \(m\).  For \(0<\rho<1\), subadditivity gives the exact
+finite-size family bound
+\[
+\boxed{
+ \sum_{\xi\ne0}\omega_t(\xi)^\rho
+ \le
+ \sum_{m\ge1}M_t(m)\Omega_m(p)^\rho.}
+\tag{15}
+\]
+The sharp cap theorem in the companion note therefore gives
+\[
+\boxed{
+ D_t^{\rm cap}
+ \le
+ K^{-1/\rho}
+ \left[
+ \sum_{m\ge1}M_t(m)\Omega_m(p)^\rho
+ \right]^{1/\rho}.}
+\tag{16}
+\]
+
+\section{Hellinger factorization and graphlike theorem}
+
+For processed variable \(j\), define
+\[
+ \beta_j=2\sqrt{p_j(1-p_j)}.
+\tag{17}
+\]
+
+\begin{lemma}[tilted Hellinger majorant]
+For \(S\subseteq I_t\) and \(r>0\),
+\[
+\boxed{
+ \kappa_{t,r}(S)
+ \le
+ \sqrt r\prod_{j\in S}\beta_j.}
+\tag{18}
+\]
+\end{lemma}
+
+\begin{proof}
+Apply \(\min\{a,rb\}\le\sqrt r\sqrt{ab}\) in (7).  The remaining
+Hellinger coefficient factorizes over the product marginal.
+\end{proof}
+
+Define the score moment
+\[
+ R_{t,1/2}(\delta)
+ =
+ \E_{Q_t}
+ \left[
+ \frac{g_t(Q_t+\delta)}{g_t(Q_t)}
+ \right]^{1/2}.
+\tag{19}
+\]
+Then
+\[
+ \overline\kappa_t(\mathcal F)
+ \le
+ R_{t,1/2}(\delta_tD_t\mathcal F)
+ \prod_{j\in S_{\mathcal F}}\beta_j.
+\tag{20}
+\]
+For the row-factorized score
+\[
+ g_t(q)
+ =
+ \prod_{i\in\Gamma_t}
+ \rho_{i,t}(q_i)^{\alpha_{i,t}},
+ \qquad
+ \rho_{i,t}(b)=\Prb[(Q_t)_i=b],
+\tag{21}
+\]
+Finner's inequality gives
+\[
+ \frac12
+ \max_{j\in J_t}
+ \sum_{\substack{i:\delta_i=1\\H_{ij}=1}}\alpha_{i,t}
+ \le1
+ \quad\Longrightarrow\quad
+ R_{t,1/2}(\delta)\le1.
+\tag{22}
+\]
+
+\begin{theorem}[graphlike pointwise domination]
+Suppose every detector column has weight at most two, the score has form
+(21), and \(\alpha_{i,t}\le1\) for every active row.  Define
+\[
+ w_t(\gamma)=\prod_{j\in\gamma}\beta_j.
+\tag{23}
+\]
+Then, for every nonzero \(\xi\in G_t\),
+\[
+\boxed{
+ \omega_t(\xi)
+ \le
+ \sum_{\substack{
+ \mathcal F\ {\rm compatible\ visible}\\
+ D_t\mathcal F=\xi}}
+ \prod_{\gamma\in\mathcal F}w_t(\gamma).}
+\tag{24}
+\]
+\end{theorem}
+
+\begin{proof}
+A future detector column meets at most two active rows.  The left side of
+(22) is therefore at most \(\frac12(2)=1\).  Hence the score moment in
+(20) is at most one.  Compatible components are disjoint, so
+\[
+ \prod_{j\in S_{\mathcal F}}\beta_j
+ =
+ \prod_{\gamma\in\mathcal F}w_t(\gamma).
+\]
+Apply Theorem 2.
+\end{proof}
+
+\section{Fractional Peierls and score-gap bounds}
+
+Let \(\mathcal P_t^{\rm vis}\) be the visible polymers and define
+\[
+ \Xi_{t,\rho}
+ =
+ \sum_{\gamma\in\mathcal P_t^{\rm vis}}w_t(\gamma)^\rho.
+\tag{25}
+\]
+For \(0<\rho<1\), Theorem 4 and subadditivity imply
+\[
+\boxed{
+ \sum_{\xi\ne0}\omega_t(\xi)^\rho
+ \le
+ \prod_{\gamma\in\mathcal P_t^{\rm vis}}
+ (1+w_t(\gamma)^\rho)-1
+ \le e^{\Xi_{t,\rho}}-1.}
+\tag{26}
+\]
+Consequently,
+\[
+\boxed{
+ D^{\rm cap}
+ \le
+ K^{-1/\rho}\sum_t
+ \left(e^{\Xi_{t,\rho}}-1\right)^{1/\rho}.}
+\tag{27}
+\]
+
+For score-gap pruning, replace \(r\) in the coupling lift by
+\(e^{-\Delta}r\).  Lemma 3 contributes \(e^{-\Delta/2}\), and the exact
+gap theorem from the companion note gives
+\[
+\boxed{
+ D_t^{\rm gap}
+ \le
+ e^{-\Delta/2}\left(e^{\Xi_{t,1}}-1\right).}
+\tag{28}
+\]
+The excess logical-Bayes-risk result becomes
+\[
+\boxed{
+ R_{\rm Frontier}-R_{\rm logical\ ML}
+ \le
+ \sum_t\left[
+ e^{-\Delta/2}(e^{\Xi_{t,1}}-1)
+ +
+ K^{-1/\rho}(e^{\Xi_{t,\rho}}-1)^{1/\rho}
+ \right].}
+\tag{29}
+\]
+
+\section{Connected-set and lifetime bounds}
+
+Let \(d_t\) be the maximum number of processed variables incident to a
+completed detector, with \(d_t=1\) by convention when there are no completed
+incidences.  In the graphlike case the maximum degree of \(\mathcal G_t\) is
+at most
+\[
+ \Delta_t=2(d_t-1).
+\tag{30}
+\]
+A graph of maximum degree \(\Delta_t\) has at most
+\(\Delta_t^{2(m-1)}\) connected \(m\)-sets containing a fixed root: encode a
+canonical rooted spanning tree by its depth-first walk of length
+\(2(m-1)\).  Therefore, with \(n_t=|I_t|\) and
+\(\overline\beta_t=\max_{j\in I_t}\beta_j\),
+\[
+ \Xi_{t,\rho}
+ \le
+ n_t\sum_{m\ge1}
+ \Delta_t^{2(m-1)}\overline\beta_t^{\rho m}.
+\tag{31}
+\]
+If \(\Delta_t^2\overline\beta_t^\rho<1\), this gives
+\[
+\boxed{
+ \Xi_{t,\rho}
+ \le
+ \frac{n_t\overline\beta_t^\rho}
+ {1-\Delta_t^2\overline\beta_t^\rho}.}
+\tag{32}
+\]
+For \(\Delta_t=0\), the \(m=1\) factor in (31) is interpreted as one.
+This deliberately coarse count drops completed-parity and visibility
+restrictions.
+
+Finally, define
+\[
+ \mathcal L_\rho=\sum_t\Xi_{t,\rho},
+ \qquad
+ x_\rho=\sup_t\Xi_{t,\rho}.
+\tag{33}
+\]
+For \(0<x_\rho<\infty\),
+\[
+ (e^x-1)^{1/\rho}
+ \le
+ e^{x_\rho/\rho}x_\rho^{1/\rho-1}x,
+ \qquad 0\le x\le x_\rho.
+\]
+Equation (27) yields the integrated ordering-lifetime form
+\[
+\boxed{
+ D^{\rm cap}
+ \le
+ K^{-1/\rho}
+ e^{x_\rho/\rho}
+ x_\rho^{1/\rho-1}
+ \mathcal L_\rho.}
+\tag{34}
+\]
+This isolates the time-integrated visible-polymer activity rather than the
+worst-case raw boundary width.
+
+\section{Scope and next steps}
+
+The graphlike quotient-overlap family theorem is now proved, including
+arbitrary quotient merging, invisible components, row-score effects, and a
+fully explicit connected-set bound.  The exact low-weight overlap advantage
+survives in the nonmultiplicative family bound (15), whereas the unconditional
+componentwise theorem uses
+\(\beta(p)=2\sqrt{p(1-p)}\sim2\sqrt p\).
+
+The remaining improvements are to count only parity-compatible visible
+families, control their actual ordering lifetimes, exploit (15) at finite
+size, and analyze terminal logical ranking through charged/projective sector
+distortion.  None of the present bounds equates raw frontier width with
+logical error.
+
+\section*{References}
+
+\begin{itemize}
+\item H. Finner, ``A Generalization of H\"older's Inequality and Some
+Probability Inequalities,'' \emph{The Annals of Probability} 20(4),
+1893--1901 (1992).
+\url{https://doi.org/10.1214/aop/1176989534}
+\item O. Fawzi, A. Grospellier, and A. Leverrier, ``Efficient decoding of
+random errors for quantum expander codes,'' arXiv:1711.08351 (2017).
+\url{https://arxiv.org/abs/1711.08351}
+\end{itemize}
+
+\end{document}

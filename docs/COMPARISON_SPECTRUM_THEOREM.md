@@ -5,7 +5,8 @@ Status: rigorous finite-model theorem and proof draft, 2026-07-28.
 This note isolates the pruning statement from any qLDPC-geometry or polymer
 approximation.  It proves the exact syndrome-averaged top-\(K\) cap bound for
 the score used by Frontier, proves the analogous score-gap bound, and states
-precisely what remains to obtain a graphlike or qLDPC Peierls theorem.
+the extra hypothesis needed for a Peierls theorem.  The graphlike case of
+that hypothesis is proved in `GRAPHLIKE_OVERLAP_PEIERLS.md`.
 
 Two corrections to the earlier informal formulation are important.
 
@@ -486,10 +487,12 @@ Consequently
 \tag{26}
 \]
 This verifies the important \(p\)-scale rather than \(\sqrt p\)-scale
-single-shift activity before quotient merging.  Turning (25) into a
-pointwise quotient/polymer bound for (7) is a separate lemma.
+single-shift activity before quotient merging.  The companion graphlike note
+turns (25) into an exact **family-union** quotient bound.  It also shows by a
+two-bit counterexample that the exact \(\Omega_m\) activities cannot be
+multiplied componentwise.
 
-## 8. Conditional fractional Peierls corollary
+## 8. Peierls reduction and graphlike completion
 
 Suppose one proves, for visible compatible polymer families \(\mathcal F\),
 the pointwise domination
@@ -542,10 +545,19 @@ Hence every cap power
 \]
 is available, subject to the integrated lifetime factor in (29).
 
-Equation (29) is a rigorous conditional corollary.  The missing
-family-specific step is (27) for the minimum-overlap spectrum after quotient
-merging.  Detector-column weight two makes the Finner condition simple and
-makes open defects graphlike, but it does not by itself prove (27).
+Equation (29) is a rigorous reduction.  The companion note
+`GRAPHLIKE_OVERLAP_PEIERLS.md` proves (27) for detector-column weight at most
+two, row-factorized score exponents at most one, and Hellinger polymer
+activities
+\[
+w_t(\gamma)
+=
+\prod_{j\in\gamma}2\sqrt{p_j(1-p_j)}.
+\tag{32}
+\]
+The proof uses an explicit quotient subcoupling and Finner non-amplification.
+It also retains a sharper nonmultiplicative exact-family bound with one
+\(\Omega_m\) activity on the union of each visible compatible family.
 
 ## 9. Verification and next proof obligations
 
@@ -562,12 +574,14 @@ five-fault model with completed, active, and unopened checks.  It verifies:
 The test is a finite algebra check, not evidence for a graphlike Peierls
 constant.
 
-The next proof obligations are:
+The first former proof obligation, pointwise quotient/polymer domination for
+graphlike DEMs, is discharged in `GRAPHLIKE_OVERLAP_PEIERLS.md`.  The
+remaining obligations are:
 
-1. prove the pointwise quotient/polymer domination (27), first for graphlike
-   DEMs;
-2. count parity-compatible open defects with ordering lifetimes, rather than
-   raw connected subgraphs;
-3. measure or bound the resulting \(\mu_{\rm open}\);
+1. replace the companion note's coarse connected-set bound by
+   parity-compatible open-defect counts with ordering lifetimes;
+2. measure or bound the resulting \(\mu_{\rm open}\) and integrated activity;
+3. exploit the exact nonmultiplicative family overlap for finite-size
+   improvements;
 4. analyze terminal ranking separately through sectorwise survival bias or
    charged pruning susceptibility.
